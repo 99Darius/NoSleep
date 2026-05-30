@@ -15,6 +15,7 @@ bundle: build
 	cp .build/release/NoSleepApp $(APP)/Contents/MacOS/NoSleepApp
 	cp .build/release/nosleep    $(APP)/Contents/MacOS/nosleep
 	cp Resources/Info.plist      $(APP)/Contents/Info.plist
+	cp Resources/AppIcon.icns    $(APP)/Contents/Resources/AppIcon.icns
 	# Bundle the KeyboardShortcuts SPM resource bundle so Bundle.module resolves
 	# at runtime instead of fatalError-ing. ditto (not cp -R): the bundle's .lproj
 	# dirs are read-only, which trips up cp.
