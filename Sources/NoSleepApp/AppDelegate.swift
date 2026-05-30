@@ -27,6 +27,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return NoSleepState(isActive: self.manager.isActive, expiresAt: self.currentExpiry)
         }
         menu.onChangeShortcut = { [weak self] in self?.shortcutSettings.show() }
+        menu.onUninstall = { Uninstaller.run() }
 
         // Global hotkey (default ⌃⌘S, user-rebindable). KeyboardShortcuts registers
         // the persisted shortcut and delivers callbacks on the main thread.

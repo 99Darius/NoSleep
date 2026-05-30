@@ -53,6 +53,22 @@ Durations accept `s`, `m`, and `h` suffixes. Any command other than `status`/`of
 will launch the menu bar agent automatically if it isn't already running, and the
 CLI stays in sync with the menu since both talk to the same agent.
 
+## Uninstall
+
+Easiest: open the menu bar item → **Uninstall NoSleep…** → confirm. That turns off
+keep-awake, removes the Launch at Login item, deletes NoSleep's settings and
+shortcut, removes the `nosleep` CLI symlink, and moves `NoSleep.app` to the Trash.
+
+To do it manually instead:
+
+```bash
+osascript -e 'tell application id "com.nosleep" to quit'   # or quit from the menu
+rm -rf /Applications/NoSleep.app                            # wherever you put it
+rm -f /usr/local/bin/nosleep                                # if you symlinked the CLI
+defaults delete com.nosleep.shared 2>/dev/null              # saved state
+# Launch at Login is cleared automatically on quit/removal.
+```
+
 ## Caveats
 
 NoSleep blocks **idle system sleep only** (`PreventUserIdleSystemSleep`). It is

@@ -7,6 +7,7 @@ final class MenuController: NSObject, NSMenuDelegate {
     var onTimer: ((TimeInterval) -> Void)?
     var onToggleLoginItem: (() -> Void)?
     var onChangeShortcut: (() -> Void)?
+    var onUninstall: (() -> Void)?
     var onQuit: (() -> Void)?
     /// Supplies the live state so the menu can re-render (e.g. countdown) when opened.
     var currentState: (() -> NoSleepState)?
@@ -44,6 +45,11 @@ final class MenuController: NSObject, NSMenuDelegate {
         login.target = self
         login.state = LoginItem.isEnabled ? .on : .off
         menu.addItem(login)
+
+        menu.addItem(.separator())
+        let uninstall = NSMenuItem(title: "Uninstall NoSleep…", action: #selector(uninstallTapped), keyEquivalent: "")
+        uninstall.target = self
+        menu.addItem(uninstall)
 
         let quit = NSMenuItem(title: "Quit NoSleep", action: #selector(quitTapped), keyEquivalent: "q")
         quit.target = self
@@ -110,6 +116,9 @@ final class MenuController: NSObject, NSMenuDelegate {
         statusItem.button?.image = Self.icon(crossed: state.isActive)
         statusItem.button?.image?.accessibilityDescription =
             state.isActive ? "NoSleep active" : "NoSleep inactive"
+        // Visible "S" label next to the icon so it's easy to spot in the menu bar.
+        statusItem.button?.imagePosition = .imageLeft
+        statusItem.button?.title = " S"
         guard let toggle = statusItem.menu?.items.first else { return }
         if state.isActive {
             if let exp = state.expiresAt {
@@ -131,5 +140,6 @@ final class MenuController: NSObject, NSMenuDelegate {
     }
     @objc private func loginTapped() { onToggleLoginItem?() }
     @objc private func changeShortcutTapped() { onChangeShortcut?() }
+    @objc private func uninstallTapped() { onUninstall?() }
     @objc private func quitTapped() { onQuit?() }
 }
