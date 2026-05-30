@@ -10,7 +10,16 @@
   .lead { font-size: 14px; color: #3a3a3c; }
   ul { font-size: 13px; padding-left: 18px; margin: 0 0 12px; }
   li { margin-bottom: 6px; }
-  .accent { color: #3a4fd0; font-weight: 600; }
+  .accent { color: #6f86ff; font-weight: 600; }
+  .shortcut { font-size: 15px; font-weight: 700; color: #2c3bb0;
+              background: #eef1ff; border: 1px solid #d4d9ff;
+              border-radius: 8px; padding: 10px 12px; margin: 4px 0 0; }
+  .shortcut kbd { font: inherit; }
+  @media (prefers-color-scheme: dark) {
+    body { color: #f5f5f7; }
+    .lead { color: #c7c7cc; }
+    .shortcut { color: #cdd5ff; background: #23284a; border-color: #3a4180; }
+  }
 </style>
 </head>
 <body>
@@ -22,6 +31,8 @@
     <li>Close the lid and your Mac stays awake — no external display needed.</li>
     <li>Turn it off anytime to get normal sleep back.</li>
   </ul>
+  <p class="shortcut">⌃⌘S — the one shortcut to remember. Press it anywhere to
+  toggle Sleep / No-Sleep.</p>
   <p>When you click <b>Install</b>, NoSleep is added to your Applications and
   opens automatically. The first time you turn it on, macOS will ask for your
   password to allow the lid-closed mode — that’s expected.</p>

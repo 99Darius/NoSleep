@@ -12,6 +12,9 @@ final class MenuController: NSObject, NSMenuDelegate {
     /// Supplies the live state so the menu can re-render (e.g. countdown) when opened.
     var currentState: (() -> NoSleepState)?
 
+    private var toggleItem: NSMenuItem?
+    private var loginItem: NSMenuItem?
+
     override init() {
         super.init()
         // Persist the icon's menu bar position once the user ⌘-drags it.
@@ -22,9 +25,19 @@ final class MenuController: NSObject, NSMenuDelegate {
 
     private func build() {
         let menu = NSMenu()
-        let toggle = NSMenuItem(title: "Enable NoSleep", action: #selector(toggleTapped), keyEquivalent: "")
+
+        // Prominent, non-clickable reminder of the global shortcut.
+        let hint = NSMenuItem(title: "Press  ⌃⌘S  to toggle Sleep / No-Sleep", action: nil, keyEquivalent: "")
+        hint.isEnabled = false
+        menu.addItem(hint)
+        menu.addItem(.separator())
+
+        // The toggle item also displays "⌃⌘S" next to it as a constant reminder.
+        let toggle = NSMenuItem(title: "Enable NoSleep", action: #selector(toggleTapped), keyEquivalent: "s")
+        toggle.keyEquivalentModifierMask = [.command, .control]
         toggle.target = self
         menu.addItem(toggle)
+        toggleItem = toggle
         menu.addItem(.separator())
 
         let durations: [(String, TimeInterval)] = [("15 minutes", 900), ("1 hour", 3600), ("2 hours", 7200)]
@@ -48,6 +61,7 @@ final class MenuController: NSObject, NSMenuDelegate {
         login.target = self
         login.state = LoginItem.isEnabled ? .on : .off
         menu.addItem(login)
+        loginItem = login
 
         menu.addItem(.separator())
         let uninstall = NSMenuItem(title: "Uninstall NoSleep…", action: #selector(uninstallTapped), keyEquivalent: "")
@@ -119,7 +133,8 @@ final class MenuController: NSObject, NSMenuDelegate {
         statusItem.button?.image = Self.icon(crossed: state.isActive)
         statusItem.button?.image?.accessibilityDescription =
             state.isActive ? "NoSleep active" : "NoSleep inactive"
-        guard let toggle = statusItem.menu?.items.first else { return }
+        statusItem.button?.toolTip = "NoSleep — press ⌃⌘S to toggle Sleep / No-Sleep"
+        guard let toggle = toggleItem else { return }
         if state.isActive {
             if let exp = state.expiresAt {
                 let left = max(0, exp.timeIntervalSinceNow)
@@ -130,8 +145,7 @@ final class MenuController: NSObject, NSMenuDelegate {
         } else {
             toggle.title = "Enable NoSleep"
         }
-        statusItem.menu?.items.first(where: { $0.title == "Launch at Login" })?.state =
-            LoginItem.isEnabled ? .on : .off
+        loginItem?.state = LoginItem.isEnabled ? .on : .off
     }
 
     @objc private func toggleTapped() { onToggle?() }

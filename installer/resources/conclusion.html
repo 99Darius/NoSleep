@@ -7,15 +7,24 @@
          color: #1d1d1f; margin: 0; padding: 8px 6px; line-height: 1.5; }
   h1 { font-size: 19px; margin: 0 0 6px; }
   p  { font-size: 13px; margin: 0 0 12px; }
-  .accent { color: #3a4fd0; font-weight: 600; }
+  .accent { color: #6f86ff; font-weight: 600; }
+  .hero { font-size: 22px; font-weight: 800; color: #2c3bb0;
+          background: #eef1ff; border: 1px solid #d4d9ff;
+          border-radius: 10px; padding: 14px; text-align: center; margin: 4px 0 14px; }
+  @media (prefers-color-scheme: dark) {
+    body { color: #f5f5f7; }
+    .hero { color: #cdd5ff; background: #23284a; border-color: #3a4180; }
+  }
 </style>
 </head>
 <body>
   <h1>NoSleep is ready 🎉</h1>
+  <div class="hero">Press ⌃⌘S to toggle Sleep / No-Sleep</div>
   <p>It just opened and is waiting in your menu bar — look for the
   <span class="accent">S</span> icon at the top-right of your screen.</p>
-  <p>Click it (or press <span class="accent">⌃⌘S</span>) to keep your Mac awake.
-  When it’s on, the S shows a line through it. Click again to turn it off.</p>
+  <p>That one shortcut — <span class="accent">⌃⌘S</span> (Control-Command-S) —
+  flips keep-awake on and off from anywhere. When it’s on, the menu bar S shows
+  a line through it. You can also click the icon to toggle.</p>
   <p>Enjoy — and remember to give your Mac some airflow when you keep it awake
   with the lid closed.</p>
 </body>

@@ -1,8 +1,12 @@
 import AppKit
 
-// Renders the installer background: a clean light panel with the NoSleep
-// S-in-box logo and wordmark anchored at the bottom-left. Usage:
-//   swift make_installer_bg.swift <out.png>
+// Renders the installer background: a clean panel with the NoSleep S-in-box
+// logo and wordmark anchored at the bottom-left. Usage:
+//   swift make_installer_bg.swift <out.png> [dark]
+// The optional "dark" arg renders the dark-mode variant so the macOS Installer's
+// light step labels stay readable.
+
+let darkMode = CommandLine.arguments.count > 2 && CommandLine.arguments[2] == "dark"
 
 func render(width: Int, height: Int) -> Data {
     let w = CGFloat(width), h = CGFloat(height)
@@ -13,11 +17,17 @@ func render(width: Int, height: Int) -> Data {
     NSGraphicsContext.saveGraphicsState()
     NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
 
-    // Soft top-to-bottom gradient, white → very light blue.
-    let bg = NSGradient(colors: [
-        NSColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
-        NSColor(srgbRed: 0.90, green: 0.93, blue: 1.0, alpha: 1.0),
-    ])!
+    // Soft top-to-bottom gradient. Light mode: white → light blue.
+    // Dark mode: deep navy → near-black, so the Installer's light step labels read.
+    let bg = darkMode
+        ? NSGradient(colors: [
+            NSColor(srgbRed: 0.13, green: 0.15, blue: 0.27, alpha: 1.0),
+            NSColor(srgbRed: 0.06, green: 0.07, blue: 0.12, alpha: 1.0),
+          ])!
+        : NSGradient(colors: [
+            NSColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
+            NSColor(srgbRed: 0.90, green: 0.93, blue: 1.0, alpha: 1.0),
+          ])!
     bg.draw(in: NSRect(x: 0, y: 0, width: w, height: h), angle: -90)
 
     // Logo tile + wordmark anchored bottom-left, lifted so the wordmark
@@ -50,10 +60,13 @@ func render(width: Int, height: Int) -> Data {
     let sh = s.size().height
     s.draw(in: NSRect(x: margin, y: tileBottom + (tile - sh) / 2, width: tile, height: sh))
 
-    // Wordmark below the tile.
+    // Wordmark below the tile — navy on light, white on dark.
+    let wordColor = darkMode
+        ? NSColor.white
+        : NSColor(srgbRed: 0.16, green: 0.19, blue: 0.42, alpha: 1.0)
     let word = NSAttributedString(string: "NoSleep", attributes: [
         .font: NSFont.systemFont(ofSize: w * 0.075, weight: .bold),
-        .foregroundColor: NSColor(srgbRed: 0.16, green: 0.19, blue: 0.42, alpha: 1.0),
+        .foregroundColor: wordColor,
     ])
     word.draw(at: NSPoint(x: margin, y: wordBaseline))
 

@@ -6,4 +6,5 @@ build/
 *.pkg
 *.dmg
 installer/resources/background.png
+installer/resources/background-dark.png
 installer/resources/LICENSE.txt

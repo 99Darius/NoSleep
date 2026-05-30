@@ -4,8 +4,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT=$(pwd)
-BUILD="$ROOT/build/pkg"
-rm -rf "$BUILD"
+# Stage in a throwaway temp dir (avoids stuck/again-read-only leftovers in-repo).
+BUILD=$(mktemp -d /tmp/nosleep_pkg.XXXXXX)
+trap 'rm -rf "$BUILD" 2>/dev/null || true' EXIT
 mkdir -p "$BUILD/pkgroot/Applications"
 
 # 1. Fresh app bundle.
@@ -16,6 +17,7 @@ ditto "$ROOT/NoSleep.app" "$BUILD/pkgroot/Applications/NoSleep.app"
 
 # 3. Installer assets (background image + license copy).
 swift "$ROOT/tools/make_installer_bg.swift" "$ROOT/installer/resources/background.png"
+swift "$ROOT/tools/make_installer_bg.swift" "$ROOT/installer/resources/background-dark.png" dark
 cp "$ROOT/LICENSE" "$ROOT/installer/resources/LICENSE.txt"
 chmod +x "$ROOT/installer/scripts/postinstall"
 
