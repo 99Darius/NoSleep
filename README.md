@@ -1,9 +1,19 @@
 # NoSleep
 
 A tiny macOS menu bar agent (`NoSleep.app`) plus a `nosleep` CLI that keep your
-Mac awake on demand. A single menu bar agent owns one IOKit power assertion and
-is the source of truth; the menu, a global hotkey, and the CLI all drive that
-one shared state.
+Mac awake on demand — **even with the lid closed**, no external display needed.
+
+When you turn NoSleep on it sets `pmset disablesleep 1`, the one setting that
+overrides clamshell (lid-close) sleep; turning it off restores
+`disablesleep 0`. Because that setting is system-wide it needs root, so macOS
+asks for your **administrator password** when you toggle it. A single menu bar
+agent is the source of truth; the menu, a global hotkey, and the CLI all drive
+that one shared state.
+
+> ⚠️ With the lid closed there's no airflow — your Mac can get warm, especially
+> while charging. Keep it somewhere ventilated. NoSleep restores normal sleep
+> when you disable it or quit. If it's ever force-quit while active, run
+> `sudo pmset -a disablesleep 0` to restore sleep.
 
 ## Build
 
@@ -71,12 +81,16 @@ defaults delete com.nosleep.shared 2>/dev/null              # saved state
 
 ## Caveats
 
-NoSleep blocks **idle system sleep only** (`PreventUserIdleSystemSleep`). It is
-deliberately minimal:
+NoSleep uses `pmset disablesleep`, which fully disables system sleep while it's on:
 
-- **Closing the lid still sleeps the Mac.** Clamshell sleep is a hardware/OS
-  behavior that an idle-sleep assertion does not override.
-- **Apple menu → Sleep still sleeps the Mac.** Explicit user-requested sleep is
-  always honored.
-- **The display still sleeps / dims by design.** NoSleep keeps the *system*
-  awake (e.g. for downloads or builds), not the screen.
+- **Requires your admin password** each time you toggle it (it changes a
+  system-wide power setting). The authorization is cached briefly by macOS.
+- **Heat:** with the lid closed there's no airflow — the Mac can get warm,
+  especially while charging. Use it somewhere ventilated.
+- **It really doesn't sleep.** While active, idle sleep, lid-close (clamshell)
+  sleep, and even Apple menu → Sleep are all suppressed. Turn NoSleep off (or
+  quit it) to get normal sleep back.
+- **The display may still turn off** to save power; the *system* stays awake
+  behind it (audio keeps playing, downloads keep running).
+- **If force-quit while active**, the setting persists — restore sleep with
+  `sudo pmset -a disablesleep 0`.

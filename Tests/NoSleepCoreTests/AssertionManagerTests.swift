@@ -5,9 +5,12 @@ final class FakeSleepBlocker: SleepBlocking {
     private(set) var beginCount = 0
     private(set) var endCount = 0
     var heldToken: Int? = nil
+    /// When true, `begin` fails (returns nil) to simulate a cancelled auth prompt.
+    var failBegin = false
 
-    func begin(reason: String) -> Int {
+    func begin(reason: String) -> Int? {
         beginCount += 1
+        if failBegin { return nil }
         heldToken = beginCount
         return beginCount
     }
@@ -57,5 +60,14 @@ final class AssertionManagerTests: XCTestCase {
         XCTAssertTrue(m.isActive)
         m.toggle()
         XCTAssertFalse(m.isActive)
+    }
+
+    func testActivateStaysInactiveWhenBeginFails() {
+        let fake = FakeSleepBlocker()
+        fake.failBegin = true
+        let m = AssertionManager(blocker: fake)
+        m.activate()
+        XCTAssertFalse(m.isActive, "a failed/cancelled begin must not mark active")
+        XCTAssertEqual(fake.beginCount, 1)
     }
 }

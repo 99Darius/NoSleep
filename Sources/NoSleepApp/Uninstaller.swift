@@ -24,6 +24,12 @@ enum Uninstaller {
         NSApp.activate(ignoringOtherApps: true)
         guard alert.runModal() == .alertFirstButtonReturn else { return }
 
+        // 0. Restore sleep in case closed-lid mode is active (best effort, admin prompt).
+        if let script = NSAppleScript(source: "do shell script \"/usr/bin/pmset -a disablesleep 0\" with administrator privileges") {
+            var err: NSDictionary?
+            script.executeAndReturnError(&err)
+        }
+
         // 1. Login item.
         try? SMAppService.mainApp.unregister()
 

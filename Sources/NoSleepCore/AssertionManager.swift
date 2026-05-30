@@ -20,7 +20,8 @@ public final class AssertionManager {
 
     public func activate() {
         guard token == nil else { return }            // idempotent: no leak
-        token = blocker.begin(reason: "NoSleep active")
+        guard let t = blocker.begin(reason: "NoSleep active") else { return } // failed/cancelled
+        token = t
         onChange?()
     }
 
