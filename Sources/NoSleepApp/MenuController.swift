@@ -14,6 +14,9 @@ final class MenuController: NSObject, NSMenuDelegate {
 
     override init() {
         super.init()
+        // Persist the icon's menu bar position once the user ⌘-drags it.
+        // (macOS has no API to force right-most; system items always stay rightmost.)
+        statusItem.autosaveName = "NoSleepStatusItem"
         build()
     }
 
@@ -116,9 +119,6 @@ final class MenuController: NSObject, NSMenuDelegate {
         statusItem.button?.image = Self.icon(crossed: state.isActive)
         statusItem.button?.image?.accessibilityDescription =
             state.isActive ? "NoSleep active" : "NoSleep inactive"
-        // Visible "S" label next to the icon so it's easy to spot in the menu bar.
-        statusItem.button?.imagePosition = .imageLeft
-        statusItem.button?.title = " S"
         guard let toggle = statusItem.menu?.items.first else { return }
         if state.isActive {
             if let exp = state.expiresAt {
