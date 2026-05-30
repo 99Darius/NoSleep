@@ -40,7 +40,7 @@ func waitForState(_ predicate: (NoSleepState) -> Bool) {
 func post(_ cmd: Command) {
     DistributedNotificationCenter.default().postNotificationName(
         Notification.Name("com.nosleep.cmd"),
-        object: nil, userInfo: cmd.userInfo as? [String: Any],
+        object: nil, userInfo: cmd.userInfo,
         deliverImmediately: true)
 }
 
