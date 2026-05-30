@@ -19,8 +19,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         menu.onToggle = { [weak self] in self?.handleToggle() }
         menu.onTimer = { [weak self] secs in self?.handleTimer(secs) }
-        menu.onToggleLoginItem = { LoginItem.setEnabled(!LoginItem.isEnabled) }
+        menu.onToggleLoginItem = { [weak self] in self?.toggleLoginItem() }
         menu.onQuit = { NSApp.terminate(nil) }
+        menu.currentState = { [weak self] in
+            guard let self else { return .inactive }
+            return NoSleepState(isActive: self.manager.isActive, expiresAt: self.currentExpiry)
+        }
 
         hotkey = HotkeyManager { [weak self] in self?.handleToggle() }
         if !hotkey.register() {
@@ -31,10 +35,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self, selector: #selector(handleCommand(_:)),
             name: AppDelegate.commandNotification, object: nil)
 
-        // Default-on login item on first launch.
+        // Default-on login item on first launch. Only mark as done if it succeeded,
+        // so a failure retries on the next launch.
         if !UserDefaults.standard.bool(forKey: "didSetDefaultLoginItem") {
-            LoginItem.setEnabled(true)
-            UserDefaults.standard.set(true, forKey: "didSetDefaultLoginItem")
+            if LoginItem.setEnabled(true) {
+                UserDefaults.standard.set(true, forKey: "didSetDefaultLoginItem")
+            }
         }
 
         persistAndRender()   // start inactive
@@ -56,6 +62,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         persistAndRender()
     }
 
+    private func toggleLoginItem() {
+        let desired = !LoginItem.isEnabled
+        if !LoginItem.setEnabled(desired) {
+            let alert = NSAlert()
+            alert.alertStyle = .informational
+            alert.messageText = desired ? "Couldn't enable Launch at Login"
+                                        : "Couldn't disable Launch at Login"
+            alert.informativeText = "NoSleep was unable to update the Launch at Login setting. Please try again."
+            alert.runModal()
+        }
+        // The next render re-reads LoginItem.isEnabled, so the checkmark stays truthful.
+        menu.render(state: NoSleepState(isActive: manager.isActive, expiresAt: currentExpiry))
+    }
+
     private func persistAndRender() {
         if !manager.isActive { currentExpiry = nil }
         let state = NoSleepState(isActive: manager.isActive, expiresAt: currentExpiry)
@@ -64,13 +84,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func handleCommand(_ note: Notification) {
-        guard let cmd = Command(userInfo: note.userInfo) else { return }
-        switch cmd {
-        case .on: timer.cancel(); currentExpiry = nil; manager.activate()
-        case .off: timer.cancel(); currentExpiry = nil; manager.deactivate()
-        case .toggle: handleToggle()
-        case .timer(let s): handleTimer(s)
-        case .status: persistAndRender()   // ensure store is fresh
+        // DistributedNotificationCenter may deliver off the main thread; hop to main
+        // so all manager/timer/menu/currentExpiry touches honor the concurrency model.
+        let userInfo = note.userInfo
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            guard let cmd = Command(userInfo: userInfo) else { return }
+            switch cmd {
+            case .on: self.timer.cancel(); self.currentExpiry = nil; self.manager.activate()
+            case .off: self.timer.cancel(); self.currentExpiry = nil; self.manager.deactivate()
+            case .toggle: self.handleToggle()
+            case .timer(let s): self.handleTimer(s)
+            case .status: self.persistAndRender()   // ensure store is fresh
+            }
         }
     }
 }

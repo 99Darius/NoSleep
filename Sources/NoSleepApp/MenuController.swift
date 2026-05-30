@@ -1,14 +1,19 @@
 import AppKit
 import NoSleepCore
 
-final class MenuController {
+final class MenuController: NSObject, NSMenuDelegate {
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     var onToggle: (() -> Void)?
     var onTimer: ((TimeInterval) -> Void)?
     var onToggleLoginItem: (() -> Void)?
     var onQuit: (() -> Void)?
+    /// Supplies the live state so the menu can re-render (e.g. countdown) when opened.
+    var currentState: (() -> NoSleepState)?
 
-    init() { build() }
+    override init() {
+        super.init()
+        build()
+    }
 
     private func build() {
         let menu = NSMenu()
@@ -39,8 +44,17 @@ final class MenuController {
         quit.target = self
         menu.addItem(quit)
 
+        menu.delegate = self
         statusItem.menu = menu
         render(state: .inactive)
+    }
+
+    /// Refresh the countdown/labels each time the menu is shown so a running
+    /// timer's "(Xm left)" text stays current.
+    func menuWillOpen(_ menu: NSMenu) {
+        if let state = currentState?() {
+            render(state: state)
+        }
     }
 
     /// Update icon + toggle label/remaining time.

@@ -15,8 +15,26 @@ func launchAgent() {
     proc.arguments = ["-b", bundleID]
     try? proc.run()
     proc.waitUntilExit()
-    // brief wait for heartbeat
-    for _ in 0..<20 where !agentRunning() { usleep(100_000) }
+    // Wait until the agent's DistributedNotificationCenter observer is registered.
+    // The agent calls store.save(..., pid:) at the END of applicationDidFinishLaunching
+    // (after addObserver), so a matching fresh pid in the shared store means the
+    // observer exists and any subsequent post will be delivered.
+    for _ in 0..<30 {
+        if let pid = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).first?.processIdentifier,
+           store.loadPID() == Int(pid) {
+            break
+        }
+        usleep(100_000)
+    }
+}
+
+/// Poll the shared store until `predicate` holds, up to ~1.5s (100ms steps).
+/// Graceful fallback: returns after the timeout regardless.
+func waitForState(_ predicate: (NoSleepState) -> Bool) {
+    for _ in 0..<15 {
+        if predicate(store.load()) { return }
+        usleep(100_000)
+    }
 }
 
 func post(_ cmd: Command) {
@@ -51,11 +69,25 @@ switch cmd {
 case .status:
     printState()
 case .off:
-    if agentRunning() { post(.off); usleep(200_000) }
+    if agentRunning() {
+        post(.off)
+        waitForState { !$0.isActive }
+    }
     printState()
-default:
+case .on:
+    if !agentRunning() { launchAgent() }
+    post(.on)
+    waitForState { $0.isActive }
+    printState()
+case .toggle:
+    if !agentRunning() { launchAgent() }
+    let wasActive = store.load().isActive
+    post(.toggle)
+    waitForState { $0.isActive != wasActive }
+    printState()
+case .timer:
     if !agentRunning() { launchAgent() }
     post(cmd)
-    usleep(200_000)   // let agent update shared state
+    waitForState { $0.isActive }
     printState()
 }
