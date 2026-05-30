@@ -24,12 +24,13 @@ cp -R NoSleep.app /Applications/
 ln -sf /Applications/NoSleep.app/Contents/MacOS/nosleep /usr/local/bin/nosleep
 ```
 
-Launch it once with `open /Applications/NoSleep.app`. A moon icon appears in the
-menu bar (no Dock icon). "Launch at Login" is enabled by default.
+Launch it once with `open /Applications/NoSleep.app`. An "S" icon appears in the
+menu bar (no Dock icon) — struck through when keep-awake is active. "Launch at
+Login" is enabled by default.
 
 ## Hotkey
 
-Press **⌃⌘Z** (Control-Command-Z) anywhere to toggle keep-awake on/off.
+Press **⌃⌘S** (Control-Command-S) anywhere to toggle keep-awake on/off.
 
 ## CLI
 

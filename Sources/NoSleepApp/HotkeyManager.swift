@@ -31,7 +31,7 @@ final class HotkeyManager {
 
         let id = EventHotKeyID(signature: OSType(0x4E534C50), id: 1) // 'NSLP'
         let mods = UInt32(cmdKey | controlKey)
-        let status = RegisterEventHotKey(UInt32(kVK_ANSI_Z), mods,
+        let status = RegisterEventHotKey(UInt32(kVK_ANSI_S), mods,
                                          id, GetApplicationEventTarget(), 0, &ref)
         guard status == noErr else {
             unregister()
