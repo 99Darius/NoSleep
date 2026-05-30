@@ -5,6 +5,7 @@ public protocol TimerScheduling: AnyObject {
     func cancel()
 }
 
+/// Concurrency: not thread-safe by design; all calls happen on the main thread.
 public final class TimerController {
     private let scheduler: TimerScheduling
     private let onExpire: () -> Void

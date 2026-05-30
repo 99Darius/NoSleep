@@ -23,6 +23,21 @@ final class CommandTests: XCTestCase {
         XCTAssertNil(Command.parse(["timer", "abc"]))
     }
 
+    func testParseDurationRejectsNegative() {
+        XCTAssertNil(parseDuration("-5m"))
+        XCTAssertNil(Command.parse(["timer", "-5m"]))
+        // Fractional durations remain allowed.
+        XCTAssertEqual(parseDuration("1.5h"), 5400)
+    }
+
+    func testTimerUserInfoDecodesNSNumber() {
+        // Mirrors the real DistributedNotificationCenter decode path, where
+        // numeric payload values arrive as NSNumber.
+        let info: [AnyHashable: Any] = ["action": "timer",
+                                        "seconds": NSNumber(value: 3600.0)]
+        XCTAssertEqual(Command(userInfo: info), .timer(3600))
+    }
+
     func testRoundTripViaUserInfo() {
         for c in [Command.on, .off, .toggle, .status, .timer(3600)] {
             let info = c.userInfo
@@ -32,8 +47,10 @@ final class CommandTests: XCTestCase {
 
     func testFormatDuration() {
         XCTAssertEqual(formatDuration(seconds: 0), "0s")
+        XCTAssertEqual(formatDuration(seconds: 60), "1m")
         XCTAssertEqual(formatDuration(seconds: 90), "1m30s")
         XCTAssertEqual(formatDuration(seconds: 3600), "1h")
+        XCTAssertEqual(formatDuration(seconds: 3660), "1h1m")
         XCTAssertEqual(formatDuration(seconds: 3720), "1h2m")
     }
 }

@@ -19,8 +19,8 @@ public final class StateStore {
     public func save(_ state: NoSleepState, pid: Int32) {
         if let data = try? JSONEncoder().encode(state) {
             defaults.set(data, forKey: stateKey)
+            defaults.set(Int(pid), forKey: pidKey)
         }
-        defaults.set(Int(pid), forKey: pidKey)
     }
 
     public func load() -> NoSleepState {

@@ -52,12 +52,15 @@ public enum Command: Equatable {
 /// Parse durations like "90s", "15m", "1h", "2h".
 public func parseDuration(_ text: String) -> TimeInterval? {
     guard let unit = text.last, let value = Double(text.dropLast()) else { return nil }
+    let seconds: TimeInterval
     switch unit {
-    case "s": return value
-    case "m": return value * 60
-    case "h": return value * 3600
+    case "s": seconds = value
+    case "m": seconds = value * 60
+    case "h": seconds = value * 3600
     default: return nil
     }
+    guard seconds >= 0 else { return nil }
+    return seconds
 }
 
 /// Format seconds compactly: 3720 -> "1h2m".

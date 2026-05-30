@@ -1,6 +1,10 @@
 import Foundation
 
 /// Single source of truth for the keep-awake state. Holds at most one block.
+///
+/// Concurrency: this type is not thread-safe by design. All calls are expected
+/// to happen on the main thread — the timer fires on the main DispatchQueue, and
+/// DistributedNotificationCenter observers and menu actions all run on main.
 public final class AssertionManager {
     private let blocker: SleepBlocking
     private var token: Int?

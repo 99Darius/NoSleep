@@ -53,4 +53,18 @@ final class TimerControllerTests: XCTestCase {
         sched.fire()
         XCTAssertFalse(expired)
     }
+
+    /// Locks the auto-off integration contract: when the timer fires, the
+    /// composed AssertionManager is deactivated.
+    func testTimerExpiryDeactivatesManager() {
+        let manager = AssertionManager(blocker: FakeSleepBlocker())
+        let sched = ManualScheduler()
+        let tc = TimerController(scheduler: sched,
+                                 onExpire: { manager.deactivate() })
+        manager.activate()
+        XCTAssertTrue(manager.isActive)
+        tc.start(seconds: 3600)
+        sched.fire()
+        XCTAssertFalse(manager.isActive)
+    }
 }
