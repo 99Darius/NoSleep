@@ -1,0 +1,12 @@
+#!/bin/bash
+# Launch NoSleep after install, in the logged-in user's GUI session.
+# (postinstall runs as root, so we hop into the console user's context.)
+
+loggedInUser=$(/usr/bin/stat -f "%Su" /dev/console)
+uid=$(/usr/bin/id -u "$loggedInUser")
+
+if [ -n "$loggedInUser" ] && [ "$loggedInUser" != "root" ] && [ -n "$uid" ]; then
+    /bin/launchctl asuser "$uid" /usr/bin/open -a "/Applications/NoSleep.app" || true
+fi
+
+exit 0

@@ -2,3 +2,8 @@
 NoSleep.app/
 .DS_Store
 *.xcuserstate
+build/
+*.pkg
+*.dmg
+installer/resources/background.png
+installer/resources/LICENSE.txt
