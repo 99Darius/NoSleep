@@ -46,6 +46,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         persistAndRender()   // start inactive
+        reconcileLeftoverSleepBlock()
+    }
+
+    /// NoSleep always starts inactive. If the system still has sleep disabled,
+    /// it was left on by a previous force-quit — offer to restore normal sleep.
+    private func reconcileLeftoverSleepBlock() {
+        guard PMSetSleepBlocker.systemSleepDisabled() else { return }
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = "Turn sleep back on?"
+        alert.informativeText = """
+        NoSleep is currently keeping your Mac awake from a previous session. \
+        Want to switch back to normal sleep?
+        """
+        alert.addButton(withTitle: "Turn Sleep Back On")
+        alert.addButton(withTitle: "Keep Awake")
+        NSApp.activate(ignoringOtherApps: true)
+        if alert.runModal() == .alertFirstButtonReturn {
+            blocker.forceRestoreSleep()   // admin prompt → disablesleep 0
+        }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -80,20 +100,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func confirmClosedLidIfNeeded() -> Bool {
         if UserDefaults.standard.bool(forKey: "didShowClosedLidWarning") { return true }
         let alert = NSAlert()
-        alert.alertStyle = .warning
-        alert.messageText = "Keep your Mac awake with the lid closed?"
+        alert.alertStyle = .informational
+        alert.messageText = "Keep your Mac awake — even with the lid closed"
         alert.informativeText = """
-        NoSleep stops your Mac from sleeping even when the lid is shut (it sets \
-        pmset disablesleep).
+        Your Mac will stay awake until you turn NoSleep off, so music, \
+        downloads, and other tasks keep going even if you close the lid.
 
-        • You will be asked for your administrator password.
-        • With the lid closed there is no airflow — your Mac can get warm, \
-        especially while charging. Keep it somewhere ventilated.
+        • macOS will ask for your password once to allow this.
+        • The lid blocks airflow, so give your Mac some room to breathe while \
+        charging.
 
-        NoSleep turns this back off when you disable it or quit. If it is ever \
-        force-quit while active, run: sudo pmset -a disablesleep 0
+        Turn it off anytime from the menu or with ⌃⌘S.
         """
-        alert.addButton(withTitle: "Enable")
+        alert.addButton(withTitle: "Keep Awake")
         alert.addButton(withTitle: "Cancel")
         NSApp.activate(ignoringOtherApps: true)
         guard alert.runModal() == .alertFirstButtonReturn else { return false }

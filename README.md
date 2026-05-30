@@ -10,10 +10,10 @@ asks for your **administrator password** when you toggle it. A single menu bar
 agent is the source of truth; the menu, a global hotkey, and the CLI all drive
 that one shared state.
 
-> ⚠️ With the lid closed there's no airflow — your Mac can get warm, especially
-> while charging. Keep it somewhere ventilated. NoSleep restores normal sleep
-> when you disable it or quit. If it's ever force-quit while active, run
-> `sudo pmset -a disablesleep 0` to restore sleep.
+> 💡 The lid blocks airflow, so give your Mac some room to breathe while
+> charging. NoSleep restores normal sleep automatically when you turn it off or
+> quit — and if it was ever left on (e.g. after a force-quit), it offers to
+> switch sleep back on the next time it launches.
 
 ## Build
 
@@ -79,18 +79,18 @@ defaults delete com.nosleep.shared 2>/dev/null              # saved state
 # Launch at Login is cleared automatically on quit/removal.
 ```
 
-## Caveats
+## Good to know
 
-NoSleep uses `pmset disablesleep`, which fully disables system sleep while it's on:
+NoSleep uses `pmset disablesleep`, which keeps the whole system awake while it's on:
 
-- **Requires your admin password** each time you toggle it (it changes a
-  system-wide power setting). The authorization is cached briefly by macOS.
-- **Heat:** with the lid closed there's no airflow — the Mac can get warm,
-  especially while charging. Use it somewhere ventilated.
-- **It really doesn't sleep.** While active, idle sleep, lid-close (clamshell)
-  sleep, and even Apple menu → Sleep are all suppressed. Turn NoSleep off (or
-  quit it) to get normal sleep back.
-- **The display may still turn off** to save power; the *system* stays awake
-  behind it (audio keeps playing, downloads keep running).
-- **If force-quit while active**, the setting persists — restore sleep with
-  `sudo pmset -a disablesleep 0`.
+- **Asks for your password** when you toggle it — it changes a system-wide power
+  setting. macOS remembers the authorization for a little while.
+- **Give it airflow:** with the lid closed there's no ventilation, so keep your
+  Mac somewhere open while charging.
+- **It stays fully awake** while on — idle, lid-close, and even Apple menu →
+  Sleep are all held off. Turn NoSleep off (or quit it) for normal sleep again.
+- **The screen can still turn off** to save power; the system keeps running
+  behind it (music plays, downloads continue).
+- **Never get stuck:** if NoSleep is ever left on after a force-quit, it notices
+  on its next launch and offers to switch sleep back on — no Terminal needed.
+  (If you ever want to do it by hand: `sudo pmset -a disablesleep 0`.)

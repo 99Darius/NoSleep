@@ -23,6 +23,33 @@ final class PMSetSleepBlocker: SleepBlocking {
         heldTokens.remove(token)
     }
 
+    /// Reads whether system sleep is currently disabled. No root required.
+    /// `pmset -g` lists a `disablesleep` line only when it is set.
+    static func systemSleepDisabled() -> Bool {
+        let proc = Process()
+        proc.executableURL = URL(fileURLWithPath: "/usr/bin/pmset")
+        proc.arguments = ["-g"]
+        let pipe = Pipe()
+        proc.standardOutput = pipe
+        do { try proc.run() } catch { return false }
+        proc.waitUntilExit()
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        guard let out = String(data: data, encoding: .utf8) else { return false }
+        for line in out.split(separator: "\n") where line.contains("disablesleep") {
+            return line.split(separator: " ").last == "1"
+        }
+        return false
+    }
+
+    /// Force-restore normal sleep (admin prompt). Recovers a leftover
+    /// `disablesleep 1` from a previous force-quit. Returns true on success.
+    @discardableResult
+    func forceRestoreSleep() -> Bool {
+        let ok = setDisableSleep(false)
+        if ok { heldTokens.removeAll() }
+        return ok
+    }
+
     /// Returns true if `disablesleep` was set successfully.
     @discardableResult
     private func setDisableSleep(_ on: Bool) -> Bool {
