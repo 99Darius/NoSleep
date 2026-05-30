@@ -1,4 +1,5 @@
 import AppKit
+import KeyboardShortcuts
 import NoSleepCore
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -11,7 +12,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
     private let menu = MenuController()
     private let store = StateStore.shared()
-    private var hotkey: HotkeyManager!
+    private let shortcutSettings = ShortcutSettingsWindowController()
     private var currentExpiry: Date?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -25,11 +26,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self else { return .inactive }
             return NoSleepState(isActive: self.manager.isActive, expiresAt: self.currentExpiry)
         }
+        menu.onChangeShortcut = { [weak self] in self?.shortcutSettings.show() }
 
-        hotkey = HotkeyManager { [weak self] in self?.handleToggle() }
-        if !hotkey.register() {
-            // Hotkey unavailable; app still works via menu/CLI. (Could surface in menu.)
-        }
+        // Global hotkey (default ⌃⌘S, user-rebindable). KeyboardShortcuts registers
+        // the persisted shortcut and delivers callbacks on the main thread.
+        KeyboardShortcuts.onKeyDown(for: .toggle) { [weak self] in self?.handleToggle() }
 
         DistributedNotificationCenter.default().addObserver(
             self, selector: #selector(handleCommand(_:)),

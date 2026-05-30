@@ -32,6 +32,10 @@ Login" is enabled by default.
 
 Press **⌃⌘S** (Control-Command-S) anywhere to toggle keep-awake on/off.
 
+To rebind it, open the menu bar item → **Change Shortcut…**, click the field,
+and press your new combination ("Reset to ⌃⌘S" restores the default). Powered by
+[KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts).
+
 ## CLI
 
 ```bash

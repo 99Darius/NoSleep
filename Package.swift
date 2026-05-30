@@ -4,11 +4,17 @@ import PackageDescription
 let package = Package(
     name: "NoSleep",
     platforms: [.macOS(.v13)],
+    dependencies: [
+        .package(url: "https://github.com/sindresorhus/KeyboardShortcuts", from: "2.0.0"),
+    ],
     targets: [
         .target(name: "NoSleepCore"),
         .executableTarget(
             name: "NoSleepApp",
-            dependencies: ["NoSleepCore"]
+            dependencies: [
+                "NoSleepCore",
+                .product(name: "KeyboardShortcuts", package: "KeyboardShortcuts"),
+            ]
         ),
         .executableTarget(
             name: "nosleep",

@@ -6,6 +6,7 @@ final class MenuController: NSObject, NSMenuDelegate {
     var onToggle: (() -> Void)?
     var onTimer: ((TimeInterval) -> Void)?
     var onToggleLoginItem: (() -> Void)?
+    var onChangeShortcut: (() -> Void)?
     var onQuit: (() -> Void)?
     /// Supplies the live state so the menu can re-render (e.g. countdown) when opened.
     var currentState: (() -> NoSleepState)?
@@ -34,6 +35,10 @@ final class MenuController: NSObject, NSMenuDelegate {
         timerParent.submenu = timerMenu
         menu.addItem(timerParent)
         menu.addItem(.separator())
+
+        let shortcut = NSMenuItem(title: "Change Shortcut…", action: #selector(changeShortcutTapped), keyEquivalent: "")
+        shortcut.target = self
+        menu.addItem(shortcut)
 
         let login = NSMenuItem(title: "Launch at Login", action: #selector(loginTapped), keyEquivalent: "")
         login.target = self
@@ -125,5 +130,6 @@ final class MenuController: NSObject, NSMenuDelegate {
         if let secs = sender.representedObject as? TimeInterval { onTimer?(secs) }
     }
     @objc private func loginTapped() { onToggleLoginItem?() }
+    @objc private func changeShortcutTapped() { onChangeShortcut?() }
     @objc private func quitTapped() { onQuit?() }
 }
