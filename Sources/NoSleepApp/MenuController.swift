@@ -57,10 +57,54 @@ final class MenuController: NSObject, NSMenuDelegate {
         }
     }
 
+    /// Menu bar icon: an "S" (Sleep) in a rounded box. When active (no-sleep),
+    /// the S is struck through. Rendered as a template image so the menu bar
+    /// tints it for light/dark automatically.
+    private static func icon(crossed: Bool) -> NSImage {
+        let size = NSSize(width: 18, height: 18)
+        let image = NSImage(size: size)
+        image.lockFocus()
+        NSColor.black.set()
+
+        // Rounded square box.
+        let inset: CGFloat = 1.5
+        let rect = NSRect(x: inset, y: inset, width: size.width - 2 * inset, height: size.height - 2 * inset)
+        let box = NSBezierPath(roundedRect: rect, xRadius: 3.5, yRadius: 3.5)
+        box.lineWidth = 1.5
+        box.stroke()
+
+        // Centered "S".
+        let para = NSMutableParagraphStyle()
+        para.alignment = .center
+        let attrs: [NSAttributedString.Key: Any] = [
+            .font: NSFont.systemFont(ofSize: 11, weight: .bold),
+            .foregroundColor: NSColor.black,
+            .paragraphStyle: para,
+        ]
+        let s = NSAttributedString(string: "S", attributes: attrs)
+        let sHeight = s.size().height
+        s.draw(in: NSRect(x: 0, y: (size.height - sHeight) / 2, width: size.width, height: sHeight))
+
+        // Diagonal strike when active (no-sleep).
+        if crossed {
+            let line = NSBezierPath()
+            line.move(to: NSPoint(x: inset + 1, y: inset + 1))
+            line.line(to: NSPoint(x: size.width - inset - 1, y: size.height - inset - 1))
+            line.lineWidth = 1.8
+            line.lineCapStyle = .round
+            line.stroke()
+        }
+
+        image.unlockFocus()
+        image.isTemplate = true
+        return image
+    }
+
     /// Update icon + toggle label/remaining time.
     func render(state: NoSleepState) {
-        let symbol = state.isActive ? "moon.zzz.fill" : "moon"
-        statusItem.button?.image = NSImage(systemSymbolName: symbol, accessibilityDescription: "NoSleep")
+        statusItem.button?.image = Self.icon(crossed: state.isActive)
+        statusItem.button?.image?.accessibilityDescription =
+            state.isActive ? "NoSleep active" : "NoSleep inactive"
         guard let toggle = statusItem.menu?.items.first else { return }
         if state.isActive {
             if let exp = state.expiresAt {
