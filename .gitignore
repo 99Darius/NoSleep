@@ -1,0 +1,4 @@
+.build/
+NoSleep.app/
+.DS_Store
+*.xcuserstate
