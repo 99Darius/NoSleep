@@ -37,9 +37,9 @@ productbuild --distribution "$ROOT/installer/distribution.xml" \
 
 # 6. Deliver to Downloads.
 cp "$BUILD/NoSleep-Installer.pkg" "$HOME/Downloads/NoSleep-Installer.pkg"
-
-# 6b. Stage into the landing site so `vercel deploy` ships the latest build.
-cp "$BUILD/NoSleep-Installer.pkg" "$ROOT/site/NoSleep-Installer.pkg"
+# Publish: the landing page (site/) links to the pkg as a GitHub Release asset,
+# so after building, upload it with:
+#   gh release upload <tag> "$HOME/Downloads/NoSleep-Installer.pkg" --clobber
 
 # 7. Sidecar install instructions. The pkg is unsigned/unnotarized, so macOS
 #    Gatekeeper blocks a plain double-click BEFORE the installer's own welcome
