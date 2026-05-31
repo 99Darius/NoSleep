@@ -24,8 +24,11 @@ enum Uninstaller {
         NSApp.activate(ignoringOtherApps: true)
         guard alert.runModal() == .alertFirstButtonReturn else { return }
 
-        // 0. Restore sleep in case closed-lid mode is active (best effort, admin prompt).
-        if let script = NSAppleScript(source: "do shell script \"/usr/bin/pmset -a disablesleep 0\" with administrator privileges") {
+        // 0. Restore sleep in case closed-lid mode is active, and remove the
+        //    passwordless sudoers drop-in we installed. Both happen in one admin
+        //    prompt (best effort).
+        let cleanup = "/usr/bin/pmset -a disablesleep 0; /bin/rm -f /etc/sudoers.d/nosleep"
+        if let script = NSAppleScript(source: "do shell script \"\(cleanup)\" with administrator privileges") {
             var err: NSDictionary?
             script.executeAndReturnError(&err)
         }
