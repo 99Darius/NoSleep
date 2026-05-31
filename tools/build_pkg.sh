@@ -9,11 +9,11 @@ BUILD=$(mktemp -d /tmp/nosleep_pkg.XXXXXX)
 trap 'rm -rf "$BUILD" 2>/dev/null || true' EXIT
 mkdir -p "$BUILD/pkgroot/Applications"
 
-# 1. Fresh app bundle.
-make bundle >/dev/null
-
-# 2. Stage the app at its install location (/Applications).
-ditto "$ROOT/NoSleep.app" "$BUILD/pkgroot/Applications/NoSleep.app"
+# 1. Build the app bundle straight into the staging pkgroot at its install
+#    location. We deliberately do NOT create NoSleep.app in the repo: a stale,
+#    root-owned bundle there (e.g. left by an aborted installer run) would make
+#    `make bundle`'s `rm -rf` fail and block every future build.
+make bundle ARTIFACT="$BUILD/pkgroot/Applications/NoSleep.app" >/dev/null
 
 # 3. Installer assets (background image + license copy).
 swift "$ROOT/tools/make_installer_bg.swift" "$ROOT/installer/resources/background.png"
