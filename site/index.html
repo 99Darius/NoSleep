@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NoSleep — keep your Mac awake, even with the lid closed</title>
+<meta name="description" content="A tiny macOS menu bar app that keeps your Mac awake — even with the lid closed. Toggle with ⌃⌘S. Free and open-source.">
+<meta property="og:title" content="NoSleep for macOS">
+<meta property="og:description" content="Keep your Mac awake — even with the lid closed. Toggle with ⌃⌘S.">
+<meta property="og:type" content="website">
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --card: #ffffff;
+    --text: #1d1d1f;
+    --muted: #6b6b70;
+    --accent: #5566ff;
+    --accent-deep: #2c3bb0;
+    --accent-soft: #eef1ff;
+    --accent-border: #d4d9ff;
+    --shadow: 0 10px 40px rgba(40, 50, 120, 0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e0f17;
+      --card: #181a26;
+      --text: #f5f5f7;
+      --muted: #a0a0aa;
+      --accent: #8190ff;
+      --accent-deep: #cdd5ff;
+      --accent-soft: #20243f;
+      --accent-border: #353a66;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 22px; }
+
+  /* Hero */
+  header { text-align: center; padding: 72px 0 48px; }
+  .logo {
+    width: 92px; height: 92px; margin: 0 auto 26px;
+    border-radius: 22px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .logo span {
+    font-size: 52px; font-weight: 800; color: #fff; line-height: 1;
+  }
+  .logo .strike {
+    position: absolute; width: 70%; height: 4px; background: rgba(255,255,255,0.92);
+    border-radius: 3px; transform: rotate(-45deg);
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.5px; }
+  .tagline { font-size: 19px; color: var(--muted); margin: 0 auto 34px; max-width: 520px; }
+
+  .cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent); color: #fff; text-decoration: none;
+    font-size: 17px; font-weight: 600;
+    padding: 15px 30px; border-radius: 13px;
+    box-shadow: var(--shadow); transition: transform .12s ease, background .12s ease;
+  }
+  .cta:hover { transform: translateY(-1px); background: var(--accent-deep); }
+  .cta-sub { display: block; font-size: 13px; color: var(--muted); margin-top: 14px; }
+  kbd {
+    font-family: inherit; font-weight: 700;
+    background: var(--accent-soft); color: var(--accent-deep);
+    border: 1px solid var(--accent-border); border-radius: 7px;
+    padding: 2px 8px; font-size: 0.92em; white-space: nowrap;
+  }
+
+  /* Cards */
+  section { padding: 14px 0; }
+  .card {
+    background: var(--card); border-radius: 18px; padding: 28px 30px;
+    box-shadow: var(--shadow); margin: 18px 0;
+  }
+  .card h2 { font-size: 21px; margin: 0 0 16px; }
+  .feature { display: flex; gap: 14px; margin: 14px 0; align-items: flex-start; }
+  .feature .ico {
+    flex: 0 0 38px; width: 38px; height: 38px; border-radius: 11px;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    display: flex; align-items: center; justify-content: center; font-size: 19px;
+  }
+  .feature b { display: block; font-size: 15px; }
+  .feature p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+
+  ol { padding-left: 22px; margin: 0; }
+  ol li { margin: 10px 0; font-size: 15px; }
+  .note {
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 12px; padding: 16px 18px; font-size: 14px; margin-top: 8px;
+  }
+  code {
+    font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.88em;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 6px; padding: 2px 7px;
+  }
+
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0 56px; }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 560px) {
+    h1 { font-size: 31px; }
+    header { padding: 52px 0 36px; }
+    .card { padding: 22px 20px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <header>
+      <div class="logo"><span>S</span><div class="strike"></div></div>
+      <h1>Keep your Mac awake</h1>
+      <p class="tagline">A tiny menu bar app that stops your Mac from sleeping —
+        even with the lid closed. Music, downloads, and long tasks keep going.</p>
+      <a class="cta" href="/NoSleep-Installer.pkg" download>⬇&nbsp; Download for macOS</a>
+      <span class="cta-sub">Free &amp; open-source · Apple Silicon &amp; Intel · Toggle with <kbd>⌃⌘S</kbd></span>
+    </header>
+
+    <section>
+      <div class="card">
+        <h2>What it does</h2>
+        <div class="feature">
+          <div class="ico">⌨️</div>
+          <div><b>One shortcut</b><p>Press <kbd>⌃⌘S</kbd> anywhere to flip keep-awake on or off. Or click the menu bar <b>S</b>.</p></div>
+        </div>
+        <div class="feature">
+          <div class="ico">💤</div>
+          <div><b>Closed-lid keep-awake</b><p>Stays awake even with the lid shut — no external display needed.</p></div>
+        </div>
+        <div class="feature">
+          <div class="ico">⏱️</div>
+          <div><b>Timers</b><p>Keep awake for 15 minutes, 1 hour, or 2 hours, then auto-off.</p></div>
+        </div>
+        <div class="feature">
+          <div class="ico">🪶</div>
+          <div><b>Lightweight</b><p>Native Swift, no Electron. Negligible CPU and memory.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card">
+        <h2>Installing</h2>
+        <p style="margin-top:0;color:var(--muted);font-size:14px;">NoSleep is open-source and isn’t signed with a paid Apple
+        certificate, so macOS shows a “can’t verify / malware” warning the first
+        time. That’s normal — here’s how to get past it (once):</p>
+        <ol>
+          <li>Download the installer and find it in your <b>Downloads</b> folder.</li>
+          <li><b>Right-click</b> (or Control-click) <code>NoSleep-Installer.pkg</code>.</li>
+          <li>Choose <b>Open</b>, then click <b>Open</b> in the warning dialog.</li>
+          <li>Follow the installer — NoSleep launches automatically when done.</li>
+        </ol>
+        <div class="note">
+          Prefer Terminal? Run
+          <code>xattr -d com.apple.quarantine ~/Downloads/NoSleep-Installer.pkg</code>
+          then double-click the installer.
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card">
+        <h2>Using it</h2>
+        <div class="feature">
+          <div class="ico">🅢</div>
+          <div><b>Toggle</b><p>Press <kbd>⌃⌘S</kbd>, or click the menu bar S icon. A line through the S means keep-awake is on.</p></div>
+        </div>
+        <div class="feature">
+          <div class="ico">🔐</div>
+          <div><b>One password prompt</b><p>The first time you keep the lid closed, macOS asks for your password once. After that it’s silent.</p></div>
+        </div>
+        <div class="feature">
+          <div class="ico">🗑️</div>
+          <div><b>Uninstall</b><p>Choose “Uninstall NoSleep…” from the menu — it cleans up everything and quits.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      Made for macOS · <a href="/NoSleep-Installer.pkg" download>Download NoSleep</a><br>
+      Open-source. Give your Mac some airflow when keeping it awake with the lid closed.
+    </footer>
+
+  </div>
+</body>
+</html>

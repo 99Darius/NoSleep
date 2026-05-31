@@ -38,6 +38,9 @@ productbuild --distribution "$ROOT/installer/distribution.xml" \
 # 6. Deliver to Downloads.
 cp "$BUILD/NoSleep-Installer.pkg" "$HOME/Downloads/NoSleep-Installer.pkg"
 
+# 6b. Stage into the landing site so `vercel deploy` ships the latest build.
+cp "$BUILD/NoSleep-Installer.pkg" "$ROOT/site/NoSleep-Installer.pkg"
+
 # 7. Sidecar install instructions. The pkg is unsigned/unnotarized, so macOS
 #    Gatekeeper blocks a plain double-click BEFORE the installer's own welcome
 #    screen can ever show. These instructions must live OUTSIDE the pkg.
