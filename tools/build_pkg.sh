@@ -10,10 +10,12 @@ trap 'rm -rf "$BUILD" 2>/dev/null || true' EXIT
 mkdir -p "$BUILD/pkgroot/Applications"
 
 # 1. Build the app bundle straight into the staging pkgroot at its install
-#    location. We deliberately do NOT create NoSleep.app in the repo: a stale,
-#    root-owned bundle there (e.g. left by an aborted installer run) would make
-#    `make bundle`'s `rm -rf` fail and block every future build.
-make bundle ARTIFACT="$BUILD/pkgroot/Applications/NoSleep.app" >/dev/null
+#    location (APP= overrides the Makefile's default). We deliberately do NOT
+#    create NoSleep.app in the repo: a stale, root-owned bundle there (e.g. left
+#    by an aborted run) would make `make bundle`'s `rm -rf` fail and block every
+#    future build.
+APP_DST="$BUILD/pkgroot/Applications/NoSleep.app"
+make bundle APP="$APP_DST" >/dev/null
 
 # 3. Installer assets (background image + license copy).
 swift "$ROOT/tools/make_installer_bg.swift" "$ROOT/installer/resources/background.png"
@@ -54,26 +56,25 @@ like:
 
   "Apple could not verify NoSleep.pkg is free of malware..."
 
-This is normal for unsigned apps. To install:
+On recent macOS (Sequoia and later) the old "right-click -> Open" trick no
+longer offers an Open button — you only get Done / Move to Bin. Use Terminal
+instead:
 
-  1. In Finder, go to your Downloads folder.
-  2. RIGHT-CLICK (or Control-click) "NoSleep-Installer.pkg".
-  3. Choose "Open" from the menu.
-  4. In the warning dialog, click "Open" (this button only appears via
-     right-click → Open, not a normal double-click).
-  5. Follow the installer. NoSleep launches automatically when it finishes.
+  1. Open the Terminal app (Applications > Utilities > Terminal).
+  2. Copy-paste this line and press Return:
+
+       xattr -d com.apple.quarantine ~/Downloads/NoSleep-Installer.pkg
+
+     (If it says "No such xattr", run:  xattr -c ~/Downloads/NoSleep-Installer.pkg )
+  3. Now double-click NoSleep-Installer.pkg in Downloads. It opens normally.
+  4. Follow the installer. NoSleep launches automatically when it finishes.
 
 You only need to do this once.
 
 --------------------------------------------------------------------
-Alternative (Terminal): remove the quarantine flag, then double-click:
-
-  xattr -d com.apple.quarantine ~/Downloads/NoSleep-Installer.pkg
-
---------------------------------------------------------------------
 USING NOSLEEP
   - Press  Control-Command-S  to toggle Sleep / No-Sleep.
-  - Or click the "S" icon in your menu bar for timers and options.
+  - Or click the menu bar icon for timers and options.
   - The first time you keep the lid closed, macOS asks for your
     password once to allow it. After that it is silent.
   - To uninstall, choose "Uninstall NoSleep..." from the menu.

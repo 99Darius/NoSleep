@@ -158,17 +158,19 @@
         <h2>Installing</h2>
         <p style="margin-top:0;color:var(--muted);font-size:14px;">NoSleep is open-source and isn’t signed with a paid Apple
         certificate, so macOS shows a “can’t verify / malware” warning the first
-        time. That’s normal — here’s how to get past it (once):</p>
+        time. That’s normal. On macOS Sequoia the old right-click→Open trick no
+        longer works, so use Terminal (once):</p>
         <ol>
-          <li>Download the installer and find it in your <b>Downloads</b> folder.</li>
-          <li><b>Right-click</b> (or Control-click) <code>NoSleep-Installer.pkg</code>.</li>
-          <li>Choose <b>Open</b>, then click <b>Open</b> in the warning dialog.</li>
+          <li>Download the installer — it lands in your <b>Downloads</b> folder.</li>
+          <li>Open <b>Terminal</b> (Applications → Utilities), then paste and run:
+            <div class="note" style="margin:8px 0 0;"><code>xattr -d com.apple.quarantine ~/Downloads/NoSleep-Installer.pkg</code></div>
+          </li>
+          <li>Double-click <code>NoSleep-Installer.pkg</code> — it now opens normally.</li>
           <li>Follow the installer — NoSleep launches automatically when done.</li>
         </ol>
-        <div class="note">
-          Prefer Terminal? Run
-          <code>xattr -d com.apple.quarantine ~/Downloads/NoSleep-Installer.pkg</code>
-          then double-click the installer.
+        <div class="note" style="font-size:13px;">
+          If step 2 says “No such xattr”, run
+          <code>xattr -c ~/Downloads/NoSleep-Installer.pkg</code> instead.
         </div>
       </div>
     </section>
