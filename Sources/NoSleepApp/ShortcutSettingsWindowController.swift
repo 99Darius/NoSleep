@@ -3,11 +3,16 @@ import KeyboardShortcuts
 
 /// A tiny settings window holding the shortcut recorder, opened from the
 /// "Change Shortcut…" menu item.
-final class ShortcutSettingsWindowController: NSObject {
+final class ShortcutSettingsWindowController: NSObject, NSWindowDelegate {
     private var window: NSWindow?
 
     func show() {
         if window == nil { window = makeWindow() }
+        // NoSleep runs as an LSUIElement accessory app (no Dock icon). As of
+        // Sequoia, presenting a titled window and making it key from `.accessory`
+        // policy is fragile — promote to `.regular` while the window is up so the
+        // recorder reliably becomes first responder, then drop back on close.
+        NSApp.setActivationPolicy(.regular)
         window?.center()
         NSApp.activate(ignoringOtherApps: true)
         window?.makeKeyAndOrderFront(nil)
@@ -20,7 +25,10 @@ final class ShortcutSettingsWindowController: NSObject {
         let row = NSStackView(views: [label, recorder])
         row.orientation = .horizontal
         row.spacing = 8
-        row.alignment = .firstBaseline
+        // `.centerY`, not `.firstBaseline`: NSSearchField (the recorder) does not
+        // expose a stable baseline, and baseline alignment against the plain
+        // label trips an Auto Layout assertion on Sequoia.
+        row.alignment = .centerY
 
         let reset = NSButton(title: "Reset to ⌃⌘S", target: self, action: #selector(resetTapped))
         reset.bezelStyle = .rounded
@@ -53,10 +61,16 @@ final class ShortcutSettingsWindowController: NSObject {
         win.title = "NoSleep Shortcut"
         win.contentView = container
         win.isReleasedWhenClosed = false
+        win.delegate = self
         return win
     }
 
     @objc private func resetTapped() {
         KeyboardShortcuts.reset(.toggle)
+    }
+
+    /// Drop back to accessory (menu-bar-only) once the settings window closes.
+    func windowWillClose(_ notification: Notification) {
+        NSApp.setActivationPolicy(.accessory)
     }
 }

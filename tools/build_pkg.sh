@@ -4,6 +4,10 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT=$(pwd)
+# Single source of truth for the release version. Keep in sync with
+# Resources/Info.plist (CFBundleShortVersionString) and installer/distribution.xml.
+VERSION=$(plutil -extract CFBundleShortVersionString raw "$ROOT/Resources/Info.plist")
+PKG_NAME="NoSleep-Installer-${VERSION}.pkg"
 # Stage in a throwaway temp dir (avoids stuck/again-read-only leftovers in-repo).
 BUILD=$(mktemp -d /tmp/nosleep_pkg.XXXXXX)
 trap 'rm -rf "$BUILD" 2>/dev/null || true' EXIT
@@ -26,7 +30,7 @@ chmod +x "$ROOT/installer/scripts/postinstall"
 # 4. Component package: installs NoSleep.app, runs postinstall (auto-launch).
 pkgbuild --root "$BUILD/pkgroot" \
          --identifier com.nosleep.pkg \
-         --version 1.0 \
+         --version "$VERSION" \
          --install-location / \
          --scripts "$ROOT/installer/scripts" \
          "$BUILD/NoSleep-component.pkg"
@@ -35,18 +39,18 @@ pkgbuild --root "$BUILD/pkgroot" \
 productbuild --distribution "$ROOT/installer/distribution.xml" \
              --resources "$ROOT/installer/resources" \
              --package-path "$BUILD" \
-             "$BUILD/NoSleep-Installer.pkg"
+             "$BUILD/$PKG_NAME"
 
 # 6. Deliver to Downloads.
-cp "$BUILD/NoSleep-Installer.pkg" "$HOME/Downloads/NoSleep-Installer.pkg"
+cp "$BUILD/$PKG_NAME" "$HOME/Downloads/$PKG_NAME"
 # Publish: the landing page (site/) links to the pkg as a GitHub Release asset,
 # so after building, upload it with:
-#   gh release upload <tag> "$HOME/Downloads/NoSleep-Installer.pkg" --clobber
+#   gh release create "v$VERSION" "$HOME/Downloads/$PKG_NAME" --title "NoSleep $VERSION"
 
 # 7. Sidecar install instructions. The pkg is unsigned/unnotarized, so macOS
 #    Gatekeeper blocks a plain double-click BEFORE the installer's own welcome
 #    screen can ever show. These instructions must live OUTSIDE the pkg.
-cat > "$HOME/Downloads/How to Install NoSleep.txt" <<'TXT'
+cat > "$HOME/Downloads/How to Install NoSleep.txt" <<TXT
 HOW TO INSTALL NOSLEEP
 ======================
 
@@ -63,10 +67,10 @@ instead:
   1. Open the Terminal app (Applications > Utilities > Terminal).
   2. Copy-paste this line and press Return:
 
-       xattr -d com.apple.quarantine ~/Downloads/NoSleep-Installer.pkg
+       xattr -d com.apple.quarantine ~/Downloads/${PKG_NAME}
 
-     (If it says "No such xattr", run:  xattr -c ~/Downloads/NoSleep-Installer.pkg )
-  3. Now double-click NoSleep-Installer.pkg in Downloads. It opens normally.
+     (If it says "No such xattr", run:  xattr -c ~/Downloads/${PKG_NAME} )
+  3. Now double-click ${PKG_NAME} in Downloads. It opens normally.
   4. Follow the installer. NoSleep launches automatically when it finishes.
 
 You only need to do this once.
@@ -80,5 +84,5 @@ USING NOSLEEP
   - To uninstall, choose "Uninstall NoSleep..." from the menu.
 TXT
 
-echo "Installer:    ~/Downloads/NoSleep-Installer.pkg"
+echo "Installer:    ~/Downloads/$PKG_NAME"
 echo "Instructions: ~/Downloads/How to Install NoSleep.txt"
