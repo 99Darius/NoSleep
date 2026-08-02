@@ -121,6 +121,20 @@ do {
     check(Command(userInfo: Command.ping.userInfo) == .ping, "ping round-trips through userInfo")
 }
 
+// MARK: - AgentProcessSampler (real libproc — regression for the
+// proc_listallpids return-value bug: it returns a PID COUNT, not bytes;
+// treating it as bytes sampled only 1/4 of processes and Smart NoSleep
+// never saw the agents)
+
+do {
+    let samples = AgentProcessSampler().sampleProcesses()
+    check(samples.count > 200, "sampler sees the whole process table (got \(samples.count))")
+    let me = ProcessInfo.processInfo.processIdentifier
+    let mine = samples.first { $0.pid == me }
+    check(mine != nil, "sampler includes this very process")
+    check((mine?.cpuTime ?? 0) > 0.01, "sampler reports plausible cpu time for this process")
+}
+
 // MARK: - StateStore heartbeat
 
 do {

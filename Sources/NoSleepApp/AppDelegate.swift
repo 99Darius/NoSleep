@@ -196,10 +196,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             if restart || !monitor.isRunning {
                 monitor.start(graceMinutes: SmartSettings.graceMinutes,
                               watchlist: SmartSettings.watchlist)
+                // Ask for notification permission NOW, while the user is at
+                // the keyboard — at fire time (3 AM, lid closed) the auth
+                // prompt would never be seen.
+                requestNotificationAuthOnce()
             }
         } else {
             monitor.stop()
         }
+    }
+
+    private var didRequestNotificationAuth = false
+    private func requestNotificationAuthOnce() {
+        guard !didRequestNotificationAuth, Bundle.main.bundleIdentifier != nil else { return }
+        didRequestNotificationAuth = true
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert]) { _, _ in }
     }
 
     /// Smart NoSleep verdict: agents idle for the whole grace window.
@@ -220,8 +231,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// when Smart NoSleep released the block, how long agents were idle,
     /// and what was running before.
     private func notifyAgentsIdle(graceMinutes: Int, lastAgents: [String], lastActivity: Date?) {
-        // UNUserNotificationCenter traps in un-bundled dev runs (swift run).
-        guard Bundle.main.bundleIdentifier != nil else { return }
         let timeFmt = DateFormatter()
         timeFmt.timeStyle = .short
         timeFmt.dateStyle = .none
@@ -239,14 +248,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             body += " No coding agents were seen running."
         }
 
+        let title = "NoSleep turned itself off"
+        // UNUserNotificationCenter traps in un-bundled dev runs (swift run):
+        // go straight to the in-app toast there.
+        guard Bundle.main.bundleIdentifier != nil else {
+            ToastPanel.show(title: title, body: body)
+            return
+        }
         let center = UNUserNotificationCenter.current()
-        center.requestAuthorization(options: [.alert]) { granted, _ in
-            guard granted else { return }
-            let content = UNMutableNotificationContent()
-            content.title = "NoSleep turned itself off"
-            content.body = body
-            center.add(UNNotificationRequest(identifier: "com.nosleep.agents-idle",
-                                             content: content, trigger: nil))
+        center.getNotificationSettings { settings in
+            if settings.authorizationStatus == .authorized {
+                let content = UNMutableNotificationContent()
+                content.title = title
+                content.body = body
+                center.add(UNNotificationRequest(identifier: "com.nosleep.agents-idle",
+                                                 content: content, trigger: nil))
+            } else {
+                // Auth denied/never granted (common for ad-hoc-signed builds):
+                // fall back to our own floating toast so the user still sees
+                // when and why the Mac went to sleep.
+                DispatchQueue.main.async {
+                    ToastPanel.show(title: title, body: body)
+                }
+            }
         }
     }
 
