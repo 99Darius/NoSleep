@@ -74,6 +74,25 @@
   }
   .cta:hover { transform: translateY(-1px); background: var(--accent-deep); }
   .cta-sub { display: block; font-size: 13px; color: var(--muted); margin-top: 14px; }
+
+  /* Email-gate download form */
+  .dl-form {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    max-width: 480px; margin: 0 auto;
+  }
+  .dl-form input[type="email"] {
+    flex: 1 1 200px; min-width: 0;
+    font: inherit; font-size: 16px; color: var(--text);
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 13px; padding: 14px 16px; outline: none;
+  }
+  .dl-form input[type="email"]:focus { border-color: var(--accent); }
+  .dl-form .cta { border: 0; cursor: pointer; font-family: inherit; }
+  .gh-link {
+    display: inline-block; margin-top: 12px; font-size: 14px; font-weight: 600;
+    color: var(--accent); text-decoration: none;
+  }
+  .gh-link:hover { text-decoration: underline; }
   kbd {
     font-family: inherit; font-weight: 700;
     background: var(--accent-soft); color: var(--accent-deep);
@@ -127,8 +146,14 @@
       <h1>Keep your Mac awake</h1>
       <p class="tagline">A tiny menu bar app that stops your Mac from sleeping —
         even with the lid closed. Music, downloads, and long tasks keep going.</p>
-      <a class="cta" href="https://github.com/99Darius/NoSleep/releases/download/v1.0.1/NoSleep-Installer-1.0.1.pkg">⬇&nbsp; Download for macOS</a>
-      <span class="cta-sub">Free &amp; open-source · Apple Silicon &amp; Intel · Toggle with <kbd>⌃⌘S</kbd></span>
+      <form id="dl-form" class="dl-form" novalidate>
+        <input type="email" id="dl-email" placeholder="you@example.com"
+               autocomplete="email" aria-label="Email address" required>
+        <button class="cta" type="submit">⬇&nbsp; Download for macOS</button>
+      </form>
+      <span class="cta-sub">Drop your email to get the installer and occasional update news — no spam.<br>
+        Free &amp; open-source · Apple Silicon &amp; Intel · Toggle with <kbd>⌃⌘S</kbd></span>
+      <a class="gh-link" href="https://github.com/99Darius/NoSleep">Open source on GitHub →</a>
     </header>
 
     <section>
@@ -199,5 +224,49 @@
     </footer>
 
   </div>
+
+  <script>
+    (function () {
+      var PKG = 'https://github.com/99Darius/NoSleep/releases/download/v1.0.1/NoSleep-Installer-1.0.1.pkg';
+      var form = document.getElementById('dl-form');
+      var input = document.getElementById('dl-email');
+
+      function startDownload() { window.location.href = PKG; }
+
+      // Returning visitor: already gave an email — no need to ask again.
+      var saved = null;
+      try { saved = localStorage.getItem('nosleepEmail'); } catch (e) {}
+      if (saved) {
+        var link = document.createElement('a');
+        link.className = 'cta';
+        link.href = PKG;
+        link.innerHTML = '⬇&nbsp; Download for macOS';
+        form.replaceWith(link);
+        return;
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var email = input.value.trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+          input.setCustomValidity('Please enter a valid email address.');
+          input.reportValidity();
+          input.setCustomValidity('');
+          return;
+        }
+        try { localStorage.setItem('nosleepEmail', email); } catch (err) {}
+        // Best-effort capture; the download must never wait on it.
+        try {
+          fetch('/api/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email }),
+            keepalive: true
+          }).catch(function () {});
+        } catch (err) {}
+        startDownload();
+      });
+    })();
+  </script>
 </body>
 </html>
