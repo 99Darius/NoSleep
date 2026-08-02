@@ -40,32 +40,43 @@ func sample(_ pid: Int32, _ command: String, cpu: TimeInterval) -> ProcessSample
 
 do {
     let tracker = AgentActivityTracker(watchlist: AgentWatchlist(patterns: ["claude"]))
-    check(!tracker.recordTick(samples: [sample(10, "claude", cpu: 500)]),
+    check(!tracker.recordTick(samples: [sample(10, "claude", cpu: 500)]).busy,
           "first sighting is not busy (no baseline)")
 }
 do {
     let tracker = AgentActivityTracker(watchlist: AgentWatchlist(patterns: ["claude"]), busyCPUSeconds: 1.0)
     _ = tracker.recordTick(samples: [sample(10, "claude", cpu: 500)])
-    check(tracker.recordTick(samples: [sample(10, "claude", cpu: 501.5)]),
-          "cpu delta >= threshold is busy")
+    let tick = tracker.recordTick(samples: [sample(10, "claude", cpu: 501.5)])
+    check(tick.busy, "cpu delta >= threshold is busy")
+    check(tick.busyAgents == ["claude"], "busy tick names the active agent")
+}
+do {
+    let tracker = AgentActivityTracker(watchlist: AgentWatchlist(patterns: ["claude", "ollama"]), busyCPUSeconds: 1.0)
+    _ = tracker.recordTick(samples: [sample(10, "/usr/local/bin/claude", cpu: 500),
+                                     sample(11, "/opt/homebrew/bin/ollama", cpu: 40)])
+    let tick = tracker.recordTick(samples: [sample(10, "/usr/local/bin/claude", cpu: 502),
+                                            sample(11, "/opt/homebrew/bin/ollama", cpu: 45)])
+    check(tick.busyAgents.sorted() == ["claude", "ollama"],
+          "busy agents report display names, deduped and sorted")
 }
 do {
     let tracker = AgentActivityTracker(watchlist: AgentWatchlist(patterns: ["claude"]), busyCPUSeconds: 1.0)
     _ = tracker.recordTick(samples: [sample(10, "claude", cpu: 500)])
-    check(!tracker.recordTick(samples: [sample(10, "claude", cpu: 500.2)]),
-          "cpu delta below threshold is idle")
+    let tick = tracker.recordTick(samples: [sample(10, "claude", cpu: 500.2)])
+    check(!tick.busy, "cpu delta below threshold is idle")
+    check(tick.busyAgents.isEmpty, "idle tick names no agents")
 }
 do {
     let tracker = AgentActivityTracker(watchlist: AgentWatchlist(patterns: ["claude"]), busyCPUSeconds: 1.0)
     _ = tracker.recordTick(samples: [sample(20, "/usr/bin/ffmpeg", cpu: 100)])
-    check(!tracker.recordTick(samples: [sample(20, "/usr/bin/ffmpeg", cpu: 200)]),
+    check(!tracker.recordTick(samples: [sample(20, "/usr/bin/ffmpeg", cpu: 200)]).busy,
           "unwatched process delta does not count")
 }
 do {
     let tracker = AgentActivityTracker(watchlist: AgentWatchlist(patterns: ["claude"]), busyCPUSeconds: 1.0)
     _ = tracker.recordTick(samples: [sample(10, "claude", cpu: 500)])
     _ = tracker.recordTick(samples: [])
-    check(!tracker.recordTick(samples: [sample(10, "claude", cpu: 900)]),
+    check(!tracker.recordTick(samples: [sample(10, "claude", cpu: 900)]).busy,
           "disappeared pid re-baselines instead of diffing stale value")
 }
 

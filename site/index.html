@@ -168,6 +168,10 @@
           <div><b>Closed-lid keep-awake</b><p>Stays awake even with the lid shut — no external display needed.</p></div>
         </div>
         <div class="feature">
+          <div class="ico">🤖</div>
+          <div><b>Smart NoSleep</b><p>Made for overnight AI coding runs: stays awake while your agents (Claude Code, Codex, Ollama…) are working, then lets the Mac sleep once they finish — saving battery and heat. Prefer always-on? Switch to Absolute NoSleep.</p></div>
+        </div>
+        <div class="feature">
           <div class="ico">⏱️</div>
           <div><b>Timers</b><p>Keep awake for 15 minutes, 1 hour, or 2 hours, then auto-off.</p></div>
         </div>
@@ -188,14 +192,14 @@
         <ol>
           <li>Download the installer — it lands in your <b>Downloads</b> folder.</li>
           <li>Open <b>Terminal</b> (Applications → Utilities), then paste and run:
-            <div class="note" style="margin:8px 0 0;"><code>xattr -d com.apple.quarantine ~/Downloads/NoSleep-Installer-1.0.1.pkg</code></div>
+            <div class="note" style="margin:8px 0 0;"><code>xattr -d com.apple.quarantine ~/Downloads/NoSleep-Installer-1.1.0.pkg</code></div>
           </li>
-          <li>Double-click <code>NoSleep-Installer-1.0.1.pkg</code> — it now opens normally.</li>
+          <li>Double-click <code>NoSleep-Installer-1.1.0.pkg</code> — it now opens normally.</li>
           <li>Follow the installer — NoSleep launches automatically when done.</li>
         </ol>
         <div class="note" style="font-size:13px;">
           If step 2 says “No such xattr”, run
-          <code>xattr -c ~/Downloads/NoSleep-Installer-1.0.1.pkg</code> instead.
+          <code>xattr -c ~/Downloads/NoSleep-Installer-1.1.0.pkg</code> instead.
         </div>
       </div>
     </section>
@@ -219,7 +223,7 @@
     </section>
 
     <footer>
-      Made for macOS · <a href="https://github.com/99Darius/NoSleep/releases/download/v1.0.1/NoSleep-Installer-1.0.1.pkg">Download NoSleep</a> · <a href="https://github.com/99Darius/NoSleep">Source on GitHub</a><br>
+      Made for macOS · <a href="https://github.com/99Darius/NoSleep/releases/download/v1.1.0/NoSleep-Installer-1.1.0.pkg">Download NoSleep</a> · <a href="https://github.com/99Darius/NoSleep">Source on GitHub</a><br>
       Open-source. Give your Mac some airflow when keeping it awake with the lid closed.
     </footer>
 
@@ -227,7 +231,7 @@
 
   <script>
     (function () {
-      var PKG = 'https://github.com/99Darius/NoSleep/releases/download/v1.0.1/NoSleep-Installer-1.0.1.pkg';
+      var PKG = 'https://github.com/99Darius/NoSleep/releases/download/v1.1.0/NoSleep-Installer-1.1.0.pkg';
       var form = document.getElementById('dl-form');
       var input = document.getElementById('dl-email');
 

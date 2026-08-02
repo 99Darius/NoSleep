@@ -207,21 +207,44 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// while unattended) and tell the user why.
     private func handleAgentsIdle() {
         guard manager.isActive else { return }
-        notifyAgentsIdle(graceMinutes: SmartSettings.graceMinutes)
+        notifyAgentsIdle(graceMinutes: SmartSettings.graceMinutes,
+                         lastAgents: monitor.lastBusyAgents,
+                         lastActivity: monitor.lastBusyDate)
         timer.cancel()
         currentExpiry = nil
         manager.deactivate()
     }
 
-    private func notifyAgentsIdle(graceMinutes: Int) {
+    /// Rich "went to sleep" toast. With the lid closed it lands in
+    /// Notification Center, so the user sees the full story on wake:
+    /// when Smart NoSleep released the block, how long agents were idle,
+    /// and what was running before.
+    private func notifyAgentsIdle(graceMinutes: Int, lastAgents: [String], lastActivity: Date?) {
         // UNUserNotificationCenter traps in un-bundled dev runs (swift run).
         guard Bundle.main.bundleIdentifier != nil else { return }
+        let timeFmt = DateFormatter()
+        timeFmt.timeStyle = .short
+        timeFmt.dateStyle = .none
+        let now = timeFmt.string(from: Date())
+
+        var body = "Smart NoSleep let your Mac sleep at \(now) — no agent activity for \(graceMinutes) min."
+        if !lastAgents.isEmpty {
+            let names = lastAgents.joined(separator: ", ")
+            if let seen = lastActivity {
+                body += " Last running: \(names) (until \(timeFmt.string(from: seen)))."
+            } else {
+                body += " Last running: \(names)."
+            }
+        } else {
+            body += " No coding agents were seen running."
+        }
+
         let center = UNUserNotificationCenter.current()
         center.requestAuthorization(options: [.alert]) { granted, _ in
             guard granted else { return }
             let content = UNMutableNotificationContent()
             content.title = "NoSleep turned itself off"
-            content.body = "No coding-agent activity for \(graceMinutes) minutes — normal sleep is back on."
+            content.body = body
             center.add(UNNotificationRequest(identifier: "com.nosleep.agents-idle",
                                              content: content, trigger: nil))
         }

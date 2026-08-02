@@ -16,6 +16,10 @@ final class AgentActivityMonitor {
     private var lastTickDate: Date?
 
     var onIdle: (() -> Void)?
+    /// For the "went to sleep" notification: which agents were last seen
+    /// working, and when. Reset on every start().
+    private(set) var lastBusyAgents: [String] = []
+    private(set) var lastBusyDate: Date?
 
     init(sampler: ProcessActivitySampling,
          store: StateStore,
@@ -35,6 +39,8 @@ final class AgentActivityMonitor {
             self?.onIdle?()
         }
         lastTickDate = Date()
+        lastBusyAgents = []
+        lastBusyDate = nil
         let t = DispatchSource.makeTimerSource(queue: .main)
         t.schedule(deadline: .now() + tickInterval, repeating: tickInterval)
         t.setEventHandler { [weak self] in self?.tick() }
@@ -52,7 +58,7 @@ final class AgentActivityMonitor {
 
     private func tick() {
         guard let tracker, let detector else { return }
-        let cpuBusy = tracker.recordTick(samples: sampler.sampleProcesses())
+        let cpuTick = tracker.recordTick(samples: sampler.sampleProcesses())
         // A `nosleep ping` since the previous tick counts as agent activity.
         let heartbeatBusy: Bool
         if let hb = store.loadHeartbeat(), let last = lastTickDate {
@@ -61,6 +67,13 @@ final class AgentActivityMonitor {
             heartbeatBusy = false
         }
         lastTickDate = Date()
-        detector.record(busy: cpuBusy || heartbeatBusy)
+        let busy = cpuTick.busy || heartbeatBusy
+        if busy {
+            var agents = cpuTick.busyAgents
+            if heartbeatBusy { agents.append("nosleep ping") }
+            lastBusyAgents = agents
+            lastBusyDate = Date()
+        }
+        detector.record(busy: busy)
     }
 }

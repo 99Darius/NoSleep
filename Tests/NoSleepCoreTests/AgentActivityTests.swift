@@ -36,28 +36,42 @@ final class AgentActivityTrackerTests: XCTestCase {
     func testFirstSightingIsNotBusy() {
         let tracker = AgentActivityTracker(watchlist: AgentWatchlist(patterns: ["claude"]))
         // No baseline yet — cumulative CPU alone must not count as activity.
-        XCTAssertFalse(tracker.recordTick(samples: [sample(10, "claude", cpu: 500)]))
+        XCTAssertFalse(tracker.recordTick(samples: [sample(10, "claude", cpu: 500)]).busy)
     }
 
-    func testCPUDeltaAtOrAboveThresholdIsBusy() {
+    func testCPUDeltaAtOrAboveThresholdIsBusyAndNamesAgent() {
         let tracker = AgentActivityTracker(watchlist: AgentWatchlist(patterns: ["claude"]),
                                            busyCPUSeconds: 1.0)
         _ = tracker.recordTick(samples: [sample(10, "claude", cpu: 500)])
-        XCTAssertTrue(tracker.recordTick(samples: [sample(10, "claude", cpu: 501.5)]))
+        let tick = tracker.recordTick(samples: [sample(10, "claude", cpu: 501.5)])
+        XCTAssertTrue(tick.busy)
+        XCTAssertEqual(tick.busyAgents, ["claude"])
+    }
+
+    func testBusyAgentsAreDisplayNamesSorted() {
+        let tracker = AgentActivityTracker(watchlist: AgentWatchlist(patterns: ["claude", "ollama"]),
+                                           busyCPUSeconds: 1.0)
+        _ = tracker.recordTick(samples: [sample(10, "/usr/local/bin/claude", cpu: 500),
+                                         sample(11, "/opt/homebrew/bin/ollama", cpu: 40)])
+        let tick = tracker.recordTick(samples: [sample(10, "/usr/local/bin/claude", cpu: 502),
+                                                sample(11, "/opt/homebrew/bin/ollama", cpu: 45)])
+        XCTAssertEqual(tick.busyAgents, ["claude", "ollama"])
     }
 
     func testCPUDeltaBelowThresholdIsIdle() {
         let tracker = AgentActivityTracker(watchlist: AgentWatchlist(patterns: ["claude"]),
                                            busyCPUSeconds: 1.0)
         _ = tracker.recordTick(samples: [sample(10, "claude", cpu: 500)])
-        XCTAssertFalse(tracker.recordTick(samples: [sample(10, "claude", cpu: 500.2)]))
+        let tick = tracker.recordTick(samples: [sample(10, "claude", cpu: 500.2)])
+        XCTAssertFalse(tick.busy)
+        XCTAssertTrue(tick.busyAgents.isEmpty)
     }
 
     func testUnwatchedProcessDeltaDoesNotCount() {
         let tracker = AgentActivityTracker(watchlist: AgentWatchlist(patterns: ["claude"]),
                                            busyCPUSeconds: 1.0)
         _ = tracker.recordTick(samples: [sample(20, "/usr/bin/ffmpeg", cpu: 100)])
-        XCTAssertFalse(tracker.recordTick(samples: [sample(20, "/usr/bin/ffmpeg", cpu: 200)]))
+        XCTAssertFalse(tracker.recordTick(samples: [sample(20, "/usr/bin/ffmpeg", cpu: 200)]).busy)
     }
 
     func testDisappearedProcessIsForgotten() {
@@ -66,7 +80,7 @@ final class AgentActivityTrackerTests: XCTestCase {
         _ = tracker.recordTick(samples: [sample(10, "claude", cpu: 500)])
         _ = tracker.recordTick(samples: [])   // process exited
         // PID reused by a fresh process: must re-baseline, not diff against 500.
-        XCTAssertFalse(tracker.recordTick(samples: [sample(10, "claude", cpu: 900)]))
+        XCTAssertFalse(tracker.recordTick(samples: [sample(10, "claude", cpu: 900)]).busy)
     }
 }
 
