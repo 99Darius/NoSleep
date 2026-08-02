@@ -14,6 +14,23 @@ final class AgentWatchlistTests: XCTestCase {
         XCTAssertTrue(list.matches("/Users/x/.claude/local/claude"))
     }
 
+    func testMatchedPatternNamesVersionedBinaries() {
+        // Claude Code installs as .../claude/versions/2.1.220 — the agent
+        // name must come from the pattern, not the path basename.
+        let list = AgentWatchlist.default
+        XCTAssertTrue(list.matches("/Users/x/.local/share/claude/versions/2.1.220"))
+        XCTAssertEqual(list.matchedPattern("/Users/x/.local/share/claude/versions/2.1.220"), "claude")
+    }
+
+    func testDefaultThresholdIgnoresIdleHousekeeping() {
+        // Idle agent sessions hover at 0.6–1.7 CPU-s/min (live-measured);
+        // real work burns 10s+. Default threshold must split them.
+        let tracker = AgentActivityTracker(watchlist: .default)
+        _ = tracker.recordTick(samples: [ProcessSample(pid: 10, command: "claude", cpuTime: 100)])
+        XCTAssertFalse(tracker.recordTick(samples: [ProcessSample(pid: 10, command: "claude", cpuTime: 101.7)]).busy)
+        XCTAssertTrue(tracker.recordTick(samples: [ProcessSample(pid: 10, command: "claude", cpuTime: 112)]).busy)
+    }
+
     func testAppBundleExecutablesNeverCount() {
         // GUI chat apps run inference server-side; their Electron windows must
         // not hold the Mac awake (live-test lesson).

@@ -33,13 +33,20 @@ public struct AgentWatchlist {
     ])
 
     public func matches(_ command: String) -> Bool {
+        matchedPattern(command) != nil
+    }
+
+    /// The watchlist pattern the command matches, or nil. Used both for
+    /// filtering and as the human-readable agent name (versioned binaries
+    /// like .../claude/versions/2.1.220 would otherwise surface as "2.1.220").
+    public func matchedPattern(_ command: String) -> String? {
         let lower = command.lowercased()
         // GUI chat apps (.app bundles — Claude Desktop, ChatGPT, PWA loaders)
         // never count: their inference runs server-side, so the Mac sleeping
         // loses nothing — while their Electron windows burn enough idle CPU
         // to hold the Mac awake forever. Only local CLI/daemon agents matter.
-        if lower.contains(".app/") { return false }
-        return patterns.contains { lower.contains($0.lowercased()) }
+        if lower.contains(".app/") { return nil }
+        return patterns.first { lower.contains($0.lowercased()) }
     }
 }
 
@@ -63,7 +70,10 @@ public final class AgentActivityTracker {
     private let busyCPUSeconds: TimeInterval
     private var lastCPUTime: [Int32: TimeInterval] = [:]
 
-    public init(watchlist: AgentWatchlist, busyCPUSeconds: TimeInterval = 1.0) {
+    /// Default threshold 3.0 CPU-seconds per tick: idle agent sessions'
+    /// background housekeeping hovers at 0.6–1.7 s/min (live-measured) and
+    /// must not count, while real work burns 10s+ per minute.
+    public init(watchlist: AgentWatchlist, busyCPUSeconds: TimeInterval = 3.0) {
         self.watchlist = watchlist
         self.busyCPUSeconds = busyCPUSeconds
     }
@@ -74,13 +84,13 @@ public final class AgentActivityTracker {
     /// nothing about *recent* activity), and PIDs that vanish are forgotten so
     /// a reused PID re-baselines instead of diffing a stale value.
     public func recordTick(samples: [ProcessSample]) -> ActivityTick {
-        let watched = samples.filter { watchlist.matches($0.command) }
         var names: Set<String> = []
         var current: [Int32: TimeInterval] = [:]
-        for s in watched {
+        for s in samples {
+            guard let pattern = watchlist.matchedPattern(s.command) else { continue }
             current[s.pid] = s.cpuTime
             if let prev = lastCPUTime[s.pid], s.cpuTime - prev >= busyCPUSeconds {
-                names.insert((s.command as NSString).lastPathComponent)
+                names.insert(pattern)
             }
         }
         lastCPUTime = current

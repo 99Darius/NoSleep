@@ -33,6 +33,10 @@ do {
           "default watchlist ignores Claude PWA loader (.app bundle)")
     check(list.matches("/opt/homebrew/bin/ollama serve"), "default watchlist matches ollama")
     check(list.matches("/Users/x/.claude/local/claude"), "default watchlist matches claude CLI")
+    check(list.matches("/Users/x/.local/share/claude/versions/2.1.220"),
+          "default watchlist matches claude versioned binary")
+    check(list.matchedPattern("/Users/x/.local/share/claude/versions/2.1.220") == "claude",
+          "matchedPattern returns readable agent name for versioned binary")
     check(!list.matches("/bin/bash"), "default watchlist ignores bash")
     check(!list.matches("/usr/sbin/mDNSResponder"), "default watchlist ignores mDNSResponder")
     for cmd in ["claude", "codex", "aider", "ollama", "gemini", "cursor-agent"] {
@@ -66,6 +70,25 @@ do {
                                             sample(11, "/opt/homebrew/bin/ollama", cpu: 45)])
     check(tick.busyAgents.sorted() == ["claude", "ollama"],
           "busy agents report display names, deduped and sorted")
+}
+do {
+    // Versioned binary paths (Claude Code installs as .../claude/versions/2.1.220)
+    // must surface the agent name, not the version number.
+    let tracker = AgentActivityTracker(watchlist: .default, busyCPUSeconds: 1.0)
+    _ = tracker.recordTick(samples: [sample(10, "/Users/x/.local/share/claude/versions/2.1.220", cpu: 100)])
+    let tick = tracker.recordTick(samples: [sample(10, "/Users/x/.local/share/claude/versions/2.1.220", cpu: 130)])
+    check(tick.busyAgents == ["claude"], "busy agent named by matched pattern, not basename")
+}
+do {
+    // Default threshold must ignore idle-session housekeeping (~1 CPU-sec/min)
+    // but catch real work. Live-test lesson: idle claude sessions hover at
+    // 0.6–1.7 s/min and held the Mac awake at the old 1.0 threshold.
+    let tracker = AgentActivityTracker(watchlist: .default)   // default threshold
+    _ = tracker.recordTick(samples: [sample(10, "claude", cpu: 100)])
+    check(!tracker.recordTick(samples: [sample(10, "claude", cpu: 101.7)]).busy,
+          "default threshold ignores idle-session housekeeping (1.7s/min)")
+    check(tracker.recordTick(samples: [sample(10, "claude", cpu: 112)]).busy,
+          "default threshold catches real work (10s/min)")
 }
 do {
     let tracker = AgentActivityTracker(watchlist: AgentWatchlist(patterns: ["claude"]), busyCPUSeconds: 1.0)
