@@ -9,11 +9,19 @@ final class MenuController: NSObject, NSMenuDelegate {
     var onChangeShortcut: (() -> Void)?
     var onUninstall: (() -> Void)?
     var onQuit: (() -> Void)?
+    var onSelectMode: ((KeepAwakeMode) -> Void)?
+    var onSelectGrace: ((Int) -> Void)?
     /// Supplies the live state so the menu can re-render (e.g. countdown) when opened.
     var currentState: (() -> NoSleepState)?
+    /// Supplies the persisted mode + grace minutes for menu checkmarks.
+    var currentMode: (() -> (KeepAwakeMode, Int))?
 
     private var toggleItem: NSMenuItem?
     private var loginItem: NSMenuItem?
+    private var smartModeItem: NSMenuItem?
+    private var absoluteModeItem: NSMenuItem?
+    private var graceParentItem: NSMenuItem?
+    private var graceItems: [NSMenuItem] = []
 
     override init() {
         super.init()
@@ -51,6 +59,35 @@ final class MenuController: NSObject, NSMenuDelegate {
         let timerParent = NSMenuItem(title: "Stay awake for…", action: nil, keyEquivalent: "")
         timerParent.submenu = timerMenu
         menu.addItem(timerParent)
+        menu.addItem(.separator())
+
+        // Keep-awake mode: Smart (default) sleeps once coding agents go idle;
+        // Absolute never sleeps until turned off.
+        let smart = NSMenuItem(title: "Smart NoSleep — sleep when agents finish",
+                               action: #selector(smartModeTapped), keyEquivalent: "")
+        smart.target = self
+        menu.addItem(smart)
+        smartModeItem = smart
+
+        let absolute = NSMenuItem(title: "Absolute NoSleep — never sleep",
+                                  action: #selector(absoluteModeTapped), keyEquivalent: "")
+        absolute.target = self
+        menu.addItem(absolute)
+        absoluteModeItem = absolute
+
+        let graceMenu = NSMenu()
+        for minutes in [5, 15, 30, 60] {
+            let item = NSMenuItem(title: "\(minutes) minutes",
+                                  action: #selector(graceTapped(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = minutes
+            graceMenu.addItem(item)
+            graceItems.append(item)
+        }
+        let graceParent = NSMenuItem(title: "Sleep after agents idle for…", action: nil, keyEquivalent: "")
+        graceParent.submenu = graceMenu
+        menu.addItem(graceParent)
+        graceParentItem = graceParent
         menu.addItem(.separator())
 
         let shortcut = NSMenuItem(title: "Change Shortcut…", action: #selector(changeShortcutTapped), keyEquivalent: "")
@@ -146,6 +183,14 @@ final class MenuController: NSObject, NSMenuDelegate {
             toggle.title = "Enable NoSleep"
         }
         loginItem?.state = LoginItem.isEnabled ? .on : .off
+
+        if let (mode, grace) = currentMode?() {
+            smartModeItem?.state = mode == .smart ? .on : .off
+            absoluteModeItem?.state = mode == .absolute ? .on : .off
+            for item in graceItems {
+                item.state = (item.representedObject as? Int) == grace ? .on : .off
+            }
+        }
     }
 
     @objc private func toggleTapped() { onToggle?() }
@@ -153,6 +198,11 @@ final class MenuController: NSObject, NSMenuDelegate {
         if let secs = sender.representedObject as? TimeInterval { onTimer?(secs) }
     }
     @objc private func loginTapped() { onToggleLoginItem?() }
+    @objc private func smartModeTapped() { onSelectMode?(.smart) }
+    @objc private func absoluteModeTapped() { onSelectMode?(.absolute) }
+    @objc private func graceTapped(_ sender: NSMenuItem) {
+        if let minutes = sender.representedObject as? Int { onSelectGrace?(minutes) }
+    }
     @objc private func changeShortcutTapped() { onChangeShortcut?() }
     @objc private func uninstallTapped() { onUninstall?() }
     @objc private func quitTapped() { onQuit?() }

@@ -75,13 +75,18 @@ func printState() {
 
 let args = Array(CommandLine.arguments.dropFirst())
 guard let cmd = Command.parse(args) else {
-    FileHandle.standardError.write(Data("usage: nosleep [on|off|toggle|status|timer <15m|1h|2h|90s>]\n".utf8))
+    FileHandle.standardError.write(Data("usage: nosleep [on|off|toggle|status|ping|timer <15m|1h|2h|90s>]\n".utf8))
     exit(2)
 }
 
 switch cmd {
 case .status:
     printState()
+case .ping:
+    // Agent-activity heartbeat for Smart NoSleep. Writes straight to the
+    // shared store (no DNC round-trip, no agent-launch): the agent reads the
+    // timestamp on its next monitor tick. Silent so it's hook-friendly.
+    store.saveHeartbeat(Date())
 case .off:
     // Nothing to do if the agent isn't running (no assertion is held).
     if agentRunning(), ensureAgentReady(launchIfNeeded: false) {

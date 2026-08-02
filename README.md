@@ -46,6 +46,33 @@ To rebind it, open the menu bar item → **Change Shortcut…**, click the field
 and press your new combination ("Reset to ⌃⌘S" restores the default). Powered by
 [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts).
 
+## Smart NoSleep vs Absolute NoSleep
+
+NoSleep's main job is keeping your Mac awake while coding agents (Claude Code,
+Codex, aider, Ollama, …) work — often overnight with the lid closed. Two modes,
+picked from the menu:
+
+- **Smart NoSleep** (default) — stays awake while your agents are working.
+  Once every watched agent has been idle for the grace period (default
+  15 minutes, configurable 5/15/30/60), NoSleep turns itself off so the Mac can
+  sleep — saving battery and heat. You get a notification when that happens.
+- **Absolute NoSleep** — never sleeps until you turn it off (or a timer fires).
+
+Smart mode watches CPU activity of known agent processes (`claude`, `codex`,
+`aider`, `ollama`, `gemini`, `cursor-agent`, `copilot`, ChatGPT). Override the
+list with:
+
+```bash
+defaults write com.nosleep agentWatchlist -array claude ollama my-agent
+```
+
+For an exact signal, any tool can also run `nosleep ping` as a heartbeat — e.g.
+a Claude Code `PostToolUse`/`Stop` hook. A ping counts as agent activity and
+resets the idle window.
+
+> Heads-up: an agent that only waits on a remote machine (SSH, cloud session)
+> looks idle locally — use Absolute mode for those runs.
+
 ## CLI
 
 ```bash
@@ -53,6 +80,7 @@ nosleep on                 # keep awake until turned off
 nosleep off                # allow sleep again
 nosleep toggle             # flip the current state
 nosleep status             # print "active" / "active (Nm left)" / "inactive"
+nosleep ping               # agent-activity heartbeat for Smart NoSleep (silent)
 nosleep timer 15m          # keep awake for 15 minutes, then auto-off
 nosleep timer 1h           # 1 hour
 nosleep timer 2h           # 2 hours

@@ -6,6 +6,7 @@ public enum Command: Equatable {
     case toggle
     case status
     case timer(TimeInterval)
+    case ping
 
     /// Parse from CLI argv (excluding the program name).
     public static func parse(_ args: [String]) -> Command? {
@@ -15,6 +16,7 @@ public enum Command: Equatable {
         case "off": return .off
         case "toggle": return .toggle
         case "status": return .status
+        case "ping": return .ping
         case "timer":
             guard args.count >= 2, let secs = parseDuration(args[1]) else { return nil }
             return .timer(secs)
@@ -31,6 +33,7 @@ public enum Command: Equatable {
         case .toggle: return ["action": "toggle"]
         case .status: return ["action": "status"]
         case .timer(let s): return ["action": "timer", "seconds": s]
+        case .ping: return ["action": "ping"]
         }
     }
 
@@ -44,6 +47,7 @@ public enum Command: Equatable {
         case "timer":
             guard let s = userInfo?["seconds"] as? TimeInterval else { return nil }
             self = .timer(s)
+        case "ping": self = .ping
         default: return nil
         }
     }

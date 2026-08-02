@@ -1,6 +1,34 @@
 import AppKit
 import KeyboardShortcuts
 import NoSleepCore
+import UserNotifications
+
+/// Persisted Smart NoSleep settings.
+enum SmartSettings {
+    static var mode: KeepAwakeMode {
+        get {
+            let raw = UserDefaults.standard.string(forKey: "keepAwakeMode") ?? ""
+            return KeepAwakeMode(rawValue: raw) ?? .smart   // Smart is the default
+        }
+        set { UserDefaults.standard.set(newValue.rawValue, forKey: "keepAwakeMode") }
+    }
+
+    static var graceMinutes: Int {
+        get {
+            let v = UserDefaults.standard.integer(forKey: "smartGraceMinutes")
+            return v > 0 ? v : 15
+        }
+        set { UserDefaults.standard.set(newValue, forKey: "smartGraceMinutes") }
+    }
+
+    static var watchlist: AgentWatchlist {
+        if let patterns = UserDefaults.standard.stringArray(forKey: "agentWatchlist"),
+           !patterns.isEmpty {
+            return AgentWatchlist(patterns: patterns)
+        }
+        return .default
+    }
+}
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     static let commandNotification = Notification.Name("com.nosleep.cmd")
@@ -14,6 +42,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let store = StateStore.shared()
     private let shortcutSettings = ShortcutSettingsWindowController()
     private var currentExpiry: Date?
+    private lazy var monitor = AgentActivityMonitor(sampler: AgentProcessSampler(),
+                                                    store: store)
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         manager.onChange = { [weak self] in self?.persistAndRender() }
@@ -28,6 +58,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         menu.onChangeShortcut = { [weak self] in self?.shortcutSettings.show() }
         menu.onUninstall = { Uninstaller.run() }
+        menu.currentMode = { (SmartSettings.mode, SmartSettings.graceMinutes) }
+        menu.onSelectMode = { [weak self] mode in
+            SmartSettings.mode = mode
+            self?.syncMonitor()
+            self?.persistAndRender()
+        }
+        menu.onSelectGrace = { [weak self] minutes in
+            SmartSettings.graceMinutes = minutes
+            self?.syncMonitor(restart: true)
+            self?.persistAndRender()
+        }
+        monitor.onIdle = { [weak self] in self?.handleAgentsIdle() }
 
         // Global hotkey (default ⌃⌘S, user-rebindable). KeyboardShortcuts registers
         // the persisted shortcut and delivers callbacks on the main thread.
@@ -103,9 +145,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         alert.alertStyle = .informational
         alert.messageText = "Keep your Mac awake — even with the lid closed"
         alert.informativeText = """
-        Your Mac will stay awake until you turn NoSleep off, so music, \
-        downloads, and other tasks keep going even if you close the lid.
+        Your Mac will stay awake so music, downloads, and coding agents keep \
+        going even if you close the lid.
 
+        • Smart NoSleep (default): once your coding agents finish working, \
+        NoSleep lets the Mac sleep again to save battery and heat.
+        • Absolute NoSleep: stays awake until you turn it off.
         • macOS will ask for your password once to allow this.
         • The lid blocks airflow, so give your Mac some room to breathe while \
         charging.
@@ -139,6 +184,47 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let state = NoSleepState(isActive: manager.isActive, expiresAt: currentExpiry)
         store.save(state, pid: ProcessInfo.processInfo.processIdentifier)
         menu.render(state: state)
+        syncMonitor()
+    }
+
+    /// The agent-activity monitor runs exactly while keep-awake is active in
+    /// Smart mode. `restart` forces a fresh grace window (e.g. after the user
+    /// changes the grace period).
+    private func syncMonitor(restart: Bool = false) {
+        let shouldRun = manager.isActive && SmartSettings.mode == .smart
+        if shouldRun {
+            if restart || !monitor.isRunning {
+                monitor.start(graceMinutes: SmartSettings.graceMinutes,
+                              watchlist: SmartSettings.watchlist)
+            }
+        } else {
+            monitor.stop()
+        }
+    }
+
+    /// Smart NoSleep verdict: agents idle for the whole grace window.
+    /// Release the sleep block (passwordless sudo rule → no prompt needed
+    /// while unattended) and tell the user why.
+    private func handleAgentsIdle() {
+        guard manager.isActive else { return }
+        notifyAgentsIdle(graceMinutes: SmartSettings.graceMinutes)
+        timer.cancel()
+        currentExpiry = nil
+        manager.deactivate()
+    }
+
+    private func notifyAgentsIdle(graceMinutes: Int) {
+        // UNUserNotificationCenter traps in un-bundled dev runs (swift run).
+        guard Bundle.main.bundleIdentifier != nil else { return }
+        let center = UNUserNotificationCenter.current()
+        center.requestAuthorization(options: [.alert]) { granted, _ in
+            guard granted else { return }
+            let content = UNMutableNotificationContent()
+            content.title = "NoSleep turned itself off"
+            content.body = "No coding-agent activity for \(graceMinutes) minutes — normal sleep is back on."
+            center.add(UNNotificationRequest(identifier: "com.nosleep.agents-idle",
+                                             content: content, trigger: nil))
+        }
     }
 
     @objc private func handleCommand(_ note: Notification) {
@@ -154,6 +240,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             case .toggle: self.handleToggle()
             case .timer(let s): self.handleTimer(s)
             case .status: self.persistAndRender()   // ensure store is fresh
+            case .ping: break   // heartbeat is written straight to the shared store by the CLI
             }
         }
     }

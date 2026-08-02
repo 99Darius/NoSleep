@@ -7,6 +7,7 @@ final class CommandTests: XCTestCase {
         XCTAssertEqual(Command.parse(["off"]), .off)
         XCTAssertEqual(Command.parse(["toggle"]), .toggle)
         XCTAssertEqual(Command.parse(["status"]), .status)
+        XCTAssertEqual(Command.parse(["ping"]), .ping)
     }
 
     func testParseTimerDurations() {
@@ -39,7 +40,7 @@ final class CommandTests: XCTestCase {
     }
 
     func testRoundTripViaUserInfo() {
-        for c in [Command.on, .off, .toggle, .status, .timer(3600)] {
+        for c in [Command.on, .off, .toggle, .status, .timer(3600), .ping] {
             let info = c.userInfo
             XCTAssertEqual(Command(userInfo: info), c)
         }

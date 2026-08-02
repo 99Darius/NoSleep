@@ -36,4 +36,16 @@ final class StateStoreTests: XCTestCase {
         XCTAssertEqual(store.load(), state)
         XCTAssertEqual(store.loadPID(), 4321)
     }
+
+    func testHeartbeatDefaultsToNil() {
+        let (store, _) = makeStore()
+        XCTAssertNil(store.loadHeartbeat())
+    }
+
+    func testHeartbeatRoundTrip() {
+        let (store, _) = makeStore()
+        let stamp = Date(timeIntervalSince1970: 1_700_000_000)
+        store.saveHeartbeat(stamp)
+        XCTAssertEqual(store.loadHeartbeat(), stamp)
+    }
 }

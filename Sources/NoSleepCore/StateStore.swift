@@ -34,4 +34,17 @@ public final class StateStore {
         let p = defaults.integer(forKey: pidKey)
         return p == 0 ? nil : p
     }
+
+    // MARK: - Agent heartbeat (`nosleep ping`)
+
+    private var heartbeatKey: String { "lastHeartbeat" }
+
+    public func saveHeartbeat(_ date: Date) {
+        defaults.set(date.timeIntervalSince1970, forKey: heartbeatKey)
+    }
+
+    public func loadHeartbeat() -> Date? {
+        let t = defaults.double(forKey: heartbeatKey)
+        return t == 0 ? nil : Date(timeIntervalSince1970: t)
+    }
 }
