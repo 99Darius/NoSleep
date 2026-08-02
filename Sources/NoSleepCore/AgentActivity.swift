@@ -29,11 +29,16 @@ public struct AgentWatchlist {
 
     public static let `default` = AgentWatchlist(patterns: [
         "claude", "codex", "aider", "ollama", "gemini", "cursor-agent",
-        "copilot", "ChatGPT",
+        "copilot",
     ])
 
     public func matches(_ command: String) -> Bool {
         let lower = command.lowercased()
+        // GUI chat apps (.app bundles — Claude Desktop, ChatGPT, PWA loaders)
+        // never count: their inference runs server-side, so the Mac sleeping
+        // loses nothing — while their Electron windows burn enough idle CPU
+        // to hold the Mac awake forever. Only local CLI/daemon agents matter.
+        if lower.contains(".app/") { return false }
         return patterns.contains { lower.contains($0.lowercased()) }
     }
 }

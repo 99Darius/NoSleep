@@ -22,9 +22,17 @@ do {
 }
 do {
     let list = AgentWatchlist.default
-    check(list.matches("/Applications/Claude.app/Contents/Frameworks/Claude Helper.app/Contents/MacOS/Claude Helper --type=utility"),
-          "default watchlist matches Claude Helper command line")
+    // GUI chat apps (.app bundles) must NOT count: their inference runs
+    // server-side, and an open Electron window burns enough CPU to hold the
+    // Mac awake forever (live-test lesson, round 3).
+    check(!list.matches("/Applications/Claude.app/Contents/Frameworks/Claude Helper.app/Contents/MacOS/Claude Helper"),
+          "default watchlist ignores Claude Desktop helpers (.app bundle)")
+    check(!list.matches("/Applications/Claude.app/Contents/MacOS/Claude"),
+          "default watchlist ignores Claude Desktop main binary (.app bundle)")
+    check(!list.matches("/Users/x/Applications/Chrome Apps.localized/Claude.app/Contents/MacOS/app_mode_loader"),
+          "default watchlist ignores Claude PWA loader (.app bundle)")
     check(list.matches("/opt/homebrew/bin/ollama serve"), "default watchlist matches ollama")
+    check(list.matches("/Users/x/.claude/local/claude"), "default watchlist matches claude CLI")
     check(!list.matches("/bin/bash"), "default watchlist ignores bash")
     check(!list.matches("/usr/sbin/mDNSResponder"), "default watchlist ignores mDNSResponder")
     for cmd in ["claude", "codex", "aider", "ollama", "gemini", "cursor-agent"] {

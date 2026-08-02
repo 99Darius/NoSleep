@@ -10,8 +10,17 @@ final class AgentWatchlistTests: XCTestCase {
 
     func testMatchesSubstringInFullCommandLine() {
         let list = AgentWatchlist.default
-        XCTAssertTrue(list.matches("/Applications/Claude.app/Contents/Frameworks/Claude Helper.app/Contents/MacOS/Claude Helper --type=utility"))
         XCTAssertTrue(list.matches("/opt/homebrew/bin/ollama serve"))
+        XCTAssertTrue(list.matches("/Users/x/.claude/local/claude"))
+    }
+
+    func testAppBundleExecutablesNeverCount() {
+        // GUI chat apps run inference server-side; their Electron windows must
+        // not hold the Mac awake (live-test lesson).
+        let list = AgentWatchlist.default
+        XCTAssertFalse(list.matches("/Applications/Claude.app/Contents/Frameworks/Claude Helper.app/Contents/MacOS/Claude Helper"))
+        XCTAssertFalse(list.matches("/Applications/Claude.app/Contents/MacOS/Claude"))
+        XCTAssertFalse(list.matches("/Users/x/Applications/Chrome Apps.localized/Claude.app/Contents/MacOS/app_mode_loader"))
     }
 
     func testDoesNotMatchUnrelatedProcesses() {

@@ -1,5 +1,6 @@
 import Foundation
 import NoSleepCore
+import os
 
 /// Runs while keep-awake is active in Smart NoSleep mode. Every tick it asks
 /// the sampler for process CPU activity and checks the shared-store heartbeat
@@ -14,6 +15,11 @@ final class AgentActivityMonitor {
     private var tracker: AgentActivityTracker?
     private var detector: IdleDetector?
     private var lastTickDate: Date?
+    private var idleTickCount = 0
+    // Unified log, subsystem com.nosleep: one line per tick so "why didn't it
+    // sleep" is answerable with
+    //   log show --last 30m --predicate 'subsystem == "com.nosleep"'
+    private let log = Logger(subsystem: "com.nosleep", category: "smart")
 
     var onIdle: (() -> Void)?
     /// For the "went to sleep" notification: which agents were last seen
@@ -73,6 +79,11 @@ final class AgentActivityMonitor {
             if heartbeatBusy { agents.append("nosleep ping") }
             lastBusyAgents = agents
             lastBusyDate = Date()
+            idleTickCount = 0
+            log.info("tick: BUSY — \(agents.joined(separator: ", "), privacy: .public)")
+        } else {
+            idleTickCount += 1
+            log.info("tick: idle #\(self.idleTickCount, privacy: .public)")
         }
         detector.record(busy: busy)
     }
