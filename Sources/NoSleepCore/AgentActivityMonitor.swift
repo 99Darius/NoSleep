@@ -19,7 +19,9 @@ public final class AgentActivityMonitor {
     public private(set) var idleTickCount = 0
     // Unified log, subsystem com.nosleep: one line per tick so "why didn't it
     // sleep" is answerable with
-    //   log show --info --predicate 'subsystem == "com.nosleep"'
+    //   log show --info --predicate 'subsystem == "com.nosleep" AND process == "NoSleepApp"'
+    // (the process clause matters: coretest drives this same class and its
+    // ticks land in the same subsystem)
     private let log = Logger(subsystem: "com.nosleep", category: "smart")
 
     public var onIdle: (() -> Void)?
