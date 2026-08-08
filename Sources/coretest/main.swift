@@ -166,6 +166,115 @@ do {
     check((mine?.cpuTime ?? 0) > 0.01, "sampler reports plausible cpu time for this process")
 }
 
+// MARK: - AgentActivityMonitor: the countdown only runs when nobody is home
+//
+// Live bug 2026-08-07: the user woke the Mac at 07:06, worked at the keyboard,
+// and Smart NoSleep still turned NoSleep off at 07:21 — the grace window only
+// looked at agents, so a present human counted as "nothing happening". Worse
+// than a bogus toast: NoSleep silently disarmed itself, so the next lid-close
+// would have slept the Mac mid-run.
+
+final class FakeSampler: ProcessActivitySampling {
+    var samples: [ProcessSample] = []
+    func sampleProcesses() -> [ProcessSample] { samples }
+}
+
+final class FakePresence: UserPresenceProviding {
+    var idleSeconds: TimeInterval = 9_999
+    func secondsSinceLastUserInput() -> TimeInterval { idleSeconds }
+}
+
+func makeMonitor(_ sampler: FakeSampler,
+                 _ presence: FakePresence) -> AgentActivityMonitor {
+    let suite = "com.nosleep.coretest.monitor"
+    let defaults = UserDefaults(suiteName: suite)!
+    defaults.removePersistentDomain(forName: suite)
+    return AgentActivityMonitor(sampler: sampler,
+                                presence: presence,
+                                store: StateStore(defaults: defaults),
+                                tickInterval: 60)
+}
+
+do {
+    // Human at the keyboard: no agent is running, but the Mac is in use, so the
+    // countdown must not advance — let alone fire.
+    let sampler = FakeSampler(), presence = FakePresence()
+    let monitor = makeMonitor(sampler, presence)
+    var fired = 0
+    monitor.onIdle = { fired += 1 }
+    monitor.arm(graceMinutes: 1, watchlist: .default)
+    presence.idleSeconds = 5      // typed 5 seconds ago
+    for _ in 0..<5 { monitor.tick() }
+    check(fired == 0, "user at the keyboard never triggers auto-off")
+    check(monitor.idleTickCount == 0, "user activity holds the idle counter at zero")
+}
+do {
+    // Nobody home (lid shut, or walked away): countdown runs and fires.
+    let sampler = FakeSampler(), presence = FakePresence()
+    let monitor = makeMonitor(sampler, presence)
+    var fired = 0
+    monitor.onIdle = { fired += 1 }
+    monitor.arm(graceMinutes: 2, watchlist: .default)
+    presence.idleSeconds = 3_600
+    monitor.tick()
+    check(fired == 0, "auto-off waits out the full grace window")
+    monitor.tick()
+    check(fired == 1, "no agent and no human for the grace window triggers auto-off")
+}
+do {
+    // Input older than the gap between ticks means the human left.
+    let sampler = FakeSampler(), presence = FakePresence()
+    let monitor = makeMonitor(sampler, presence)
+    monitor.arm(graceMinutes: 5, watchlist: .default)
+    presence.idleSeconds = 300
+    monitor.tick()
+    check(monitor.idleTickCount == 1, "input older than the tick interval counts as away")
+}
+do {
+    // The "went to sleep" toast names the last agent. A human tapping the
+    // trackpad must not overwrite that with themselves.
+    let sampler = FakeSampler(), presence = FakePresence()
+    let monitor = makeMonitor(sampler, presence)
+    monitor.arm(graceMinutes: 5, watchlist: .default)
+    sampler.samples = [sample(10, "/usr/local/bin/claude", cpu: 100)]
+    monitor.tick()
+    sampler.samples = [sample(10, "/usr/local/bin/claude", cpu: 200)]
+    monitor.tick()
+    check(monitor.lastBusyAgents == ["claude"], "monitor records the busy agent")
+    sampler.samples = []
+    presence.idleSeconds = 1
+    monitor.tick()
+    check(monitor.lastBusyAgents == ["claude"], "user activity does not overwrite the last busy agent")
+}
+do {
+    // Re-arming (mode/grace change) starts a fresh window: the log numbering
+    // restarts at #1 instead of continuing from the previous run.
+    let sampler = FakeSampler(), presence = FakePresence()
+    let monitor = makeMonitor(sampler, presence)
+    monitor.arm(graceMinutes: 5, watchlist: .default)
+    monitor.tick(); monitor.tick(); monitor.tick()
+    check(monitor.idleTickCount == 3, "idle ticks accumulate within a window")
+    monitor.arm(graceMinutes: 5, watchlist: .default)
+    monitor.tick()
+    check(monitor.idleTickCount == 1, "re-arming restarts the idle tick count")
+}
+do {
+    // A busy agent still wins even when the user is away. (The first tick only
+    // baselines CPU counters, so the window has to be wider than one tick.)
+    let sampler = FakeSampler(), presence = FakePresence()
+    let monitor = makeMonitor(sampler, presence)
+    var fired = 0
+    monitor.onIdle = { fired += 1 }
+    monitor.arm(graceMinutes: 2, watchlist: .default)
+    sampler.samples = [sample(10, "/usr/local/bin/claude", cpu: 100)]
+    monitor.tick()
+    sampler.samples = [sample(10, "/usr/local/bin/claude", cpu: 200)]
+    monitor.tick()
+    sampler.samples = [sample(10, "/usr/local/bin/claude", cpu: 300)]
+    monitor.tick()
+    check(fired == 0, "a working agent keeps the Mac awake while the user is away")
+}
+
 // MARK: - StateStore heartbeat
 
 do {

@@ -43,6 +43,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let shortcutSettings = ShortcutSettingsWindowController()
     private var currentExpiry: Date?
     private lazy var monitor = AgentActivityMonitor(sampler: AgentProcessSampler(),
+                                                    presence: SystemUserPresence(),
                                                     store: store)
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -236,7 +237,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         timeFmt.dateStyle = .none
         let now = timeFmt.string(from: Date())
 
-        var body = "Smart NoSleep let your Mac sleep at \(now) — no agent activity for \(graceMinutes) min."
+        var body = "Smart NoSleep let your Mac sleep at \(now) — no agents working and no one using the Mac for \(graceMinutes) min."
         if !lastAgents.isEmpty {
             let names = lastAgents.joined(separator: ", ")
             if let seen = lastActivity {
