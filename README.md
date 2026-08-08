@@ -53,10 +53,16 @@ Codex, aider, Ollama, …) work — often overnight with the lid closed. Two mod
 picked from the menu:
 
 - **Smart NoSleep** (default) — stays awake while your agents are working.
-  Once every watched agent has been idle for the grace period (default
-  15 minutes, configurable 5/15/30/60), NoSleep turns itself off so the Mac can
-  sleep — saving battery and heat. You get a notification when that happens.
+  Once every watched agent has been idle for the grace period *and* nobody has
+  touched the Mac in that time (default 15 minutes, configurable 5/15/30/60),
+  NoSleep turns itself off so the Mac can sleep — saving battery and heat. You
+  get a notification when that happens.
 - **Absolute NoSleep** — never sleeps until you turn it off (or a timer fires).
+
+The countdown only runs when you are away, so sitting at the keyboard can never
+disarm NoSleep behind your back. A closed lid produces no input at all, so
+clamshell runs count as away immediately — as does walking off with the lid
+open, which is the case the battery savings are really for.
 
 Smart mode watches CPU activity of known agent processes (`claude`, `codex`,
 `aider`, `ollama`, `gemini`, `cursor-agent`, `copilot`, ChatGPT). Override the
