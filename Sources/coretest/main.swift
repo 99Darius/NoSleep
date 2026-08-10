@@ -181,7 +181,9 @@ final class FakeSampler: ProcessActivitySampling {
 
 final class FakePresence: UserPresenceProviding {
     var idleSeconds: TimeInterval = 9_999
+    var displayAsleep = true
     func secondsSinceLastUserInput() -> TimeInterval { idleSeconds }
+    func isDisplayAsleep() -> Bool { displayAsleep }
 }
 
 func makeMonitor(_ sampler: FakeSampler,
@@ -204,9 +206,35 @@ do {
     monitor.onIdle = { fired += 1 }
     monitor.arm(graceMinutes: 1, watchlist: .default)
     presence.idleSeconds = 5      // typed 5 seconds ago
+    presence.displayAsleep = false
     for _ in 0..<5 { monitor.tick() }
     check(fired == 0, "user at the keyboard never triggers auto-off")
     check(monitor.idleTickCount == 0, "user activity holds the idle counter at zero")
+}
+do {
+    // Live bug 2026-08-10: reading/watching for 15 min without touching the
+    // keyboard fired auto-off with the user right there. The screen being on
+    // means someone is looking at it — input recency alone must not decide.
+    let sampler = FakeSampler(), presence = FakePresence()
+    let monitor = makeMonitor(sampler, presence)
+    var fired = 0
+    monitor.onIdle = { fired += 1 }
+    monitor.arm(graceMinutes: 1, watchlist: .default)
+    presence.idleSeconds = 1_200   // 20 min since last input (watching a video)
+    presence.displayAsleep = false // but the screen is on
+    for _ in 0..<5 { monitor.tick() }
+    check(fired == 0, "screen on never triggers auto-off, even with stale input")
+    check(monitor.idleTickCount == 0, "screen on holds the idle counter at zero")
+}
+do {
+    // Screen off but input seconds ago: a transition blip — hold.
+    let sampler = FakeSampler(), presence = FakePresence()
+    let monitor = makeMonitor(sampler, presence)
+    monitor.arm(graceMinutes: 5, watchlist: .default)
+    presence.idleSeconds = 3
+    presence.displayAsleep = true
+    monitor.tick()
+    check(monitor.idleTickCount == 0, "recent input holds the countdown even with the screen off")
 }
 do {
     // Nobody home (lid shut, or walked away): countdown runs and fires.

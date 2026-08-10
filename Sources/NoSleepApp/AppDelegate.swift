@@ -237,7 +237,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         timeFmt.dateStyle = .none
         let now = timeFmt.string(from: Date())
 
-        var body = "Smart NoSleep let your Mac sleep at \(now) — no agents working and no one using the Mac for \(graceMinutes) min."
+        var body = "Smart NoSleep let your Mac sleep at \(now) — screen off and no agents working for \(graceMinutes) min."
         if !lastAgents.isEmpty {
             let names = lastAgents.joined(separator: ", ")
             if let seen = lastActivity {

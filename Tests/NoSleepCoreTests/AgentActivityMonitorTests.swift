@@ -8,7 +8,9 @@ private final class FakeSampler: ProcessActivitySampling {
 
 private final class FakePresence: UserPresenceProviding {
     var idleSeconds: TimeInterval = 9_999
+    var displayAsleep = true
     func secondsSinceLastUserInput() -> TimeInterval { idleSeconds }
+    func isDisplayAsleep() -> Bool { displayAsleep }
 }
 
 /// Live bug 2026-08-07: the user woke the Mac at 07:06, worked at the keyboard,
@@ -42,8 +44,32 @@ final class AgentActivityMonitorTests: XCTestCase {
         monitor.onIdle = { fired += 1 }
         monitor.arm(graceMinutes: 1, watchlist: .default)
         presence.idleSeconds = 5
+        presence.displayAsleep = false
         for _ in 0..<5 { monitor.tick() }
         XCTAssertEqual(fired, 0)
+        XCTAssertEqual(monitor.idleTickCount, 0)
+    }
+
+    func testScreenOnNeverTriggersAutoOffEvenWithStaleInput() {
+        // Live bug 2026-08-10: reading/watching for 15 min without touching
+        // the keyboard fired auto-off with the user right there.
+        let monitor = makeMonitor()
+        var fired = 0
+        monitor.onIdle = { fired += 1 }
+        monitor.arm(graceMinutes: 1, watchlist: .default)
+        presence.idleSeconds = 1_200
+        presence.displayAsleep = false
+        for _ in 0..<5 { monitor.tick() }
+        XCTAssertEqual(fired, 0)
+        XCTAssertEqual(monitor.idleTickCount, 0)
+    }
+
+    func testRecentInputHoldsTheCountdownEvenWithTheScreenOff() {
+        let monitor = makeMonitor()
+        monitor.arm(graceMinutes: 5, watchlist: .default)
+        presence.idleSeconds = 3
+        presence.displayAsleep = true
+        monitor.tick()
         XCTAssertEqual(monitor.idleTickCount, 0)
     }
 

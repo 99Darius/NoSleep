@@ -58,8 +58,10 @@ public final class AgentActivityMonitor {
         let graceTicks = max(1, Int((Double(graceMinutes) * 60 / tickInterval).rounded()))
         tracker = AgentActivityTracker(watchlist: watchlist)
         detector = IdleDetector(graceTicks: graceTicks) { [weak self] in
+            self?.log.info("grace expired — releasing keep-awake")
             self?.onIdle?()
         }
+        log.info("monitor armed: grace \(graceMinutes, privacy: .public) min")
         lastTickDate = Date()
         idleTickCount = 0
         lastBusyAgents = []
@@ -86,13 +88,16 @@ public final class AgentActivityMonitor {
         }
         lastTickDate = Date()
         let agentBusy = cpuTick.busy || heartbeatBusy
-        // A human at the keyboard holds the countdown: the Mac is in use, so
-        // "the agents finished" is not a reason to disarm keep-awake. macOS
-        // won't idle-sleep under active input anyway, and disarming here would
-        // silently leave the next lid-close unprotected. Input within one tick
-        // counts as present; a shut lid can produce none, so this covers
-        // clamshell without needing to read the lid switch.
-        let userPresent = presence.secondsSinceLastUserInput() <= tickInterval
+        // A present human holds the countdown: the Mac is in use, so "the
+        // agents finished" is not a reason to disarm keep-awake — that would
+        // silently leave the next lid-close unprotected. Presence is judged by
+        // the screen, not input recency: reading or watching a video produces
+        // no input for long stretches while someone is clearly there. A dark
+        // screen means the lid is shut or macOS's own idle timer already
+        // decided the user left — only then does the countdown run. Recent
+        // input stays as a backstop around the transition.
+        let userPresent = !presence.isDisplayAsleep()
+            || presence.secondsSinceLastUserInput() <= tickInterval
         if agentBusy {
             var agents = cpuTick.busyAgents
             if heartbeatBusy { agents.append("nosleep ping") }
@@ -102,7 +107,8 @@ public final class AgentActivityMonitor {
             lastBusyDate = Date()
             log.info("tick: BUSY — \(agents.joined(separator: ", "), privacy: .public)")
         } else if userPresent {
-            log.info("tick: user active — countdown held")
+            let why = presence.isDisplayAsleep() ? "user active" : "screen on"
+            log.info("tick: \(why, privacy: .public) — countdown held")
         } else {
             idleTickCount += 1
             log.info("tick: idle #\(self.idleTickCount, privacy: .public)")
