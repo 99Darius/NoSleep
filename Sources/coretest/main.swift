@@ -145,6 +145,52 @@ do {
     check(fired == 2, "reset re-arms idle detector")
 }
 
+// MARK: - Doze/re-engage (2026-08-12): auto-off must not disarm the mode
+//
+// Live complaint: "it keeps switching the mode back to yes-sleep". Every fire
+// flipped the toggle off for good; the user had to re-enable by hand each
+// morning. Smart NoSleep now stays armed: the block releases when idle and
+// re-engages when agents work again — so the detector must be able to fire
+// once per idle episode, and the monitor must report when agents resume.
+
+do {
+    // After a fire, a busy tick re-arms the detector for the next episode.
+    var fired = 0
+    let d = IdleDetector(graceTicks: 2, onIdle: { fired += 1 })
+    d.record(busy: false); d.record(busy: false)
+    check(fired == 1, "detector fires at the end of the first idle episode")
+    d.record(busy: false)
+    check(fired == 1, "detector stays quiet while the same episode continues")
+    d.record(busy: true)
+    d.record(busy: false); d.record(busy: false)
+    check(fired == 2, "busy tick re-arms the detector for the next idle episode")
+}
+do {
+    // Monitor surfaces agent resumption so the app can re-engage the block.
+    let sampler = FakeSampler(), presence = FakePresence()
+    let monitor = makeMonitor(sampler, presence)
+    var resumed: [[String]] = []
+    monitor.onBusy = { resumed.append($0) }
+    monitor.arm(graceMinutes: 5, watchlist: .default)
+    sampler.samples = [sample(10, "/usr/local/bin/claude", cpu: 100)]
+    monitor.tick()
+    check(resumed.isEmpty, "baseline tick does not report busy agents")
+    sampler.samples = [sample(10, "/usr/local/bin/claude", cpu: 200)]
+    monitor.tick()
+    check(resumed == [["claude"]], "busy tick reports the working agents via onBusy")
+}
+do {
+    // Dozing state persists for the CLI/menu; old persisted JSON (no key)
+    // must still decode.
+    let dozing = NoSleepState(isActive: false, expiresAt: nil, dozing: true)
+    let data = try! JSONEncoder().encode(dozing)
+    let back = try! JSONDecoder().decode(NoSleepState.self, from: data)
+    check(back.dozing == true, "dozing round-trips through Codable")
+    let legacy = try! JSONDecoder().decode(NoSleepState.self,
+                                           from: Data(#"{"isActive":true}"#.utf8))
+    check(legacy.isActive && legacy.dozing != true, "legacy state JSON decodes without dozing")
+}
+
 // MARK: - Command.ping
 
 do {

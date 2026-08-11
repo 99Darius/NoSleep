@@ -14,6 +14,17 @@ final class NoSleepStateTests: XCTestCase {
         XCTAssertTrue(s.isActive)
         XCTAssertEqual(s.expiresAt, when)
     }
+
+    func testDozingRoundTripsAndLegacyJSONDecodes() {
+        let dozing = NoSleepState(isActive: false, expiresAt: nil, dozing: true)
+        let back = try! JSONDecoder().decode(NoSleepState.self,
+                                             from: try! JSONEncoder().encode(dozing))
+        XCTAssertEqual(back.dozing, true)
+        let legacy = try! JSONDecoder().decode(NoSleepState.self,
+                                               from: Data(#"{"isActive":true}"#.utf8))
+        XCTAssertTrue(legacy.isActive)
+        XCTAssertNil(legacy.dozing)
+    }
 }
 
 final class StateStoreTests: XCTestCase {

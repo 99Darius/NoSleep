@@ -68,6 +68,8 @@ func printState() {
         } else {
             print("active")
         }
+    } else if state.dozing == true {
+        print("dozing (armed — re-engages when agents run)")
     } else {
         print("inactive")
     }

@@ -134,6 +134,20 @@ final class IdleDetectorTests: XCTestCase {
         XCTAssertEqual(fired, 1)
     }
 
+    func testBusyTickReArmsForTheNextIdleEpisode() {
+        // Doze/re-engage (2026-08-12): Smart NoSleep stays armed across
+        // episodes, so the detector must fire once per idle episode.
+        var fired = 0
+        let d = IdleDetector(graceTicks: 2, onIdle: { fired += 1 })
+        d.record(busy: false); d.record(busy: false)
+        XCTAssertEqual(fired, 1)
+        d.record(busy: false)
+        XCTAssertEqual(fired, 1, "same episode fires only once")
+        d.record(busy: true)
+        d.record(busy: false); d.record(busy: false)
+        XCTAssertEqual(fired, 2, "busy tick re-arms for the next episode")
+    }
+
     func testFiresOnlyOnceUntilReset() {
         var fired = 0
         let d = IdleDetector(graceTicks: 1, onIdle: { fired += 1 })

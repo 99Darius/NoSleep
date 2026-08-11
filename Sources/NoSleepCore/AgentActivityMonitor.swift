@@ -25,6 +25,9 @@ public final class AgentActivityMonitor {
     private let log = Logger(subsystem: "com.nosleep", category: "smart")
 
     public var onIdle: (() -> Void)?
+    /// Called on every busy tick with the working agents' names — the app uses
+    /// this to re-engage the sleep block while dozing.
+    public var onBusy: (([String]) -> Void)?
     /// For the "went to sleep" notification: which agents were last seen
     /// working, and when. Reset on every start().
     public private(set) var lastBusyAgents: [String] = []
@@ -106,6 +109,7 @@ public final class AgentActivityMonitor {
             lastBusyAgents = agents
             lastBusyDate = Date()
             log.info("tick: BUSY — \(agents.joined(separator: ", "), privacy: .public)")
+            onBusy?(agents)
         } else if userPresent {
             let why = presence.isDisplayAsleep() ? "user active" : "screen on"
             log.info("tick: \(why, privacy: .public) — countdown held")

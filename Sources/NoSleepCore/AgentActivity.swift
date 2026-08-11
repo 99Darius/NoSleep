@@ -98,8 +98,10 @@ public final class AgentActivityTracker {
     }
 }
 
-/// Fires `onIdle` once after `graceTicks` consecutive idle ticks.
-/// Any busy tick resets the count; `reset()` re-arms after firing.
+/// Fires `onIdle` once per idle episode: after `graceTicks` consecutive idle
+/// ticks. Any busy tick resets the count AND re-arms for the next episode, so
+/// Smart NoSleep can doze and re-engage indefinitely. `reset()` re-arms
+/// explicitly (fresh grace window).
 /// Concurrency: not thread-safe by design; all calls happen on the main thread.
 public final class IdleDetector {
     private let graceTicks: Int
@@ -115,6 +117,7 @@ public final class IdleDetector {
     public func record(busy: Bool) {
         if busy {
             idleTicks = 0
+            fired = false
             return
         }
         idleTicks += 1

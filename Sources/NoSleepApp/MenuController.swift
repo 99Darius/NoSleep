@@ -167,9 +167,13 @@ final class MenuController: NSObject, NSMenuDelegate {
 
     /// Update icon + toggle label/remaining time.
     func render(state: NoSleepState) {
-        statusItem.button?.image = Self.icon(crossed: state.isActive)
+        let dozing = state.dozing == true
+        // The icon shows whether the MODE is on (engaged or dozing), not
+        // whether the block is currently held — an uncrossed icon while
+        // dozing read as "it switched itself off".
+        statusItem.button?.image = Self.icon(crossed: state.isActive || dozing)
         statusItem.button?.image?.accessibilityDescription =
-            state.isActive ? "NoSleep active" : "NoSleep inactive"
+            state.isActive ? "NoSleep active" : (dozing ? "NoSleep dozing" : "NoSleep inactive")
         statusItem.button?.toolTip = "NoSleep — press ⌃⌘S to toggle Sleep / No-Sleep"
         guard let toggle = toggleItem else { return }
         if state.isActive {
@@ -179,6 +183,8 @@ final class MenuController: NSObject, NSMenuDelegate {
             } else {
                 toggle.title = "Disable NoSleep"
             }
+        } else if dozing {
+            toggle.title = "Disable NoSleep (dozing — re-arms when agents run)"
         } else {
             toggle.title = "Enable NoSleep"
         }

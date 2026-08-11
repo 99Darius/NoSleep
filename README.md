@@ -54,9 +54,10 @@ picked from the menu:
 
 - **Smart NoSleep** (default) — stays awake while your agents are working.
   Once the screen has been off and every watched agent idle for the grace
-  period (default 15 minutes, configurable 5/15/30/60), NoSleep turns itself
-  off so the Mac can sleep — saving battery and heat. You get a notification
-  when that happens.
+  period (default 15 minutes, configurable 5/15/30/60), NoSleep releases the
+  sleep block so the Mac can sleep — saving battery and heat — and you get a
+  notification. It stays armed ("dozing"): when agents start working again it
+  re-engages on its own. Only you turn the mode off.
 - **Absolute NoSleep** — never sleeps until you turn it off (or a timer fires).
 
 The countdown only runs while the screen is off, so using the Mac — typing,

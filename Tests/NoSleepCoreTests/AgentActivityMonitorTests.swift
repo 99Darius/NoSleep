@@ -108,6 +108,19 @@ final class AgentActivityMonitorTests: XCTestCase {
                        "the notification reports agents, not the user")
     }
 
+    func testBusyTickReportsAgentsViaOnBusy() {
+        let monitor = makeMonitor()
+        var resumed: [[String]] = []
+        monitor.onBusy = { resumed.append($0) }
+        monitor.arm(graceMinutes: 5, watchlist: .default)
+        sampler.samples = agent(cpu: 100)
+        monitor.tick()
+        XCTAssertTrue(resumed.isEmpty, "baseline tick does not report busy agents")
+        sampler.samples = agent(cpu: 200)
+        monitor.tick()
+        XCTAssertEqual(resumed, [["claude"]])
+    }
+
     func testRearmingRestartsTheIdleTickCount() {
         let monitor = makeMonitor()
         monitor.arm(graceMinutes: 5, watchlist: .default)

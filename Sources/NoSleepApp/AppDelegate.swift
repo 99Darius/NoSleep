@@ -42,6 +42,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let store = StateStore.shared()
     private let shortcutSettings = ShortcutSettingsWindowController()
     private var currentExpiry: Date?
+    /// Smart NoSleep dozing: armed, but the sleep block is released because
+    /// agents are idle. Persisted so an app relaunch stays armed. The block
+    /// re-engages on the next busy tick (passwordless sudoers rule → silent).
+    private var smartDozing: Bool {
+        get { UserDefaults.standard.bool(forKey: "smartDozing") }
+        set { UserDefaults.standard.set(newValue, forKey: "smartDozing") }
+    }
     private lazy var monitor = AgentActivityMonitor(sampler: AgentProcessSampler(),
                                                     presence: SystemUserPresence(),
                                                     store: store)
@@ -55,7 +62,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.onQuit = { NSApp.terminate(nil) }
         menu.currentState = { [weak self] in
             guard let self else { return .inactive }
-            return NoSleepState(isActive: self.manager.isActive, expiresAt: self.currentExpiry)
+            return NoSleepState(isActive: self.manager.isActive,
+                                expiresAt: self.currentExpiry,
+                                dozing: self.smartDozing ? true : nil)
         }
         menu.onChangeShortcut = { [weak self] in self?.shortcutSettings.show() }
         menu.onUninstall = { Uninstaller.run() }
@@ -71,6 +80,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.persistAndRender()
         }
         monitor.onIdle = { [weak self] in self?.handleAgentsIdle() }
+        monitor.onBusy = { [weak self] agents in self?.handleAgentsBusy(agents) }
 
         // Global hotkey (default ⌃⌘S, user-rebindable). KeyboardShortcuts registers
         // the persisted shortcut and delivers callbacks on the main thread.
@@ -88,7 +98,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
 
-        persistAndRender()   // start inactive
+        // A dozing session survives an app relaunch: stay armed and let the
+        // monitor re-engage the block when agents resume. Everything else
+        // starts inactive.
+        if SmartSettings.mode != .smart { smartDozing = false }
+        persistAndRender()
         reconcileLeftoverSleepBlock()
     }
 
@@ -116,9 +130,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func handleToggle() {
-        if manager.isActive {
+        if manager.isActive || smartDozing {
             timer.cancel(); currentExpiry = nil
+            smartDozing = false         // manual off fully disarms
             manager.deactivate()        // pmset disablesleep 0 (admin prompt)
+            persistAndRender()
         } else {
             activateClosedLid()
         }
@@ -136,6 +152,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Turn on closed-lid keep-awake, showing the heat/lid warning the first time.
     private func activateClosedLid() {
         guard confirmClosedLidIfNeeded() else { return }
+        smartDozing = false             // manual on = fully engaged
         manager.activate()              // triggers the admin prompt via PMSetSleepBlocker
     }
 
@@ -149,8 +166,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         Your Mac will stay awake so music, downloads, and coding agents keep \
         going even if you close the lid.
 
-        • Smart NoSleep (default): once your coding agents finish working, \
-        NoSleep lets the Mac sleep again to save battery and heat.
+        • Smart NoSleep (default): once your screen is off and your coding \
+        agents finish working, NoSleep lets the Mac sleep to save battery and \
+        heat — and re-engages by itself when agents start working again.
         • Absolute NoSleep: stays awake until you turn it off.
         • macOS will ask for your password once to allow this.
         • The lid blocks airflow, so give your Mac some room to breathe while \
@@ -182,17 +200,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func persistAndRender() {
         if !manager.isActive { currentExpiry = nil }
-        let state = NoSleepState(isActive: manager.isActive, expiresAt: currentExpiry)
+        let state = NoSleepState(isActive: manager.isActive,
+                                 expiresAt: currentExpiry,
+                                 dozing: smartDozing ? true : nil)
         store.save(state, pid: ProcessInfo.processInfo.processIdentifier)
         menu.render(state: state)
         syncMonitor()
     }
 
-    /// The agent-activity monitor runs exactly while keep-awake is active in
-    /// Smart mode. `restart` forces a fresh grace window (e.g. after the user
-    /// changes the grace period).
+    /// The agent-activity monitor runs while keep-awake is engaged OR dozing
+    /// in Smart mode — dozing needs the ticks to notice agents resuming.
+    /// `restart` forces a fresh grace window (e.g. after the user changes the
+    /// grace period).
     private func syncMonitor(restart: Bool = false) {
-        let shouldRun = manager.isActive && SmartSettings.mode == .smart
+        let shouldRun = (manager.isActive || smartDozing) && SmartSettings.mode == .smart
         if shouldRun {
             if restart || !monitor.isRunning {
                 monitor.start(graceMinutes: SmartSettings.graceMinutes,
@@ -214,9 +235,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert]) { _, _ in }
     }
 
-    /// Smart NoSleep verdict: agents idle for the whole grace window.
-    /// Release the sleep block (passwordless sudo rule → no prompt needed
-    /// while unattended) and tell the user why.
+    /// Smart NoSleep verdict: screen off and agents idle for the whole grace
+    /// window. Release the sleep block (passwordless sudo rule → no prompt
+    /// needed while unattended) but STAY ARMED: the monitor keeps ticking and
+    /// re-engages the block when agents resume. Auto-off must never disarm the
+    /// mode — that made every fire read as "it switched itself off on me".
     private func handleAgentsIdle() {
         guard manager.isActive else { return }
         notifyAgentsIdle(graceMinutes: SmartSettings.graceMinutes,
@@ -224,7 +247,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                          lastActivity: monitor.lastBusyDate)
         timer.cancel()
         currentExpiry = nil
+        smartDozing = true
         manager.deactivate()
+    }
+
+    /// Agents resumed while dozing: silently re-engage the sleep block.
+    private func handleAgentsBusy(_ agents: [String]) {
+        guard smartDozing, !manager.isActive else { return }
+        smartDozing = false
+        manager.activate()
+        if manager.isActive {
+            ToastPanel.show(title: "NoSleep re-engaged",
+                            body: "\(agents.joined(separator: ", ")) is working — your Mac will stay awake again.",
+                            seconds: 20)
+        } else {
+            // pmset failed (sudoers rule missing?) — go back to dozing rather
+            // than silently pretending the Mac is protected.
+            smartDozing = true
+        }
+        persistAndRender()
     }
 
     /// Rich "went to sleep" toast. With the lid closed it lands in
@@ -248,8 +289,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             body += " No coding agents were seen running."
         }
+        body += " Still armed — it re-engages when agents work again."
 
-        let title = "NoSleep turned itself off"
+        let title = "Smart NoSleep is letting your Mac sleep"
         // UNUserNotificationCenter traps in un-bundled dev runs (swift run):
         // go straight to the in-app toast there.
         guard Bundle.main.bundleIdentifier != nil else {
@@ -284,7 +326,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             guard let cmd = Command(userInfo: userInfo) else { return }
             switch cmd {
             case .on: self.timer.cancel(); self.currentExpiry = nil; self.activateClosedLid()
-            case .off: self.timer.cancel(); self.currentExpiry = nil; self.manager.deactivate()
+            case .off:
+                self.timer.cancel(); self.currentExpiry = nil
+                self.smartDozing = false
+                self.manager.deactivate()
+                self.persistAndRender()
             case .toggle: self.handleToggle()
             case .timer(let s): self.handleTimer(s)
             case .status: self.persistAndRender()   // ensure store is fresh
