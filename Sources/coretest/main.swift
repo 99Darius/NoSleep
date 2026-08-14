@@ -363,5 +363,38 @@ do {
     defaults.removePersistentDomain(forName: suite)
 }
 
+// MARK: - SmartRecap message
+
+do {
+    // 1_700_000_000 = 2023-11-14 22:13:20 UTC
+    let sleptAt = Date(timeIntervalSince1970: 1_700_000_000)
+    let utc = TimeZone(identifier: "UTC")!
+    let withAgents = SmartRecap.message(sleptAt: sleptAt, graceMinutes: 5,
+                                        agents: ["claude"], timeZone: utc)
+    check(withAgents == "Smart NoSleep let your Mac sleep at 22:13 after 5 min of quiet. Last running: claude.",
+          "recap message names the time, grace and last agents")
+    let noAgents = SmartRecap.message(sleptAt: sleptAt, graceMinutes: 15,
+                                      agents: [], timeZone: utc)
+    check(noAgents == "Smart NoSleep let your Mac sleep at 22:13 after 15 min of quiet.",
+          "recap message omits agents when none were recorded")
+}
+
+// MARK: - StateStore pending recap
+
+do {
+    let suite = "com.nosleep.coretest.recap"
+    let defaults = UserDefaults(suiteName: suite)!
+    defaults.removePersistentDomain(forName: suite)
+    let store = StateStore(defaults: defaults)
+    check(store.loadPendingRecap() == nil, "no pending recap by default")
+    let recap = PendingRecap(sleptAt: Date(timeIntervalSince1970: 1_700_000_000),
+                             agents: ["claude", "nosleep ping"])
+    store.savePendingRecap(recap)
+    check(store.loadPendingRecap() == recap, "pending recap round-trips through store")
+    store.clearPendingRecap()
+    check(store.loadPendingRecap() == nil, "clearPendingRecap removes the pending recap")
+    defaults.removePersistentDomain(forName: suite)
+}
+
 print(failures == 0 ? "ALL PASS" : "\(failures) FAILURE(S)")
 exit(failures == 0 ? 0 : 1)

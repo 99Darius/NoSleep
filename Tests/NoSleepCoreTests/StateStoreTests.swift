@@ -59,4 +59,38 @@ final class StateStoreTests: XCTestCase {
         store.saveHeartbeat(stamp)
         XCTAssertEqual(store.loadHeartbeat(), stamp)
     }
+
+    func testPendingRecapDefaultsToNil() {
+        let (store, _) = makeStore()
+        XCTAssertNil(store.loadPendingRecap())
+    }
+
+    func testPendingRecapRoundTripAndClear() {
+        let (store, _) = makeStore()
+        let recap = PendingRecap(sleptAt: Date(timeIntervalSince1970: 1_700_000_000),
+                                 agents: ["claude", "nosleep ping"])
+        store.savePendingRecap(recap)
+        XCTAssertEqual(store.loadPendingRecap(), recap)
+        store.clearPendingRecap()
+        XCTAssertNil(store.loadPendingRecap())
+    }
+}
+
+final class SmartRecapTests: XCTestCase {
+    private let sleptAt = Date(timeIntervalSince1970: 1_700_000_000)  // 22:13 UTC
+    private let utc = TimeZone(identifier: "UTC")!
+
+    func testMessageNamesTimeGraceAndAgents() {
+        XCTAssertEqual(
+            SmartRecap.message(sleptAt: sleptAt, graceMinutes: 5,
+                               agents: ["claude"], timeZone: utc),
+            "Smart NoSleep let your Mac sleep at 22:13 after 5 min of quiet. Last running: claude.")
+    }
+
+    func testMessageOmitsAgentsWhenNoneRecorded() {
+        XCTAssertEqual(
+            SmartRecap.message(sleptAt: sleptAt, graceMinutes: 15,
+                               agents: [], timeZone: utc),
+            "Smart NoSleep let your Mac sleep at 22:13 after 15 min of quiet.")
+    }
 }

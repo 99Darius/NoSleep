@@ -90,6 +90,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self, selector: #selector(handleCommand(_:)),
             name: AppDelegate.commandNotification, object: nil)
 
+        // Smart auto-off always fires with the screen dark, so its toast is
+        // never seen live. Recap it the first time the display wakes instead.
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self, selector: #selector(screensDidWake(_:)),
+            name: NSWorkspace.screensDidWakeNotification, object: nil)
+
         // Default-on login item on first launch. Only mark as done if it succeeded,
         // so a failure retries on the next launch.
         if !UserDefaults.standard.bool(forKey: "didSetDefaultLoginItem") {
@@ -133,6 +139,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if manager.isActive || smartDozing {
             timer.cancel(); currentExpiry = nil
             smartDozing = false         // manual off fully disarms
+            store.clearPendingRecap()
             manager.deactivate()        // pmset disablesleep 0 (admin prompt)
             persistAndRender()
         } else {
@@ -153,6 +160,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func activateClosedLid() {
         guard confirmClosedLidIfNeeded() else { return }
         smartDozing = false             // manual on = fully engaged
+        store.clearPendingRecap()       // user is here and re-arming — no recap needed
         manager.activate()              // triggers the admin prompt via PMSetSleepBlocker
     }
 
@@ -245,6 +253,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         notifyAgentsIdle(graceMinutes: SmartSettings.graceMinutes,
                          lastAgents: monitor.lastBusyAgents,
                          lastActivity: monitor.lastBusyDate)
+        store.savePendingRecap(PendingRecap(sleptAt: Date(),
+                                            agents: monitor.lastBusyAgents))
         timer.cancel()
         currentExpiry = nil
         smartDozing = true
@@ -252,20 +262,37 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// Agents resumed while dozing: silently re-engage the sleep block.
+    /// No toast — keeping the Mac awake while agents work is just NoSleep
+    /// doing its job; announcing it only confused people.
     private func handleAgentsBusy(_ agents: [String]) {
         guard smartDozing, !manager.isActive else { return }
         smartDozing = false
         manager.activate()
-        if manager.isActive {
-            ToastPanel.show(title: "NoSleep re-engaged",
-                            body: "\(agents.joined(separator: ", ")) is working — your Mac will stay awake again.",
-                            seconds: 20)
-        } else {
+        if !manager.isActive {
             // pmset failed (sudoers rule missing?) — go back to dozing rather
             // than silently pretending the Mac is protected.
             smartDozing = true
         }
         persistAndRender()
+    }
+
+    /// First screen-on after a Smart auto-off: tell the story the user
+    /// couldn't see at 1 AM — when the Mac slept and what was last running.
+    @objc private func screensDidWake(_ note: Notification) {
+        // Small delay so the toast appears after the unlock transition.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4) { [weak self] in
+            self?.showPendingRecapIfAny()
+        }
+    }
+
+    private func showPendingRecapIfAny() {
+        guard let recap = store.loadPendingRecap() else { return }
+        store.clearPendingRecap()
+        ToastPanel.show(title: "While you were away",
+                        body: SmartRecap.message(sleptAt: recap.sleptAt,
+                                                 graceMinutes: SmartSettings.graceMinutes,
+                                                 agents: recap.agents),
+                        seconds: 45)
     }
 
     /// Rich "went to sleep" toast. With the lid closed it lands in
@@ -329,6 +356,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             case .off:
                 self.timer.cancel(); self.currentExpiry = nil
                 self.smartDozing = false
+                self.store.clearPendingRecap()
                 self.manager.deactivate()
                 self.persistAndRender()
             case .toggle: self.handleToggle()
