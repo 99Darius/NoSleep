@@ -38,14 +38,25 @@ public final class StateStore {
     // MARK: - Agent heartbeat (`nosleep ping`)
 
     private var heartbeatKey: String { "lastHeartbeat" }
+    private var heartbeatNameKey: String { "lastHeartbeatName" }
 
-    public func saveHeartbeat(_ date: Date) {
+    public func saveHeartbeat(_ date: Date, name: String? = nil) {
         defaults.set(date.timeIntervalSince1970, forKey: heartbeatKey)
+        if let name {
+            defaults.set(name, forKey: heartbeatNameKey)
+        } else {
+            defaults.removeObject(forKey: heartbeatNameKey)
+        }
     }
 
     public func loadHeartbeat() -> Date? {
         let t = defaults.double(forKey: heartbeatKey)
         return t == 0 ? nil : Date(timeIntervalSince1970: t)
+    }
+
+    /// The agent name supplied with the last `nosleep ping <name>`, if any.
+    public func loadHeartbeatName() -> String? {
+        defaults.string(forKey: heartbeatNameKey)
     }
 
     // MARK: - Pending "while you were away" recap

@@ -23,15 +23,59 @@ final class AgentActivityMonitorTests: XCTestCase {
     private var presence = FakePresence()
 
     private func makeMonitor() -> AgentActivityMonitor {
+        makeMonitorWithStore().0
+    }
+
+    private func makeMonitorWithStore() -> (AgentActivityMonitor, StateStore) {
         sampler = FakeSampler()
         presence = FakePresence()
-        let suite = "com.nosleep.tests.monitor"
+        let suite = "com.nosleep.tests.monitor.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suite)!
         defaults.removePersistentDomain(forName: suite)
-        return AgentActivityMonitor(sampler: sampler,
-                                    presence: presence,
-                                    store: StateStore(defaults: defaults),
-                                    tickInterval: 60)
+        let store = StateStore(defaults: defaults)
+        return (AgentActivityMonitor(sampler: sampler,
+                                     presence: presence,
+                                     store: store,
+                                     tickInterval: 60), store)
+    }
+
+    func testHeartbeatBusyReportsPingNameNeverThePingMechanism() {
+        let (monitor, store) = makeMonitorWithStore()
+        var resumed: [[String]] = []
+        monitor.onBusy = { resumed.append($0) }
+        monitor.arm(graceMinutes: 2, watchlist: .default)
+        monitor.tick()                              // baseline
+        store.saveHeartbeat(Date(), name: "claude")
+        monitor.tick()
+        XCTAssertEqual(resumed, [["claude"]])
+        XCTAssertEqual(monitor.lastBusyAgents, ["claude"])
+    }
+
+    func testCPUPlusPingForSameAgentReportsItOnce() {
+        let (monitor, store) = makeMonitorWithStore()
+        var resumed: [[String]] = []
+        monitor.onBusy = { resumed.append($0) }
+        monitor.arm(graceMinutes: 2, watchlist: .default)
+        sampler.samples = agent(cpu: 100)
+        monitor.tick()                              // baseline
+        store.saveHeartbeat(Date(), name: "claude")
+        sampler.samples = agent(cpu: 300)
+        monitor.tick()
+        XCTAssertEqual(resumed, [["claude"]])
+    }
+
+    func testNamelessPingIsBusyWithEmptyAgentList() {
+        let (monitor, store) = makeMonitorWithStore()
+        var fired = 0
+        var resumed: [[String]] = []
+        monitor.onIdle = { fired += 1 }
+        monitor.onBusy = { resumed.append($0) }
+        monitor.arm(graceMinutes: 2, watchlist: .default)
+        monitor.tick()                              // baseline
+        store.saveHeartbeat(Date())
+        monitor.tick()
+        XCTAssertEqual(fired, 0)
+        XCTAssertEqual(resumed, [[]])
     }
 
     private func agent(cpu: TimeInterval) -> [ProcessSample] {

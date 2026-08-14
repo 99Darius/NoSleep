@@ -363,6 +363,79 @@ do {
     defaults.removePersistentDomain(forName: suite)
 }
 
+// MARK: - Heartbeat naming (user-facing text must never say "nosleep ping")
+
+func makeMonitorWithStore(_ sampler: FakeSampler,
+                          _ presence: FakePresence) -> (AgentActivityMonitor, StateStore) {
+    let suite = "com.nosleep.coretest.hb.\(UUID().uuidString)"
+    let defaults = UserDefaults(suiteName: suite)!
+    defaults.removePersistentDomain(forName: suite)
+    let store = StateStore(defaults: defaults)
+    let monitor = AgentActivityMonitor(sampler: sampler,
+                                       presence: presence,
+                                       store: store,
+                                       tickInterval: 60)
+    return (monitor, store)
+}
+
+do {
+    let suite = "com.nosleep.coretest.hbname"
+    let defaults = UserDefaults(suiteName: suite)!
+    defaults.removePersistentDomain(forName: suite)
+    let store = StateStore(defaults: defaults)
+    store.saveHeartbeat(Date(), name: "claude")
+    check(store.loadHeartbeatName() == "claude", "heartbeat name round-trips through store")
+    store.saveHeartbeat(Date())
+    check(store.loadHeartbeatName() == nil, "nameless ping clears the stored heartbeat name")
+    defaults.removePersistentDomain(forName: suite)
+}
+
+do {
+    // Heartbeat-only activity reports the pinging agent's real name.
+    let sampler = FakeSampler(), presence = FakePresence()
+    let (monitor, store) = makeMonitorWithStore(sampler, presence)
+    var resumed: [[String]] = []
+    monitor.onBusy = { resumed.append($0) }
+    monitor.arm(graceMinutes: 2, watchlist: .default)
+    monitor.tick()                                   // baseline
+    store.saveHeartbeat(Date(), name: "claude")
+    monitor.tick()
+    check(resumed == [["claude"]], "heartbeat busy reports the pinging agent's name")
+    check(monitor.lastBusyAgents == ["claude"],
+          "lastBusyAgents records the ping name, never 'nosleep ping'")
+}
+
+do {
+    // Heartbeat + CPU activity for the same agent must not duplicate the name.
+    let sampler = FakeSampler(), presence = FakePresence()
+    let (monitor, store) = makeMonitorWithStore(sampler, presence)
+    var resumed: [[String]] = []
+    monitor.onBusy = { resumed.append($0) }
+    monitor.arm(graceMinutes: 2, watchlist: .default)
+    sampler.samples = [sample(10, "/usr/local/bin/claude", cpu: 100)]
+    monitor.tick()                                   // baseline
+    store.saveHeartbeat(Date(), name: "claude")
+    sampler.samples = [sample(10, "/usr/local/bin/claude", cpu: 300)]
+    monitor.tick()
+    check(resumed == [["claude"]], "CPU + ping for the same agent reports it once")
+}
+
+do {
+    // A nameless ping still counts as activity — with no agent names to report.
+    let sampler = FakeSampler(), presence = FakePresence()
+    let (monitor, store) = makeMonitorWithStore(sampler, presence)
+    var fired = 0
+    var resumed: [[String]] = []
+    monitor.onIdle = { fired += 1 }
+    monitor.onBusy = { resumed.append($0) }
+    monitor.arm(graceMinutes: 2, watchlist: .default)
+    monitor.tick()                                   // baseline
+    store.saveHeartbeat(Date())
+    monitor.tick()
+    check(fired == 0 && resumed == [[]],
+          "nameless ping is busy with an empty agent list — no 'nosleep ping' label")
+}
+
 // MARK: - SmartRecap message
 
 do {

@@ -75,9 +75,10 @@ list with:
 defaults write com.nosleep agentWatchlist -array claude ollama my-agent
 ```
 
-For an exact signal, any tool can also run `nosleep ping` as a heartbeat — e.g.
-a Claude Code `PostToolUse`/`Stop` hook. A ping counts as agent activity and
-resets the idle window.
+For an exact signal, any tool can also run `nosleep ping <agent-name>` as a
+heartbeat — e.g. a Claude Code `PostToolUse`/`Stop` hook running
+`nosleep ping claude`. A ping counts as agent activity and resets the idle
+window; the name (optional) is what notifications show as the working agent.
 
 > Heads-up: an agent that only waits on a remote machine (SSH, cloud session)
 > looks idle locally — use Absolute mode for those runs.
@@ -89,7 +90,7 @@ nosleep on                 # keep awake until turned off
 nosleep off                # allow sleep again
 nosleep toggle             # flip the current state
 nosleep status             # print "active" / "active (Nm left)" / "inactive"
-nosleep ping               # agent-activity heartbeat for Smart NoSleep (silent)
+nosleep ping claude        # agent-activity heartbeat for Smart NoSleep (silent)
 nosleep timer 15m          # keep awake for 15 minutes, then auto-off
 nosleep timer 1h           # 1 hour
 nosleep timer 2h           # 2 hours

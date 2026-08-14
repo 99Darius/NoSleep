@@ -60,6 +60,14 @@ final class StateStoreTests: XCTestCase {
         XCTAssertEqual(store.loadHeartbeat(), stamp)
     }
 
+    func testHeartbeatNameRoundTripsAndNamelessPingClearsIt() {
+        let (store, _) = makeStore()
+        store.saveHeartbeat(Date(), name: "claude")
+        XCTAssertEqual(store.loadHeartbeatName(), "claude")
+        store.saveHeartbeat(Date())
+        XCTAssertNil(store.loadHeartbeatName())
+    }
+
     func testPendingRecapDefaultsToNil() {
         let (store, _) = makeStore()
         XCTAssertNil(store.loadPendingRecap())

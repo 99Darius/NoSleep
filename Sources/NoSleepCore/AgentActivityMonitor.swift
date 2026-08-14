@@ -103,12 +103,18 @@ public final class AgentActivityMonitor {
             || presence.secondsSinceLastUserInput() <= tickInterval
         if agentBusy {
             var agents = cpuTick.busyAgents
-            if heartbeatBusy { agents.append("nosleep ping") }
+            // A ping carries the pinging agent's real name ("nosleep ping" is
+            // plumbing and must never surface in user-facing text). A nameless
+            // ping still counts as activity, it just has nothing to report.
+            if heartbeatBusy, let name = store.loadHeartbeatName(), !agents.contains(name) {
+                agents.append(name)
+            }
             // Only agents are recorded here — the "went to sleep" notification
             // reports what was running, not that you touched the trackpad.
             lastBusyAgents = agents
             lastBusyDate = Date()
-            log.info("tick: BUSY — \(agents.joined(separator: ", "), privacy: .public)")
+            let detail = agents.joined(separator: ", ") + (heartbeatBusy ? " (+ping)" : "")
+            log.info("tick: BUSY — \(detail, privacy: .public)")
             onBusy?(agents)
         } else if userPresent {
             let why = presence.isDisplayAsleep() ? "user active" : "screen on"
