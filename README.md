@@ -101,6 +101,17 @@ Durations accept `s`, `m`, and `h` suffixes. Any command other than `status`/`of
 will launch the menu bar agent automatically if it isn't already running, and the
 CLI stays in sync with the menu since both talk to the same agent.
 
+## Updates
+
+NoSleep checks GitHub once a day for a new stable release and tells you when
+one is out — the menu item turns into **Update to X…**, and you get a one-click
+"Download & Install" that fetches the official installer and opens it. Nothing
+is installed behind your back; you approve the install like any other pkg.
+
+Turn the daily check off with **Check Automatically** in the menu (or
+`defaults write com.nosleep autoUpdateCheck -bool false`); **Check for
+Updates…** still works on demand. Pre-releases and drafts are never offered.
+
 ## Uninstall
 
 Easiest: open the menu bar item → **Uninstall NoSleep…** → confirm. That turns off

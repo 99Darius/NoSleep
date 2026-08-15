@@ -436,6 +436,71 @@ do {
           "nameless ping is busy with an empty agent list — no 'nosleep ping' label")
 }
 
+// MARK: - UpdateCheck
+
+do {
+    check(UpdateCheck.isNewer("1.1.8", than: "1.1.7"), "patch bump is newer")
+    check(UpdateCheck.isNewer("1.2.0", than: "1.1.9"), "minor bump beats higher patch")
+    check(UpdateCheck.isNewer("1.1.10", than: "1.1.9"),
+          "version parts compare numerically, not as strings")
+    check(UpdateCheck.isNewer("v1.1.8", than: "1.1.7"), "leading v is ignored")
+    check(!UpdateCheck.isNewer("1.1.7", than: "1.1.7"), "same version is not newer")
+    check(!UpdateCheck.isNewer("1.1.6", than: "1.1.7"), "older version is not newer")
+    check(!UpdateCheck.isNewer("1.2", than: "1.2.0"), "missing parts count as zero")
+    check(UpdateCheck.isNewer("1.2.1", than: "1.2"), "shorter current still compares")
+    check(!UpdateCheck.isNewer("garbage", than: "1.1.7"),
+          "unparseable version never triggers an update")
+}
+
+do {
+    let json = """
+    {"tag_name":"v1.1.8","html_url":"https://github.com/99Darius/NoSleep/releases/tag/v1.1.8",
+     "body":"Fixes things.","draft":false,"prerelease":false,
+     "assets":[{"name":"NoSleep-Installer-1.1.8.pkg",
+                "browser_download_url":"https://github.com/99Darius/NoSleep/releases/download/v1.1.8/NoSleep-Installer-1.1.8.pkg"}]}
+    """
+    let info = UpdateCheck.parseGitHubRelease(Data(json.utf8))
+    check(info?.version == "1.1.8", "parses version from tag_name, without the v")
+    check(info?.pkgURL?.lastPathComponent == "NoSleep-Installer-1.1.8.pkg",
+          "picks the .pkg asset download URL")
+    check(info?.pageURL?.absoluteString.hasSuffix("/tag/v1.1.8") == true,
+          "keeps the release page URL")
+    check(info?.notes == "Fixes things.", "keeps the release notes")
+}
+
+do {
+    let draft = """
+    {"tag_name":"v1.2.0","draft":true,"prerelease":false,"assets":[]}
+    """
+    check(UpdateCheck.parseGitHubRelease(Data(draft.utf8)) == nil,
+          "draft releases are ignored")
+    let pre = """
+    {"tag_name":"v1.2.0","draft":false,"prerelease":true,"assets":[]}
+    """
+    check(UpdateCheck.parseGitHubRelease(Data(pre.utf8)) == nil,
+          "pre-releases are ignored — stable channel only")
+    check(UpdateCheck.parseGitHubRelease(Data("not json".utf8)) == nil,
+          "garbage payload parses to nil")
+    let noAsset = """
+    {"tag_name":"v1.2.0","html_url":"https://x/y","draft":false,"prerelease":false,"assets":[]}
+    """
+    let info = UpdateCheck.parseGitHubRelease(Data(noAsset.utf8))
+    check(info?.version == "1.2.0" && info?.pkgURL == nil,
+          "release without a pkg asset still reports the version")
+}
+
+do {
+    let now = Date(timeIntervalSince1970: 1_700_000_000)
+    check(UpdateCheck.shouldCheck(now: now, lastCheck: nil),
+          "first run always checks")
+    check(!UpdateCheck.shouldCheck(now: now, lastCheck: now.addingTimeInterval(-3600)),
+          "no re-check within the interval")
+    check(UpdateCheck.shouldCheck(now: now, lastCheck: now.addingTimeInterval(-90_000)),
+          "checks again after 24h")
+    check(UpdateCheck.shouldCheck(now: now, lastCheck: now.addingTimeInterval(86_400)),
+          "a clock jump into the future doesn't wedge the check forever")
+}
+
 // MARK: - AssertionManager unattended paths (must never prompt)
 
 final class FakeBlocker: SleepBlocking {

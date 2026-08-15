@@ -11,6 +11,10 @@ final class MenuController: NSObject, NSMenuDelegate {
     var onQuit: (() -> Void)?
     var onSelectMode: ((KeepAwakeMode) -> Void)?
     var onSelectGrace: ((Int) -> Void)?
+    var onCheckForUpdates: (() -> Void)?
+    var onToggleAutoUpdate: (() -> Void)?
+    /// Supplies the pending update (if any) plus whether auto-checking is on.
+    var currentUpdate: (() -> (available: String?, autoEnabled: Bool))?
     /// Supplies the live state so the menu can re-render (e.g. countdown) when opened.
     var currentState: (() -> NoSleepState)?
     /// Supplies the persisted mode + grace minutes for menu checkmarks.
@@ -22,6 +26,8 @@ final class MenuController: NSObject, NSMenuDelegate {
     private var absoluteModeItem: NSMenuItem?
     private var graceParentItem: NSMenuItem?
     private var graceItems: [NSMenuItem] = []
+    private var updateItem: NSMenuItem?
+    private var autoUpdateItem: NSMenuItem?
 
     override init() {
         super.init()
@@ -101,6 +107,18 @@ final class MenuController: NSObject, NSMenuDelegate {
         loginItem = login
 
         menu.addItem(.separator())
+
+        let update = NSMenuItem(title: "Check for Updates…", action: #selector(checkUpdatesTapped), keyEquivalent: "")
+        update.target = self
+        menu.addItem(update)
+        updateItem = update
+
+        let autoUpdate = NSMenuItem(title: "Check Automatically", action: #selector(toggleAutoUpdateTapped), keyEquivalent: "")
+        autoUpdate.target = self
+        menu.addItem(autoUpdate)
+        autoUpdateItem = autoUpdate
+
+        menu.addItem(.separator())
         let uninstall = NSMenuItem(title: "Uninstall NoSleep…", action: #selector(uninstallTapped), keyEquivalent: "")
         uninstall.target = self
         menu.addItem(uninstall)
@@ -119,6 +137,10 @@ final class MenuController: NSObject, NSMenuDelegate {
     func menuWillOpen(_ menu: NSMenu) {
         if let state = currentState?() {
             render(state: state)
+        }
+        if let update = currentUpdate?() {
+            updateItem?.title = update.available.map { "Update to \($0)…" } ?? "Check for Updates…"
+            autoUpdateItem?.state = update.autoEnabled ? .on : .off
         }
     }
 
@@ -209,6 +231,8 @@ final class MenuController: NSObject, NSMenuDelegate {
     @objc private func graceTapped(_ sender: NSMenuItem) {
         if let minutes = sender.representedObject as? Int { onSelectGrace?(minutes) }
     }
+    @objc private func checkUpdatesTapped() { onCheckForUpdates?() }
+    @objc private func toggleAutoUpdateTapped() { onToggleAutoUpdate?() }
     @objc private func changeShortcutTapped() { onChangeShortcut?() }
     @objc private func uninstallTapped() { onUninstall?() }
     @objc private func quitTapped() { onQuit?() }

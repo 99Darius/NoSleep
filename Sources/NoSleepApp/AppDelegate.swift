@@ -52,6 +52,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var monitor = AgentActivityMonitor(sampler: AgentProcessSampler(),
                                                     presence: SystemUserPresence(),
                                                     store: store)
+    private let updater = UpdateController()
+    private var updateTimer: Timer?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         manager.onChange = { [weak self] in self?.persistAndRender() }
@@ -67,6 +69,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 dozing: self.smartDozing ? true : nil)
         }
         menu.onChangeShortcut = { [weak self] in self?.shortcutSettings.show() }
+        menu.onCheckForUpdates = { [weak self] in
+            guard let self else { return }
+            // If a check already found something, go straight to the offer.
+            if let pending = self.updater.available {
+                self.updater.promptToUpdate(pending, userInitiated: true)
+            } else {
+                self.updater.checkNow()
+            }
+        }
+        menu.onToggleAutoUpdate = { [weak self] in
+            guard let self else { return }
+            self.updater.automaticChecksEnabled.toggle()
+            if self.updater.automaticChecksEnabled { self.updater.checkInBackgroundIfDue() }
+        }
+        menu.currentUpdate = { [weak self] in
+            (self?.updater.available?.version, self?.updater.automaticChecksEnabled ?? true)
+        }
         menu.onUninstall = { Uninstaller.run() }
         menu.currentMode = { (SmartSettings.mode, SmartSettings.graceMinutes) }
         menu.onSelectMode = { [weak self] mode in
@@ -120,6 +139,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         persistAndRender()
         reconcileLeftoverSleepBlock()
+        startUpdateChecks()
+    }
+
+    /// Daily update check. The first check waits a few seconds so launch isn't
+    /// competing with a network round-trip, then repeats hourly — the throttle
+    /// inside UpdateController is what enforces "at most once a day", so a Mac
+    /// that sleeps through its slot still checks soon after waking.
+    private func startUpdateChecks() {
+        updater.onAvailableChanged = { [weak self] in self?.persistAndRender() }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
+            self?.updater.checkInBackgroundIfDue()
+        }
+        let timer = Timer(timeInterval: 3600, repeats: true) { [weak self] _ in
+            self?.updater.checkInBackgroundIfDue()
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        updateTimer = timer
     }
 
     /// NoSleep always starts inactive. If the system still has sleep disabled,
