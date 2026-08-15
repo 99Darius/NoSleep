@@ -436,6 +436,77 @@ do {
           "nameless ping is busy with an empty agent list — no 'nosleep ping' label")
 }
 
+// MARK: - pmset SleepDisabled parsing
+// Live bug found 2026-08-16: the reader looked for "disablesleep" (the setter's
+// spelling) but pmset -g prints "SleepDisabled\t\t1", so a sleep block left
+// behind by a crash was never detected and the Mac could never sleep again.
+
+do {
+    let blocked = """
+    System-wide power settings:
+     SleepDisabled\t\t1
+    Currently in use:
+     displaysleep         60
+    """
+    check(PMSetOutput.sleepDisabled(from: blocked),
+          "tab-separated SleepDisabled 1 is detected")
+    let notBlocked = """
+    System-wide power settings:
+     SleepDisabled\t\t0
+    Currently in use:
+     displaysleep         60
+    """
+    check(!PMSetOutput.sleepDisabled(from: notBlocked), "SleepDisabled 0 is not a block")
+    // pmset omits the line entirely when sleep has never been disabled.
+    check(!PMSetOutput.sleepDisabled(from: " displaysleep 60\\n sleep 1"),
+          "absent SleepDisabled line means sleep is allowed")
+    check(PMSetOutput.sleepDisabled(from: " SleepDisabled 1"),
+          "space-separated form is detected too")
+    check(!PMSetOutput.sleepDisabled(from: ""), "empty output is not a block")
+}
+
+// MARK: - pmset displaysleep parsing (must survive other Macs' output shapes)
+
+do {
+    let laptop = """
+    System-wide power settings:
+    Currently in use:
+     standby              1
+     Sleep On Power Button 1
+     hibernatemode        3
+     displaysleep         60
+     sleep                1 (sleep prevented by caffeinate, powerd)
+     disksleep            10
+    """
+    check(SystemUserPresence.parseDisplaySleepMinutes(from: laptop) == 60,
+          "reads displaysleep from a laptop's pmset -g output")
+
+    // Desktop Macs (mini/Studio/iMac) have no battery section at all.
+    let desktop = """
+    System-wide power settings:
+    Currently in use:
+     womp                 1
+     autorestart          0
+     displaysleep         10
+     sleep                0
+     disksleep            0
+    """
+    check(SystemUserPresence.parseDisplaySleepMinutes(from: desktop) == 10,
+          "reads displaysleep on a desktop Mac with no battery section")
+
+    check(SystemUserPresence.parseDisplaySleepMinutes(from: " displaysleep         0") == 0,
+          "never-sleep display reads as 0, not nil")
+    check(SystemUserPresence.parseDisplaySleepMinutes(from: " displaysleep  15 (imp)") == 15,
+          "an annotated value still parses")
+    check(SystemUserPresence.parseDisplaySleepMinutes(from: "sleep 1\\ndisksleep 10") == nil,
+          "no displaysleep line yields nil, not a wrong number")
+    check(SystemUserPresence.parseDisplaySleepMinutes(from: "") == nil,
+          "empty output yields nil")
+    // `disksleep`/`displaysleep` both contain "sleep" — must not cross-match.
+    check(SystemUserPresence.parseDisplaySleepMinutes(from: " disksleep 10\\n displaysleep 5") == 5,
+          "disksleep never masquerades as displaysleep")
+}
+
 // MARK: - DisplayJudge (live miss 2026-08-16: screen off 4h45m, CG said awake)
 
 do {

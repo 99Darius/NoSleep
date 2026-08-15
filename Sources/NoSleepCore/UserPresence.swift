@@ -8,6 +8,12 @@ public protocol UserPresenceProviding: AnyObject {
     func secondsSinceLastUserInput() -> TimeInterval
     /// Whether the built-in/main display is asleep (dark).
     func isDisplayAsleep() -> Bool
+    /// One-line trace of the raw signals behind `isDisplayAsleep()`, for logs.
+    func signalTrace() -> String
+}
+
+public extension UserPresenceProviding {
+    func signalTrace() -> String { "" }
 }
 
 /// Real implementation, backed by the HID event system and display state.
@@ -41,11 +47,24 @@ public final class SystemUserPresence: UserPresenceProviding {
     }
 
     public func isDisplayAsleep() -> Bool {
-        DisplayJudge.isAsleep(DisplaySignals(
+        DisplayJudge.isAsleep(currentSignals())
+    }
+
+    /// The raw signals behind the verdict. The 2026-08-16 miss went unnoticed
+    /// for a night because the log recorded only the verdict, not what fed it.
+    public func currentSignals() -> DisplaySignals {
+        DisplaySignals(
             notifiedAsleep: notifiedDisplayAsleep,
             cgReportsAsleep: CGDisplayIsAsleep(CGMainDisplayID()) != 0,
             hidIdleSeconds: secondsSinceLastUserInput(),
-            displaySleepTimeout: displaySleepTimeout()))
+            displaySleepTimeout: displaySleepTimeout())
+    }
+
+    public func signalTrace() -> String {
+        let s = currentSignals()
+        let notified = s.notifiedAsleep.map { $0 ? "asleep" : "awake" } ?? "unknown"
+        return "notified=\(notified) cg=\(s.cgReportsAsleep ? "asleep" : "awake")"
+            + " idle=\(Int(s.hidIdleSeconds))s/\(Int(s.displaySleepTimeout))s"
     }
 
     /// The user's active `pmset displaysleep` setting, in seconds (0 = never).
@@ -60,6 +79,24 @@ public final class SystemUserPresence: UserPresenceProviding {
         return cachedTimeout
     }
 
+    /// Pulls `displaysleep` out of `pmset -g` output. Kept pure so the many
+    /// shapes this output takes across Macs (desktop with no battery section,
+    /// annotated values, "0" for never) can be tested without a machine that
+    /// has them.
+    public static func parseDisplaySleepMinutes(from output: String) -> Int? {
+        for rawLine in output.split(whereSeparator: \.isNewline) {
+            let fields = rawLine.split(whereSeparator: \.isWhitespace)
+            // Match the key exactly: `disksleep` also contains "sleep", and
+            // several keys share prefixes.
+            guard let keyIndex = fields.firstIndex(where: { $0 == "displaysleep" }),
+                  keyIndex + 1 < fields.count,
+                  let minutes = Int(fields[keyIndex + 1])
+            else { continue }
+            return minutes
+        }
+        return nil
+    }
+
     public static func readDisplaySleepMinutes() -> Int? {
         let proc = Process()
         proc.executableURL = URL(fileURLWithPath: "/usr/bin/pmset")
@@ -71,9 +108,6 @@ public final class SystemUserPresence: UserPresenceProviding {
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         proc.waitUntilExit()
         guard let out = String(data: data, encoding: .utf8) else { return nil }
-        for line in out.split(separator: "\n") where line.contains("displaysleep") {
-            return line.split(separator: " ").compactMap { Int($0) }.first
-        }
-        return nil
+        return parseDisplaySleepMinutes(from: out)
     }
 }

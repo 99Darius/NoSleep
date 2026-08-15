@@ -117,11 +117,11 @@ public final class AgentActivityMonitor {
             log.info("tick: BUSY — \(detail, privacy: .public)")
             onBusy?(agents)
         } else if userPresent {
-            let idle = Int(presence.secondsSinceLastUserInput())
-            let why = presence.isDisplayAsleep()
-                ? "user active (idle \(idle)s)"
-                : "screen on (idle \(idle)s)"
-            log.info("tick: \(why, privacy: .public) — countdown held")
+            // The signal trace makes a wrong verdict visible in the log the
+            // same night instead of after hours of forensics (2026-08-16).
+            let why = presence.isDisplayAsleep() ? "user active" : "screen on"
+            let trace = presence.signalTrace()
+            log.info("tick: \(why, privacy: .public) — countdown held [\(trace, privacy: .public)]")
         } else {
             idleTickCount += 1
             log.info("tick: idle #\(self.idleTickCount, privacy: .public)")

@@ -56,10 +56,7 @@ final class PMSetSleepBlocker: SleepBlocking {
         proc.waitUntilExit()
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         guard let out = String(data: data, encoding: .utf8) else { return false }
-        for line in out.split(separator: "\n") where line.contains("disablesleep") {
-            return line.split(separator: " ").last == "1"
-        }
-        return false
+        return PMSetOutput.sleepDisabled(from: out)
     }
 
     /// Force-restore normal sleep (admin prompt). Recovers a leftover
