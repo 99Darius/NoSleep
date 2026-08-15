@@ -2,6 +2,7 @@ import AppKit
 import KeyboardShortcuts
 import NoSleepCore
 import UserNotifications
+import os
 
 /// Persisted Smart NoSleep settings.
 enum SmartSettings {
@@ -49,8 +50,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         get { UserDefaults.standard.bool(forKey: "smartDozing") }
         set { UserDefaults.standard.set(newValue, forKey: "smartDozing") }
     }
+    private let presence = SystemUserPresence()
     private lazy var monitor = AgentActivityMonitor(sampler: AgentProcessSampler(),
-                                                    presence: SystemUserPresence(),
+                                                    presence: presence,
                                                     store: store)
     private let updater = UpdateController()
     private var updateTimer: Timer?
@@ -121,6 +123,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSWorkspace.shared.notificationCenter.addObserver(
             self, selector: #selector(screensDidWake(_:)),
             name: NSWorkspace.screensDidWakeNotification, object: nil)
+        // Authoritative screen-dark signal. CGDisplayIsAsleep missed a 4h45m
+        // display-off window on 2026-08-16 (Apple Silicon), which kept the
+        // countdown frozen and the Mac awake all night.
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self, selector: #selector(screensDidSleep(_:)),
+            name: NSWorkspace.screensDidSleepNotification, object: nil)
 
         // Default-on login item on first launch. Only mark as done if it succeeded,
         // so a failure retries on the next launch.
@@ -327,7 +335,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// First screen-on after a Smart auto-off: tell the story the user
     /// couldn't see at 1 AM — when the Mac slept and what was last running.
+    @objc private func screensDidSleep(_ note: Notification) {
+        presence.notifiedDisplayAsleep = true
+        Logger(subsystem: "com.nosleep", category: "smart").info("screens slept — countdown can advance")
+    }
+
     @objc private func screensDidWake(_ note: Notification) {
+        presence.notifiedDisplayAsleep = false
+        Logger(subsystem: "com.nosleep", category: "smart").info("screens woke — countdown held")
         // Small delay so the toast appears after the unlock transition.
         DispatchQueue.main.asyncAfter(deadline: .now() + 4) { [weak self] in
             self?.showPendingRecapIfAny()

@@ -436,6 +436,38 @@ do {
           "nameless ping is busy with an empty agent list — no 'nosleep ping' label")
 }
 
+// MARK: - DisplayJudge (live miss 2026-08-16: screen off 4h45m, CG said awake)
+
+do {
+    let hour: TimeInterval = 3600
+    check(DisplayJudge.isAsleep(DisplaySignals(notifiedAsleep: true)),
+          "a screensDidSleep notification means the screen is dark")
+    check(!DisplayJudge.isAsleep(DisplaySignals(notifiedAsleep: false,
+                                                hidIdleSeconds: 30,
+                                                displaySleepTimeout: hour)),
+          "after a wake notification with recent input the screen is lit")
+    check(DisplayJudge.isAsleep(DisplaySignals(cgReportsAsleep: true)),
+          "CGDisplayIsAsleep is still believed when it does report sleep")
+    // The live miss: every other signal claimed the screen was on while it had
+    // been off for hours. Past the user's own display-sleep timeout, macOS has
+    // already decided they left — so must NoSleep.
+    check(DisplayJudge.isAsleep(DisplaySignals(notifiedAsleep: false,
+                                               cgReportsAsleep: false,
+                                               hidIdleSeconds: hour + 60,
+                                               displaySleepTimeout: hour)),
+          "idle past the display-sleep timeout counts as a dark screen")
+    check(!DisplayJudge.isAsleep(DisplaySignals(hidIdleSeconds: hour - 60,
+                                                displaySleepTimeout: hour)),
+          "idle short of the timeout is not yet a dark screen")
+    check(!DisplayJudge.isAsleep(DisplaySignals(hidIdleSeconds: 86_400,
+                                                displaySleepTimeout: 0)),
+          "display set to never sleep: the idle fallback must not fire")
+    check(DisplayJudge.isAsleep(DisplaySignals(notifiedAsleep: true,
+                                               hidIdleSeconds: 0,
+                                               displaySleepTimeout: hour)),
+          "a sleep notification wins even with fresh input (lid just shut)")
+}
+
 // MARK: - UpdateCheck
 
 do {

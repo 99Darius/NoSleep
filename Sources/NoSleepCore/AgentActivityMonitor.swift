@@ -117,7 +117,10 @@ public final class AgentActivityMonitor {
             log.info("tick: BUSY — \(detail, privacy: .public)")
             onBusy?(agents)
         } else if userPresent {
-            let why = presence.isDisplayAsleep() ? "user active" : "screen on"
+            let idle = Int(presence.secondsSinceLastUserInput())
+            let why = presence.isDisplayAsleep()
+                ? "user active (idle \(idle)s)"
+                : "screen on (idle \(idle)s)"
             log.info("tick: \(why, privacy: .public) — countdown held")
         } else {
             idleTickCount += 1
