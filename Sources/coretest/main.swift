@@ -436,6 +436,52 @@ do {
           "nameless ping is busy with an empty agent list — no 'nosleep ping' label")
 }
 
+// MARK: - AssertionManager unattended paths (must never prompt)
+
+final class FakeBlocker: SleepBlocking {
+    var interactiveBegins = 0, interactiveEnds = 0
+    var niBegins = 0, niEnds = 0
+    var nonInteractiveFails = false
+    func begin(reason: String) -> Int? { interactiveBegins += 1; return 1 }
+    func end(token: Int) { interactiveEnds += 1 }
+    func beginNonInteractive(reason: String) -> Int? {
+        niBegins += 1
+        return nonInteractiveFails ? nil : 1
+    }
+    func endNonInteractive(token: Int) -> Bool {
+        niEnds += 1
+        return !nonInteractiveFails
+    }
+}
+
+do {
+    let blocker = FakeBlocker()
+    let manager = AssertionManager(blocker: blocker)
+    check(manager.activateUnattended() && manager.isActive,
+          "unattended activate acquires the block")
+    check(manager.activateUnattended() && blocker.niBegins == 1,
+          "unattended activate is idempotent while active")
+    check(manager.deactivateUnattended() && !manager.isActive,
+          "unattended deactivate releases the block")
+    check(blocker.interactiveBegins == 0 && blocker.interactiveEnds == 0,
+          "unattended paths never touch the interactive (prompting) blocker calls")
+}
+
+do {
+    let blocker = FakeBlocker()
+    let manager = AssertionManager(blocker: blocker)
+    blocker.nonInteractiveFails = true
+    check(!manager.activateUnattended() && !manager.isActive,
+          "failed unattended activate stays inactive")
+    blocker.nonInteractiveFails = false
+    manager.activate()
+    blocker.nonInteractiveFails = true
+    check(!manager.deactivateUnattended() && manager.isActive,
+          "failed unattended deactivate keeps reporting the block as held")
+    check(blocker.interactiveBegins == 1 && blocker.interactiveEnds == 0,
+          "failures never fall back to prompting calls")
+}
+
 // MARK: - SmartRecap message
 
 do {

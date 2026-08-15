@@ -70,9 +70,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.onUninstall = { Uninstaller.run() }
         menu.currentMode = { (SmartSettings.mode, SmartSettings.graceMinutes) }
         menu.onSelectMode = { [weak self] mode in
+            guard let self else { return }
             SmartSettings.mode = mode
-            self?.syncMonitor()
-            self?.persistAndRender()
+            // Mode change is a manual action: dozing (and its queued recap)
+            // belongs to Smart mode and must not linger — otherwise switching
+            // to Absolute while dozing shows a "dozing" state nothing can
+            // ever re-engage.
+            self.smartDozing = false
+            self.store.clearPendingRecap()
+            self.syncMonitor()
+            self.persistAndRender()
         }
         menu.onSelectGrace = { [weak self] minutes in
             SmartSettings.graceMinutes = minutes
@@ -107,7 +114,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // A dozing session survives an app relaunch: stay armed and let the
         // monitor re-engage the block when agents resume. Everything else
         // starts inactive.
-        if SmartSettings.mode != .smart { smartDozing = false }
+        if SmartSettings.mode != .smart {
+            smartDozing = false
+            store.clearPendingRecap()
+        }
         persistAndRender()
         reconcileLeftoverSleepBlock()
     }
@@ -202,8 +212,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             alert.informativeText = "NoSleep was unable to update the Launch at Login setting. Please try again."
             alert.runModal()
         }
-        // The next render re-reads LoginItem.isEnabled, so the checkmark stays truthful.
-        menu.render(state: NoSleepState(isActive: manager.isActive, expiresAt: currentExpiry))
+        // The next render re-reads LoginItem.isEnabled, so the checkmark stays
+        // truthful. Full persistAndRender so the dozing flag survives the render.
+        persistAndRender()
     }
 
     private func persistAndRender() {
@@ -250,6 +261,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// mode — that made every fire read as "it switched itself off on me".
     private func handleAgentsIdle() {
         guard manager.isActive else { return }
+        // Release first, unattended (sudo -n only — never an admin prompt with
+        // nobody at the screen). If it fails, the block is still real: stay
+        // active and say nothing rather than announce a sleep that can't happen.
+        guard manager.deactivateUnattended() else { return }
         notifyAgentsIdle(graceMinutes: SmartSettings.graceMinutes,
                          lastAgents: monitor.lastBusyAgents,
                          lastActivity: monitor.lastBusyDate)
@@ -258,20 +273,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         timer.cancel()
         currentExpiry = nil
         smartDozing = true
-        manager.deactivate()
+        persistAndRender()
     }
 
     /// Agents resumed while dozing: silently re-engage the sleep block.
     /// No toast — keeping the Mac awake while agents work is just NoSleep
-    /// doing its job; announcing it only confused people.
+    /// doing its job; announcing it only confused people. Unattended path:
+    /// sudo -n only, so a missing sudoers rule means "stay dozing", never a
+    /// password prompt looping once per tick at 3 AM.
     private func handleAgentsBusy(_ agents: [String]) {
         guard smartDozing, !manager.isActive else { return }
-        smartDozing = false
-        manager.activate()
-        if !manager.isActive {
-            // pmset failed (sudoers rule missing?) — go back to dozing rather
-            // than silently pretending the Mac is protected.
-            smartDozing = true
+        if manager.activateUnattended() {
+            smartDozing = false
         }
         persistAndRender()
     }

@@ -18,6 +18,52 @@ final class FakeSleepBlocker: SleepBlocking {
         endCount += 1
         heldToken = nil
     }
+
+    private(set) var niBeginCount = 0
+    private(set) var niEndCount = 0
+    var failNonInteractive = false
+
+    func beginNonInteractive(reason: String) -> Int? {
+        niBeginCount += 1
+        if failNonInteractive { return nil }
+        heldToken = niBeginCount
+        return niBeginCount
+    }
+    func endNonInteractive(token: Int) -> Bool {
+        niEndCount += 1
+        if failNonInteractive { return false }
+        heldToken = nil
+        return true
+    }
+}
+
+final class AssertionManagerUnattendedTests: XCTestCase {
+    func testUnattendedActivateAndDeactivateNeverTouchPromptingCalls() {
+        let fake = FakeSleepBlocker()
+        let manager = AssertionManager(blocker: fake)
+        XCTAssertTrue(manager.activateUnattended())
+        XCTAssertTrue(manager.isActive)
+        XCTAssertTrue(manager.activateUnattended())   // idempotent
+        XCTAssertEqual(fake.niBeginCount, 1)
+        XCTAssertTrue(manager.deactivateUnattended())
+        XCTAssertFalse(manager.isActive)
+        XCTAssertEqual(fake.beginCount, 0)
+        XCTAssertEqual(fake.endCount, 0)
+    }
+
+    func testUnattendedFailuresKeepStateHonestWithoutPrompting() {
+        let fake = FakeSleepBlocker()
+        let manager = AssertionManager(blocker: fake)
+        fake.failNonInteractive = true
+        XCTAssertFalse(manager.activateUnattended())
+        XCTAssertFalse(manager.isActive)
+        fake.failNonInteractive = false
+        manager.activate()
+        fake.failNonInteractive = true
+        XCTAssertFalse(manager.deactivateUnattended())
+        XCTAssertTrue(manager.isActive)   // block is still real — keep saying so
+        XCTAssertEqual(fake.endCount, 0)
+    }
 }
 
 final class AssertionManagerTests: XCTestCase {

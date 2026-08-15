@@ -95,7 +95,9 @@ case .off:
     // Nothing to do if the agent isn't running (no assertion is held).
     if agentRunning(), ensureAgentReady(launchIfNeeded: false) {
         post(.off)
-        waitForState { !$0.isActive }
+        // Dozing also counts as "on": wait for it to clear too, or a doze-state
+        // `off` returns before the agent updates the store and prints "dozing".
+        waitForState { !$0.isActive && $0.dozing != true }
     }
     printState()
 case .on:

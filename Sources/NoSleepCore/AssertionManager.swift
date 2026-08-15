@@ -35,4 +35,27 @@ public final class AssertionManager {
     public func toggle() {
         isActive ? deactivate() : activate()
     }
+
+    /// Unattended activation (Smart re-engage): must never show a prompt.
+    /// Returns whether the block is held afterwards.
+    @discardableResult
+    public func activateUnattended() -> Bool {
+        if token != nil { return true }
+        guard let t = blocker.beginNonInteractive(reason: "NoSleep active") else { return false }
+        token = t
+        onChange?()
+        return true
+    }
+
+    /// Unattended release (Smart auto-off): must never show a prompt.
+    /// On failure the token is kept — the block is still real, so the state
+    /// must keep saying so. Returns whether the block is released afterwards.
+    @discardableResult
+    public func deactivateUnattended() -> Bool {
+        guard let t = token else { return true }
+        guard blocker.endNonInteractive(token: t) else { return false }
+        token = nil
+        onChange?()
+        return true
+    }
 }

@@ -25,6 +25,25 @@ final class PMSetSleepBlocker: SleepBlocking {
         heldTokens.remove(token)
     }
 
+    /// Unattended begin/end (Smart auto-off / re-engage, possibly at 3 AM with
+    /// nobody present): `sudo -n` only — on failure return failure, NEVER fall
+    /// through to the AppleScript admin prompts. A modal password prompt
+    /// looping once per monitor tick is worse than staying in the current state.
+    func beginNonInteractive(reason: String) -> Int? {
+        guard runSudoNoPrompt("1") else { return nil }
+        let key = nextKey
+        nextKey += 1
+        heldTokens.insert(key)
+        return key
+    }
+
+    func endNonInteractive(token: Int) -> Bool {
+        guard heldTokens.contains(token) else { return true }
+        guard runSudoNoPrompt("0") else { return false }
+        heldTokens.remove(token)
+        return true
+    }
+
     /// Reads whether system sleep is currently disabled. No root required.
     /// `pmset -g` lists a `disablesleep` line only when it is set.
     static func systemSleepDisabled() -> Bool {
