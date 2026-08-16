@@ -107,7 +107,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.syncMonitor(restart: true)
             self?.persistAndRender()
         }
-        monitor.onIdle = { [weak self] in self?.handleAgentsIdle() }
+        monitor.onIdle = { [weak self] in self?.handleAgentsIdle() ?? true }
         monitor.onBusy = { [weak self] agents in self?.handleAgentsBusy(agents) }
 
         // Global hotkey (default ⌃⌘S, user-rebindable). KeyboardShortcuts registers
@@ -303,12 +303,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// needed while unattended) but STAY ARMED: the monitor keeps ticking and
     /// re-engages the block when agents resume. Auto-off must never disarm the
     /// mode — that made every fire read as "it switched itself off on me".
-    private func handleAgentsIdle() {
-        guard manager.isActive else { return }
+    @discardableResult
+    private func handleAgentsIdle() -> Bool {
+        guard manager.isActive else { return true }
         // Release first, unattended (sudo -n only — never an admin prompt with
         // nobody at the screen). If it fails, the block is still real: stay
-        // active and say nothing rather than announce a sleep that can't happen.
-        guard manager.deactivateUnattended() else { return }
+        // active, say nothing, and report failure so the monitor retries on the
+        // next tick instead of leaving the Mac awake until morning.
+        guard manager.deactivateUnattended() else { return false }
         notifyAgentsIdle(graceMinutes: SmartSettings.graceMinutes,
                          lastAgents: monitor.lastBusyAgents,
                          lastActivity: monitor.lastBusyDate)
@@ -318,6 +320,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         currentExpiry = nil
         smartDozing = true
         persistAndRender()
+        return true
     }
 
     /// Agents resumed while dozing: silently re-engage the sleep block.

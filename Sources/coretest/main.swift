@@ -115,7 +115,7 @@ do {
 
 do {
     var fired = 0
-    let d = IdleDetector(graceTicks: 3, onIdle: { fired += 1 })
+    let d = IdleDetector(graceTicks: 3, onIdle: { fired += 1; return true })
     d.record(busy: false)
     d.record(busy: false)
     check(fired == 0, "idle detector holds before grace window")
@@ -124,7 +124,7 @@ do {
 }
 do {
     var fired = 0
-    let d = IdleDetector(graceTicks: 3, onIdle: { fired += 1 })
+    let d = IdleDetector(graceTicks: 3, onIdle: { fired += 1; return true })
     d.record(busy: false)
     d.record(busy: false)
     d.record(busy: true)
@@ -136,7 +136,7 @@ do {
 }
 do {
     var fired = 0
-    let d = IdleDetector(graceTicks: 1, onIdle: { fired += 1 })
+    let d = IdleDetector(graceTicks: 1, onIdle: { fired += 1; return true })
     d.record(busy: false)
     d.record(busy: false)
     check(fired == 1, "idle detector fires only once")
@@ -156,7 +156,7 @@ do {
 do {
     // After a fire, a busy tick re-arms the detector for the next episode.
     var fired = 0
-    let d = IdleDetector(graceTicks: 2, onIdle: { fired += 1 })
+    let d = IdleDetector(graceTicks: 2, onIdle: { fired += 1; return true })
     d.record(busy: false); d.record(busy: false)
     check(fired == 1, "detector fires at the end of the first idle episode")
     d.record(busy: false)
@@ -249,7 +249,7 @@ do {
     let sampler = FakeSampler(), presence = FakePresence()
     let monitor = makeMonitor(sampler, presence)
     var fired = 0
-    monitor.onIdle = { fired += 1 }
+    monitor.onIdle = { fired += 1; return true }
     monitor.arm(graceMinutes: 1, watchlist: .default)
     presence.idleSeconds = 5      // typed 5 seconds ago
     presence.displayAsleep = false
@@ -264,7 +264,7 @@ do {
     let sampler = FakeSampler(), presence = FakePresence()
     let monitor = makeMonitor(sampler, presence)
     var fired = 0
-    monitor.onIdle = { fired += 1 }
+    monitor.onIdle = { fired += 1; return true }
     monitor.arm(graceMinutes: 1, watchlist: .default)
     presence.idleSeconds = 1_200   // 20 min since last input (watching a video)
     presence.displayAsleep = false // but the screen is on
@@ -287,7 +287,7 @@ do {
     let sampler = FakeSampler(), presence = FakePresence()
     let monitor = makeMonitor(sampler, presence)
     var fired = 0
-    monitor.onIdle = { fired += 1 }
+    monitor.onIdle = { fired += 1; return true }
     monitor.arm(graceMinutes: 2, watchlist: .default)
     presence.idleSeconds = 3_600
     monitor.tick()
@@ -338,7 +338,7 @@ do {
     let sampler = FakeSampler(), presence = FakePresence()
     let monitor = makeMonitor(sampler, presence)
     var fired = 0
-    monitor.onIdle = { fired += 1 }
+    monitor.onIdle = { fired += 1; return true }
     monitor.arm(graceMinutes: 2, watchlist: .default)
     sampler.samples = [sample(10, "/usr/local/bin/claude", cpu: 100)]
     monitor.tick()
@@ -426,7 +426,7 @@ do {
     let (monitor, store) = makeMonitorWithStore(sampler, presence)
     var fired = 0
     var resumed: [[String]] = []
-    monitor.onIdle = { fired += 1 }
+    monitor.onIdle = { fired += 1; return true }
     monitor.onBusy = { resumed.append($0) }
     monitor.arm(graceMinutes: 2, watchlist: .default)
     monitor.tick()                                   // baseline
@@ -434,6 +434,33 @@ do {
     monitor.tick()
     check(fired == 0 && resumed == [[]],
           "nameless ping is busy with an empty agent list — no 'nosleep ping' label")
+}
+
+// MARK: - Auto-off retries when releasing the sleep block fails
+// Without this, a missing sudoers rule turns Smart mode into "awake forever":
+// the detector latches as fired, nothing re-arms it, and the Mac never sleeps.
+
+do {
+    var attempts = 0
+    let detector = IdleDetector(graceTicks: 2) {
+        attempts += 1
+        return attempts >= 3      // first two attempts fail
+    }
+    for _ in 0..<5 { detector.record(busy: false) }
+    check(attempts == 3, "a handler that reports failure is retried on later idle ticks")
+    detector.record(busy: false)
+    check(attempts == 3, "once the handler succeeds it stops firing for this episode")
+}
+
+do {
+    var fires = 0
+    let detector = IdleDetector(graceTicks: 1) { fires += 1; return true }
+    detector.record(busy: false)
+    detector.record(busy: false)
+    check(fires == 1, "a successful handler still fires once per idle episode")
+    detector.record(busy: true)
+    detector.record(busy: false)
+    check(fires == 2, "a busy tick re-arms for the next episode")
 }
 
 // MARK: - pmset SleepDisabled parsing
@@ -522,7 +549,7 @@ do {
     // The live miss: every other signal claimed the screen was on while it had
     // been off for hours. Past the user's own display-sleep timeout, macOS has
     // already decided they left — so must NoSleep.
-    check(DisplayJudge.isAsleep(DisplaySignals(notifiedAsleep: false,
+    check(DisplayJudge.isAsleep(DisplaySignals(notifiedAsleep: nil,
                                                cgReportsAsleep: false,
                                                hidIdleSeconds: hour + 60,
                                                displaySleepTimeout: hour)),
@@ -530,9 +557,51 @@ do {
     check(!DisplayJudge.isAsleep(DisplaySignals(hidIdleSeconds: hour - 60,
                                                 displaySleepTimeout: hour)),
           "idle short of the timeout is not yet a dark screen")
-    check(!DisplayJudge.isAsleep(DisplaySignals(hidIdleSeconds: 86_400,
+    // Headless Macs and "never sleep the display" setups have no timeout to
+    // read; without a fallback window Smart mode could never fire on them.
+    check(DisplayJudge.isAsleep(DisplaySignals(hidIdleSeconds: 86_400,
+                                               displaySleepTimeout: 0)),
+          "never-sleep display falls back to a conservative idle window")
+    check(!DisplayJudge.isAsleep(DisplaySignals(hidIdleSeconds: 10 * 60,
                                                 displaySleepTimeout: 0)),
-          "display set to never sleep: the idle fallback must not fire")
+          "the headless fallback window is not tripped by a short break")
+    check(!DisplayJudge.isAsleep(DisplaySignals(displaySleepAssertionHeld: true,
+                                                hidIdleSeconds: 86_400,
+                                                displaySleepTimeout: 0)),
+          "a held display-sleep assertion blocks the headless fallback too")
+
+    // The panel power state is direct evidence and outranks the heuristics.
+    check(DisplayJudge.isAsleep(DisplaySignals(notifiedAsleep: false,
+                                               displaysAllOff: true)),
+          "all panels dark means dark, even if a wake notification was the last one seen")
+    check(!DisplayJudge.isAsleep(DisplaySignals(displaysAllOff: false,
+                                               hidIdleSeconds: 86_400,
+                                               displaySleepTimeout: hour)),
+          "a lit panel (external monitor) blocks the idle fallback")
+
+    // Regression guard for the 2026-08-07 / 08-10 complaints: watching a film
+    // holds the screen on past the display-sleep timeout with no input. The
+    // heuristic must never overrule macOS saying the screen is lit.
+    check(!DisplayJudge.isAsleep(DisplaySignals(notifiedAsleep: false,
+                                                cgReportsAsleep: false,
+                                                displaySleepAssertionHeld: true,
+                                                hidIdleSeconds: 90 * 60,
+                                                displaySleepTimeout: 10 * 60)),
+          "a long film with no keypresses never counts as a dark screen")
+    // Nothing is holding the screen on, so macOS blanked it long ago — the
+    // stale "awake" notification is what must give way, not the countdown.
+    check(DisplayJudge.isAsleep(DisplaySignals(notifiedAsleep: false,
+                                               cgReportsAsleep: false,
+                                               hidIdleSeconds: 90 * 60,
+                                               displaySleepTimeout: 10 * 60)),
+          "a stale awake notification cannot outlive the display-sleep timeout")
+    // …but before any notification has arrived, the fallback is all we have —
+    // that is the case that kept the Mac awake all night on 2026-08-16.
+    check(DisplayJudge.isAsleep(DisplaySignals(notifiedAsleep: nil,
+                                               cgReportsAsleep: false,
+                                               hidIdleSeconds: 4.5 * hour,
+                                               displaySleepTimeout: hour)),
+          "with no notification yet, idle past the timeout still counts as dark")
     check(DisplayJudge.isAsleep(DisplaySignals(notifiedAsleep: true,
                                                hidIdleSeconds: 0,
                                                displaySleepTimeout: hour)),
@@ -569,6 +638,45 @@ do {
     check(info?.pageURL?.absoluteString.hasSuffix("/tag/v1.1.8") == true,
           "keeps the release page URL")
     check(info?.notes == "Fixes things.", "keeps the release notes")
+}
+
+do {
+    // The downloaded pkg gets its quarantine flag stripped before it is opened,
+    // so the only thing standing between a user and an arbitrary installer is
+    // where the URL points. Anything off GitHub is refused.
+    let offsite = """
+    {"tag_name":"v1.1.8","html_url":"https://github.com/99Darius/NoSleep/releases/tag/v1.1.8",
+     "draft":false,"prerelease":false,
+     "assets":[{"name":"NoSleep-Installer-1.1.8.pkg",
+                "browser_download_url":"https://evil.example.com/NoSleep-Installer-1.1.8.pkg"}]}
+    """
+    let info = UpdateCheck.parseGitHubRelease(Data(offsite.utf8))
+    check(info?.version == "1.1.8" && info?.pkgURL == nil,
+          "an asset hosted off GitHub is refused")
+
+    let insecure = """
+    {"tag_name":"v1.1.8","draft":false,"prerelease":false,
+     "assets":[{"name":"NoSleep-Installer-1.1.8.pkg",
+                "browser_download_url":"http://github.com/99Darius/NoSleep/x.pkg"}]}
+    """
+    check(UpdateCheck.parseGitHubRelease(Data(insecure.utf8))?.pkgURL == nil,
+          "a plain-http asset URL is refused")
+
+    let cdn = """
+    {"tag_name":"v1.1.8","draft":false,"prerelease":false,
+     "assets":[{"name":"NoSleep-Installer-1.1.8.pkg",
+                "browser_download_url":"https://objects.githubusercontent.com/gh/1.pkg"}]}
+    """
+    check(UpdateCheck.parseGitHubRelease(Data(cdn.utf8))?.pkgURL != nil,
+          "GitHub's asset CDN host is accepted")
+
+    let lookalike = """
+    {"tag_name":"v1.1.8","draft":false,"prerelease":false,
+     "assets":[{"name":"NoSleep-Installer-1.1.8.pkg",
+                "browser_download_url":"https://github.com.evil.example/x.pkg"}]}
+    """
+    check(UpdateCheck.parseGitHubRelease(Data(lookalike.utf8))?.pkgURL == nil,
+          "a look-alike host that merely starts with github.com is refused")
 }
 
 do {

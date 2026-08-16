@@ -25,13 +25,33 @@ final class DisplayJudgeTests: XCTestCase {
         XCTAssertTrue(DisplayJudge.isAsleep(DisplaySignals(cgReportsAsleep: true)))
     }
 
-    func testIdlePastDisplaySleepTimeoutCountsAsDark() {
-        XCTAssertTrue(DisplayJudge.isAsleep(DisplaySignals(notifiedAsleep: false,
+    /// Only when nothing has reported the screen state yet — the situation that
+    /// kept the Mac awake all night on 2026-08-16.
+    func testIdlePastDisplaySleepTimeoutCountsAsDarkWhenNothingElseKnows() {
+        XCTAssertTrue(DisplayJudge.isAsleep(DisplaySignals(notifiedAsleep: nil,
                                                            cgReportsAsleep: false,
                                                            hidIdleSeconds: hour + 60,
                                                            displaySleepTimeout: hour)))
         XCTAssertFalse(DisplayJudge.isAsleep(DisplaySignals(hidIdleSeconds: hour - 60,
                                                             displaySleepTimeout: hour)))
+    }
+
+    /// Regression guard for the 2026-08-07 and 2026-08-10 complaints: a film or
+    /// video call holds the screen lit with no keypresses. Firing there tells
+    /// the user their Mac is going to sleep while they are watching it.
+    func testLitScreenVetoesTheIdleHeuristic() {
+        XCTAssertFalse(DisplayJudge.isAsleep(DisplaySignals(notifiedAsleep: false,
+                                                            hidIdleSeconds: 90 * 60,
+                                                            displaySleepTimeout: 10 * 60)))
+        XCTAssertFalse(DisplayJudge.isAsleep(DisplaySignals(displaysAllOff: false,
+                                                            hidIdleSeconds: 86_400,
+                                                            displaySleepTimeout: hour)))
+    }
+
+    /// Panel power state is direct evidence and outranks a stale notification.
+    func testAllPanelsDarkWins() {
+        XCTAssertTrue(DisplayJudge.isAsleep(DisplaySignals(notifiedAsleep: false,
+                                                           displaysAllOff: true)))
     }
 
     func testNeverSleepDisplayDisablesTheIdleFallback() {

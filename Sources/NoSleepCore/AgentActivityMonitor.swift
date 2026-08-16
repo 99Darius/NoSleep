@@ -24,7 +24,10 @@ public final class AgentActivityMonitor {
     // ticks land in the same subsystem)
     private let log = Logger(subsystem: "com.nosleep", category: "smart")
 
-    public var onIdle: (() -> Void)?
+    /// Returns whether the keep-awake block was actually released. `false`
+    /// leaves the idle episode un-fired so the next tick retries — a silently
+    /// failed release would otherwise keep the Mac awake all night.
+    public var onIdle: (() -> Bool)?
     /// Called on every busy tick with the working agents' names — the app uses
     /// this to re-engage the sleep block while dozing.
     public var onBusy: (([String]) -> Void)?
@@ -61,8 +64,13 @@ public final class AgentActivityMonitor {
         let graceTicks = max(1, Int((Double(graceMinutes) * 60 / tickInterval).rounded()))
         tracker = AgentActivityTracker(watchlist: watchlist)
         detector = IdleDetector(graceTicks: graceTicks) { [weak self] in
-            self?.log.info("grace expired — releasing keep-awake")
-            self?.onIdle?()
+            guard let self else { return true }
+            self.log.info("grace expired — releasing keep-awake")
+            let released = self.onIdle?() ?? true
+            if !released {
+                self.log.error("release FAILED — staying active, retrying next tick")
+            }
+            return released
         }
         log.info("monitor armed: grace \(graceMinutes, privacy: .public) min")
         lastTickDate = Date()

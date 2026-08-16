@@ -68,7 +68,7 @@ final class AgentActivityMonitorTests: XCTestCase {
         let (monitor, store) = makeMonitorWithStore()
         var fired = 0
         var resumed: [[String]] = []
-        monitor.onIdle = { fired += 1 }
+        monitor.onIdle = { fired += 1; return true }
         monitor.onBusy = { resumed.append($0) }
         monitor.arm(graceMinutes: 2, watchlist: .default)
         monitor.tick()                              // baseline
@@ -85,7 +85,7 @@ final class AgentActivityMonitorTests: XCTestCase {
     func testUserAtTheKeyboardNeverTriggersAutoOff() {
         let monitor = makeMonitor()
         var fired = 0
-        monitor.onIdle = { fired += 1 }
+        monitor.onIdle = { fired += 1; return true }
         monitor.arm(graceMinutes: 1, watchlist: .default)
         presence.idleSeconds = 5
         presence.displayAsleep = false
@@ -99,7 +99,7 @@ final class AgentActivityMonitorTests: XCTestCase {
         // the keyboard fired auto-off with the user right there.
         let monitor = makeMonitor()
         var fired = 0
-        monitor.onIdle = { fired += 1 }
+        monitor.onIdle = { fired += 1; return true }
         monitor.arm(graceMinutes: 1, watchlist: .default)
         presence.idleSeconds = 1_200
         presence.displayAsleep = false
@@ -120,7 +120,7 @@ final class AgentActivityMonitorTests: XCTestCase {
     func testEmptyHouseRunsTheCountdownToCompletion() {
         let monitor = makeMonitor()
         var fired = 0
-        monitor.onIdle = { fired += 1 }
+        monitor.onIdle = { fired += 1; return true }
         monitor.arm(graceMinutes: 2, watchlist: .default)
         presence.idleSeconds = 3_600
         monitor.tick()
@@ -178,7 +178,7 @@ final class AgentActivityMonitorTests: XCTestCase {
     func testWorkingAgentKeepsTheMacAwakeWhileTheUserIsAway() {
         let monitor = makeMonitor()
         var fired = 0
-        monitor.onIdle = { fired += 1 }
+        monitor.onIdle = { fired += 1; return true }
         // The first tick only baselines CPU counters, so the window has to be
         // wider than one tick.
         monitor.arm(graceMinutes: 2, watchlist: .default)

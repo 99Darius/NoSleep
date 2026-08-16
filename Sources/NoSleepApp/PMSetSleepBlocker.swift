@@ -13,6 +13,11 @@ final class PMSetSleepBlocker: SleepBlocking {
 
     func begin(reason: String) -> Int? {
         guard setDisableSleep(true) else { return nil }   // user cancelled / failed
+        // `disablesleep` is an undocumented pmset key. Read the state back
+        // rather than trusting the exit status: showing a struck-through icon
+        // and "active" while the Mac can still sleep is the worst possible lie
+        // for this app to tell.
+        guard Self.systemSleepDisabled() else { return nil }
         let key = nextKey
         nextKey += 1
         heldTokens.insert(key)
@@ -30,7 +35,7 @@ final class PMSetSleepBlocker: SleepBlocking {
     /// through to the AppleScript admin prompts. A modal password prompt
     /// looping once per monitor tick is worse than staying in the current state.
     func beginNonInteractive(reason: String) -> Int? {
-        guard runSudoNoPrompt("1") else { return nil }
+        guard runSudoNoPrompt("1"), Self.systemSleepDisabled() else { return nil }
         let key = nextKey
         nextKey += 1
         heldTokens.insert(key)
@@ -82,10 +87,26 @@ final class PMSetSleepBlocker: SleepBlocking {
         if runSudoNoPrompt(value) { return true }
 
         // First time only: install the rule (one prompt), then retry silently.
-        if installSudoersRule() && runSudoNoPrompt(value) { return true }
+        // Skipped once we've learned the rule can't take effect here (sudoers.d
+        // not included by /etc/sudoers on managed Macs, for instance) —
+        // otherwise every single toggle would cost TWO password prompts, which
+        // reads like malware.
+        if !Self.sudoersRuleIneffective {
+            if installSudoersRule() {
+                if runSudoNoPrompt(value) { return true }
+                Self.sudoersRuleIneffective = true   // installed, still no good
+            }
+        }
 
-        // Fallback (install declined/failed): legacy direct admin prompt.
+        // Fallback (install declined/failed/ineffective): direct admin prompt.
         return runPmsetViaAdmin(value)
+    }
+
+    /// Remembers that the passwordless rule was installed but `sudo -n` still
+    /// fails, so we stop reinstalling it on every toggle.
+    private static var sudoersRuleIneffective: Bool {
+        get { UserDefaults.standard.bool(forKey: "sudoersRuleIneffective") }
+        set { UserDefaults.standard.set(newValue, forKey: "sudoersRuleIneffective") }
     }
 
     /// Runs `sudo -n /usr/bin/pmset -a disablesleep <value>`.
@@ -109,24 +130,47 @@ final class PMSetSleepBlocker: SleepBlocking {
     /// rights to *only* `pmset -a disablesleep 0|1`. Single admin prompt.
     /// The rule is validated with `visudo -cf` before being moved into place.
     private func installSudoersRule() -> Bool {
-        let rule = """
+        var rule = """
         Cmnd_Alias NOSLEEP_PMSET = /usr/bin/pmset -a disablesleep 0, /usr/bin/pmset -a disablesleep 1
         %admin ALL=(root) NOPASSWD: NOSLEEP_PMSET
         """
+        // Standard (non-admin) users can authorise the install with an admin's
+        // password but are not in %admin, so the group rule would never apply to
+        // them and every later toggle would prompt. Grant the installing user
+        // directly too. The name is validated first: it is interpolated into a
+        // string executed as root.
+        let user = NSUserName()
+        if isSafeUserName(user) {
+            rule += "\n\(user) ALL=(root) NOPASSWD: NOSLEEP_PMSET"
+        }
         // base64 keeps the multi-line rule out of shell/AppleScript quoting hell;
         // its alphabet (A–Z a–z 0–9 + / =) is safe to pass unquoted.
         let b64 = Data(rule.utf8).base64EncodedString()
-        let tmp = "/tmp/com.nosleep.sudoers"
         let dst = "/etc/sudoers.d/nosleep"
-        let shell = "echo \(b64) | /usr/bin/base64 -D -o \(tmp)"
-            + " && /usr/sbin/visudo -cf \(tmp)"
-            + " && /usr/bin/install -m 0440 -o root -g wheel \(tmp) \(dst)"
-            + " && /bin/rm -f \(tmp)"
+        // The staging file MUST be created by root in a root-only directory.
+        // A fixed path in world-writable /tmp let any local process pre-place a
+        // symlink there and have root overwrite an arbitrary file (/etc/sudoers
+        // included), or swap the contents between validation and install.
+        // No double quotes anywhere: this string is embedded in an AppleScript
+        // string literal, and the mktemp template we control has no spaces.
+        let shell = "t=$(/usr/bin/mktemp /private/var/root/.nosleep.XXXXXXXX)"
+            + " && /bin/chmod 0600 $t"
+            + " && echo \(b64) | /usr/bin/base64 -D -o $t"
+            + " && /usr/sbin/visudo -cf $t"
+            + " && /usr/bin/install -m 0440 -o root -g wheel $t \(dst)"
+            + "; r=$?; /bin/rm -f $t; exit $r"
         let source = "do shell script \"\(shell)\" with administrator privileges"
         guard let script = NSAppleScript(source: source) else { return false }
         var error: NSDictionary?
         script.executeAndReturnError(&error)
         return error == nil
+    }
+
+    /// Conservative POSIX user-name check — anything else is not interpolated
+    /// into the root-executed script.
+    private func isSafeUserName(_ name: String) -> Bool {
+        !name.isEmpty && name.count <= 32
+            && name.range(of: "^[a-z_][a-z0-9_.-]*$", options: .regularExpression) != nil
     }
 
     /// Legacy fallback: prompt for admin and run pmset directly.

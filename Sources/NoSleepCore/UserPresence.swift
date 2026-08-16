@@ -1,5 +1,7 @@
 import CoreGraphics
 import Foundation
+import IOKit
+import IOKit.pwr_mgt
 
 /// Seam for "is a human using this Mac right now" (CoreGraphics in the app,
 /// a fake in tests).
@@ -56,22 +58,70 @@ public final class SystemUserPresence: UserPresenceProviding {
         DisplaySignals(
             notifiedAsleep: notifiedDisplayAsleep,
             cgReportsAsleep: CGDisplayIsAsleep(CGMainDisplayID()) != 0,
+            displaysAllOff: Self.allPanelsOff(),
+            displaySleepAssertionHeld: Self.displaySleepAssertionHeld(),
             hidIdleSeconds: secondsSinceLastUserInput(),
             displaySleepTimeout: displaySleepTimeout())
+    }
+
+    /// Whether anything currently holds a "keep the display awake" assertion —
+    /// a video player, a video call, a presentation. While one is held, macOS's
+    /// display-idle timer is suspended, so keyboard silence says nothing about
+    /// whether someone is watching.
+    public static func displaySleepAssertionHeld() -> Bool {
+        var assertions: Unmanaged<CFDictionary>?
+        guard IOPMCopyAssertionsStatus(&assertions) == kIOReturnSuccess,
+              let dict = assertions?.takeRetainedValue() as? [String: Any]
+        else { return false }
+        for key in [kIOPMAssertionTypePreventUserIdleDisplaySleep,
+                    kIOPMAssertionTypeNoDisplaySleep] {
+            if let level = dict[key as String] as? Int, level > 0 { return true }
+        }
+        return false
+    }
+
+    /// Reads every display controller's power state from IORegistry.
+    /// Returns nil when no controller can be read (older/Intel Macs), true only
+    /// when every panel is powered down. Checking *all* panels is what makes
+    /// external-monitor setups behave: a lit external display means the user is
+    /// there, even with the laptop lid shut.
+    public static func allPanelsOff() -> Bool? {
+        var states: [Int] = []
+        for className in ["AppleCLCD2", "AppleCLCD", "IODisplayWrangler"] {
+            guard let matching = IOServiceMatching(className) else { continue }
+            var iterator: io_iterator_t = 0
+            guard IOServiceGetMatchingServices(kIOMainPortDefault, matching, &iterator) == KERN_SUCCESS
+            else { continue }
+            defer { IOObjectRelease(iterator) }
+            while case let service = IOIteratorNext(iterator), service != 0 {
+                defer { IOObjectRelease(service) }
+                guard let props = IORegistryEntryCreateCFProperty(
+                        service, "IOPowerManagement" as CFString, kCFAllocatorDefault, 0)?
+                        .takeRetainedValue() as? [String: Any],
+                      let current = props["CurrentPowerState"] as? Int
+                else { continue }
+                states.append(current)
+            }
+            if !states.isEmpty { break }   // first class that answers wins
+        }
+        guard !states.isEmpty else { return nil }
+        return states.allSatisfy { $0 == 0 }
     }
 
     public func signalTrace() -> String {
         let s = currentSignals()
         let notified = s.notifiedAsleep.map { $0 ? "asleep" : "awake" } ?? "unknown"
+        let panels = s.displaysAllOff.map { $0 ? "all-off" : "lit" } ?? "unknown"
         return "notified=\(notified) cg=\(s.cgReportsAsleep ? "asleep" : "awake")"
-            + " idle=\(Int(s.hidIdleSeconds))s/\(Int(s.displaySleepTimeout))s"
+            + " panels=\(panels) idle=\(Int(s.hidIdleSeconds))s/\(Int(s.displaySleepTimeout))s"
     }
 
     /// The user's active `pmset displaysleep` setting, in seconds (0 = never).
-    /// Re-read every 10 minutes: it changes rarely, but it does change when the
-    /// Mac switches between battery and power adapter.
+    /// Re-read every minute: unplugging a MacBook can drop it from 60 minutes
+    /// (adapter) to 2 (battery), and a stale value there feeds a wrong verdict
+    /// straight into the countdown. The subprocess costs a few ms once a tick.
     private func displaySleepTimeout() -> TimeInterval {
-        if let read = timeoutReadAt, Date().timeIntervalSince(read) < 600 {
+        if let read = timeoutReadAt, Date().timeIntervalSince(read) < 60 {
             return cachedTimeout
         }
         timeoutReadAt = Date()

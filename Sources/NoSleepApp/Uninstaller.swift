@@ -44,8 +44,31 @@ enum Uninstaller {
         // 3. CLI symlink (best effort; /usr/local/bin may not be writable).
         try? FileManager.default.removeItem(atPath: "/usr/local/bin/nosleep")
 
-        // 4. Trash the app bundle (allowed while running), then quit.
-        try? FileManager.default.trashItem(at: Bundle.main.bundleURL, resultingItemURL: nil)
+        // 4. Trash the app bundle (allowed while running), then quit. Trashing
+        //    /Applications needs write access there, which a standard user does
+        //    not have — swallowing that failure told people NoSleep was gone
+        //    while it stayed installed and came back at the next login.
+        let bundle = Bundle.main.bundleURL
+        do {
+            try FileManager.default.trashItem(at: bundle, resultingItemURL: nil)
+        } catch {
+            let failed = NSAlert()
+            failed.alertStyle = .warning
+            failed.messageText = "Couldn't move NoSleep to the Trash"
+            failed.informativeText = """
+            Normal sleep and your settings have been restored, but NoSleep.app \
+            couldn't be removed — you may not have permission to change that \
+            folder. Drag it to the Trash yourself:
+
+            \(bundle.path)
+            """
+            failed.addButton(withTitle: "Show in Finder")
+            failed.addButton(withTitle: "OK")
+            NSApp.activate(ignoringOtherApps: true)
+            if failed.runModal() == .alertFirstButtonReturn {
+                NSWorkspace.shared.activateFileViewerSelecting([bundle])
+            }
+        }
 
         NSApp.terminate(nil)
     }

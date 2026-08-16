@@ -63,7 +63,8 @@ public enum UpdateCheck {
             for a in assets {
                 guard let name = a["name"] as? String, name.hasSuffix(".pkg"),
                       let urlText = a["browser_download_url"] as? String,
-                      let url = URL(string: urlText) else { continue }
+                      let url = URL(string: urlText),
+                      isTrustedAssetHost(url) else { continue }
                 pkg = url
                 break
             }
@@ -71,6 +72,20 @@ public enum UpdateCheck {
         let page = (root["html_url"] as? String).flatMap(URL.init(string:))
         let notes = (root["body"] as? String) ?? ""
         return ReleaseInfo(version: version, pkgURL: pkg, pageURL: page, notes: notes)
+    }
+
+    /// The installer is downloaded, stripped of its quarantine flag and opened,
+    /// so where it comes from is the only trust boundary left. Accept HTTPS on
+    /// GitHub's own hosts and nothing else — a compromised or spoofed feed must
+    /// not be able to point users at an arbitrary installer.
+    static func isTrustedAssetHost(_ url: URL) -> Bool {
+        guard url.scheme?.lowercased() == "https",
+              let host = url.host?.lowercased() else { return false }
+        let allowed = ["github.com", "objects.githubusercontent.com",
+                       "release-assets.githubusercontent.com"]
+        // Exact host or a subdomain of one — never a mere prefix match, which
+        // would accept "github.com.evil.example".
+        return allowed.contains(where: { host == $0 || host.hasSuffix("." + $0) })
     }
 
     /// Throttle: check at most once per `interval` (default 24h).

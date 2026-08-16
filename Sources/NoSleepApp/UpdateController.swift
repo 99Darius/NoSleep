@@ -63,6 +63,7 @@ final class UpdateController {
     private func check(userInitiated: Bool) {
         guard !checking else { return }
         checking = true
+        let previousCheck = lastCheck
         lastCheck = Date()
         var request = URLRequest(url: Self.feedURL)
         request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
@@ -75,6 +76,10 @@ final class UpdateController {
                 guard let data, error == nil,
                       let release = UpdateCheck.parseGitHubRelease(data) else {
                     self.log.info("update check failed: \(error?.localizedDescription ?? "bad payload", privacy: .public)")
+                    // Don't burn the daily slot on a failure — a check that
+                    // lands mid-flight or behind a captive portal would
+                    // otherwise silence updates for the next 24 hours.
+                    self.lastCheck = previousCheck
                     if userInitiated { self.showCheckFailed() }
                     return
                 }
@@ -94,15 +99,26 @@ final class UpdateController {
         available = release
         onAvailableChanged?()
         log.info("update available: \(release.version, privacy: .public)")
-        // Respect "Skip This Version" for automatic checks only — an explicit
-        // "Check for Updates…" always shows what's out there.
-        if !userInitiated && skippedVersion == release.version { return }
+        // A background find NEVER opens a modal. `runModal()` blocks the main
+        // run loop, and Smart NoSleep's tick timer lives there — an unattended
+        // 2 AM alert would freeze the countdown and keep the Mac awake until
+        // someone clicked a button. The menu title is the notification instead.
+        guard userInitiated else { return }
+        if skippedVersion == release.version { return }
         promptToUpdate(release, userInitiated: userInitiated)
     }
 
     // MARK: - UI
 
     func promptToUpdate(_ release: ReleaseInfo, userInitiated: Bool) {
+        // The pkg always installs to /Applications. Offering an in-place update
+        // to a copy running from anywhere else would install a SECOND NoSleep
+        // beside it — two login items fighting over one system-wide setting,
+        // and the running copy's version never changes so it re-offers forever.
+        guard Bundle.main.bundleURL.path.hasPrefix("/Applications/") else {
+            offerManualUpdate(release)
+            return
+        }
         let alert = NSAlert()
         alert.alertStyle = .informational
         alert.messageText = "NoSleep \(release.version) is available"
@@ -167,6 +183,23 @@ final class UpdateController {
         proc.standardError = FileHandle.nullDevice
         try? proc.run()
         proc.waitUntilExit()
+    }
+
+    private func offerManualUpdate(_ release: ReleaseInfo) {
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = "NoSleep \(release.version) is available"
+        alert.informativeText = """
+        NoSleep updates itself only when it lives in your Applications folder. \
+        Move NoSleep there and check again, or download the installer manually.
+        """
+        alert.addButton(withTitle: "Open Release Page")
+        alert.addButton(withTitle: "Later")
+        NSApp.activate(ignoringOtherApps: true)
+        if alert.runModal() == .alertFirstButtonReturn,
+           let page = release.pageURL ?? release.pkgURL {
+            NSWorkspace.shared.open(page)
+        }
     }
 
     private func showUpToDate() {

@@ -5,6 +5,16 @@
 loggedInUser=$(/usr/bin/stat -f "%Su" /dev/console)
 uid=$(/usr/bin/id -u "$loggedInUser")
 
+# An update installs over a RUNNING NoSleep. Without this the old process keeps
+# running from the replaced bundle: it still reports the old version, so it goes
+# on offering the same update every day, and it still holds the sleep block.
+# SIGTERM lets applicationWillTerminate release that block cleanly.
+/usr/bin/pkill -x NoSleepApp 2>/dev/null || true
+for _ in 1 2 3 4 5; do
+    /usr/bin/pgrep -x NoSleepApp >/dev/null 2>&1 || break
+    /bin/sleep 1
+done
+
 if [ -n "$loggedInUser" ] && [ "$loggedInUser" != "root" ] && [ -n "$uid" ]; then
     /bin/launchctl asuser "$uid" /usr/bin/open -a "/Applications/NoSleep.app" || true
 fi

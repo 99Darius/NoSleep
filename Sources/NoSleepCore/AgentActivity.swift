@@ -105,11 +105,16 @@ public final class AgentActivityTracker {
 /// Concurrency: not thread-safe by design; all calls happen on the main thread.
 public final class IdleDetector {
     private let graceTicks: Int
-    private let onIdle: () -> Void
+    /// Returns whether the idle verdict was acted on. `false` means the handler
+    /// could not release the sleep block (e.g. the passwordless sudoers rule is
+    /// gone), so the episode stays un-fired and the next idle tick retries —
+    /// otherwise a single failure would leave the Mac awake indefinitely with
+    /// no warning.
+    private let onIdle: () -> Bool
     private var idleTicks = 0
     private var fired = false
 
-    public init(graceTicks: Int, onIdle: @escaping () -> Void) {
+    public init(graceTicks: Int, onIdle: @escaping () -> Bool) {
         self.graceTicks = graceTicks
         self.onIdle = onIdle
     }
@@ -122,8 +127,7 @@ public final class IdleDetector {
         }
         idleTicks += 1
         if idleTicks >= graceTicks && !fired {
-            fired = true
-            onIdle()
+            fired = onIdle()
         }
     }
 
