@@ -651,11 +651,11 @@ do {
     // The whole point: NoSleep must never be the reason a Mac hard-shuts-down
     // on an empty battery. On 2026-08-17 it did, and the battery's health
     // reading dropped from Good to Poor in the same boot.
-    check(BatteryGuard.shouldRelease(BatteryState(isOnBattery: true, percent: 8)),
+    check(BatteryGuard.shouldRelease(BatteryState(isOnBattery: true, percent: 3)),
           "a critically low battery releases the sleep block")
-    check(BatteryGuard.shouldRelease(BatteryState(isOnBattery: true, percent: 10)),
+    check(BatteryGuard.shouldRelease(BatteryState(isOnBattery: true, percent: 5)),
           "the threshold itself releases")
-    check(!BatteryGuard.shouldRelease(BatteryState(isOnBattery: true, percent: 11)),
+    check(!BatteryGuard.shouldRelease(BatteryState(isOnBattery: true, percent: 6)),
           "one point above the threshold keeps working")
     check(!BatteryGuard.shouldRelease(BatteryState(isOnBattery: false, percent: 3)),
           "a low battery on the charger is charging, not dying")

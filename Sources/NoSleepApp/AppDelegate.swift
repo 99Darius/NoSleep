@@ -161,7 +161,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// Watches the battery in every mode, not just Smart — Absolute NoSleep can
     /// flatten a Mac just as thoroughly, and did on 2026-08-17. One minute is
-    /// fine-grained enough: the last 10% of a battery takes far longer than that
+    /// fine-grained enough: the last few percent of a battery take far longer
     /// to spend, and the check is a cheap IOKit snapshot.
     private func startBatteryWatch() {
         let timer = Timer(timeInterval: 60, repeats: true) { [weak self] _ in

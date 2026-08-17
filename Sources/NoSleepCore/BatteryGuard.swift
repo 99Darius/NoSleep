@@ -24,7 +24,7 @@ public struct BatteryState: Equatable {
 /// the battery has done more damage than the sleep it prevented was worth.
 public enum BatteryGuard {
     /// Release the block at or below this charge, in any mode.
-    public static let releasePercent = 10
+    public static let releasePercent = 5
     /// Only re-engage once the battery has genuinely recovered. The gap between
     /// the two thresholds is what stops a Mac parked at the line from flapping
     /// the block once a minute.
