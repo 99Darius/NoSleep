@@ -9,3 +9,4 @@ installer/resources/background.png
 installer/resources/background-dark.png
 installer/resources/LICENSE.txt
 .vercel/
+.NoSleep.app.root-leftover/

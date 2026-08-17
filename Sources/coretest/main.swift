@@ -566,7 +566,7 @@ do {
                                                 displaySleepTimeout: 0)),
           "the headless fallback window is not tripped by a short break")
     check(!DisplayJudge.isAsleep(DisplaySignals(displaySleepAssertionHeld: true,
-                                                hidIdleSeconds: 86_400,
+                                                hidIdleSeconds: 45 * 60,
                                                 displaySleepTimeout: 0)),
           "a held display-sleep assertion blocks the headless fallback too")
 
@@ -575,9 +575,46 @@ do {
                                                displaysAllOff: true)),
           "all panels dark means dark, even if a wake notification was the last one seen")
     check(!DisplayJudge.isAsleep(DisplaySignals(displaysAllOff: false,
-                                               hidIdleSeconds: 86_400,
+                                               hidIdleSeconds: 45 * 60,
                                                displaySleepTimeout: hour)),
           "a lit panel (external monitor) blocks the idle fallback")
+
+    // Live failure 2026-08-16→17: a stuck "Recording microphone" assertion from
+    // a transcription app pinned the display on all night with an external
+    // monitor lit. Both signals above said "user present", the countdown never
+    // advanced, and the Mac ran the battery flat to a hard shutdown. Nothing a
+    // present human does looks like hours of literally zero input, so past the
+    // ceiling the lit screen stops meaning anyone is in front of it.
+    check(DisplayJudge.isAsleep(DisplaySignals(displaysAllOff: false,
+                                               hidIdleSeconds: 7 * hour,
+                                               displaySleepTimeout: hour)),
+          "a lit panel cannot hold the countdown past the absence ceiling")
+    check(DisplayJudge.isAsleep(DisplaySignals(displaySleepAssertionHeld: true,
+                                               hidIdleSeconds: 7 * hour,
+                                               displaySleepTimeout: hour)),
+          "a stuck display-sleep assertion cannot hold it past the ceiling either")
+    check(DisplayJudge.isAsleep(DisplaySignals(notifiedAsleep: false,
+                                               displaysAllOff: false,
+                                               displaySleepAssertionHeld: true,
+                                               hidIdleSeconds: 7 * hour,
+                                               displaySleepTimeout: 0)),
+          "every present-looking signal at once still yields to the ceiling")
+    // The ceiling must clear the longest thing anyone passively watches.
+    check(!DisplayJudge.isAsleep(DisplaySignals(displaysAllOff: false,
+                                               displaySleepAssertionHeld: true,
+                                               hidIdleSeconds: 110 * 60,
+                                               displaySleepTimeout: hour)),
+          "a feature-length film with no input is still someone watching")
+    // Someone who set a 3-hour display timeout means it: scale the ceiling to
+    // their own setting rather than second-guessing it after two hours.
+    check(!DisplayJudge.isAsleep(DisplaySignals(displaysAllOff: false,
+                                               hidIdleSeconds: 5 * hour,
+                                               displaySleepTimeout: 3 * hour)),
+          "the ceiling scales with a long user-set display-sleep timeout")
+    check(DisplayJudge.isAsleep(DisplaySignals(displaysAllOff: false,
+                                               hidIdleSeconds: 7 * hour,
+                                               displaySleepTimeout: 3 * hour)),
+          "…but that scaled ceiling still has a top")
 
     // Regression guard for the 2026-08-07 / 08-10 complaints: watching a film
     // holds the screen on past the display-sleep timeout with no input. The
@@ -606,6 +643,38 @@ do {
                                                hidIdleSeconds: 0,
                                                displaySleepTimeout: hour)),
           "a sleep notification wins even with fresh input (lid just shut)")
+}
+
+// MARK: - BatteryGuard (live failure 2026-08-16→17: ran the battery to 0)
+
+do {
+    // The whole point: NoSleep must never be the reason a Mac hard-shuts-down
+    // on an empty battery. On 2026-08-17 it did, and the battery's health
+    // reading dropped from Good to Poor in the same boot.
+    check(BatteryGuard.shouldRelease(BatteryState(isOnBattery: true, percent: 8)),
+          "a critically low battery releases the sleep block")
+    check(BatteryGuard.shouldRelease(BatteryState(isOnBattery: true, percent: 10)),
+          "the threshold itself releases")
+    check(!BatteryGuard.shouldRelease(BatteryState(isOnBattery: true, percent: 11)),
+          "one point above the threshold keeps working")
+    check(!BatteryGuard.shouldRelease(BatteryState(isOnBattery: false, percent: 3)),
+          "a low battery on the charger is charging, not dying")
+    // Desktop Macs and unreadable power sources must not be treated as empty.
+    check(!BatteryGuard.shouldRelease(nil),
+          "no readable battery never releases the block")
+
+    check(BatteryGuard.shouldResume(BatteryState(isOnBattery: false, percent: 5)),
+          "plugging in resumes immediately, whatever the charge")
+    check(!BatteryGuard.shouldResume(BatteryState(isOnBattery: true, percent: 12)),
+          "a small recovery on battery does not resume")
+    check(BatteryGuard.shouldResume(BatteryState(isOnBattery: true, percent: 25)),
+          "a real recovery on battery resumes")
+    check(BatteryGuard.shouldResume(nil),
+          "an unreadable battery must not strand the block off forever")
+    // Release and resume must not overlap, or a Mac sitting at the threshold
+    // would flap the sleep block once a minute all night.
+    check(BatteryGuard.resumePercent > BatteryGuard.releasePercent,
+          "the resume threshold sits above the release threshold")
 }
 
 // MARK: - UpdateCheck

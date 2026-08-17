@@ -56,6 +56,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                                     store: store)
     private let updater = UpdateController()
     private var updateTimer: Timer?
+    private var batteryTimer: Timer?
+    /// The sleep block was released because the battery was nearly empty.
+    /// Persisted like `smartDozing`: a relaunch must not forget why keep-awake
+    /// is off and quietly re-engage it into a dying battery.
+    private var batteryHold: Bool {
+        get { UserDefaults.standard.bool(forKey: "batteryHold") }
+        set { UserDefaults.standard.set(newValue, forKey: "batteryHold") }
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         manager.onChange = { [weak self] in self?.persistAndRender() }
@@ -148,6 +156,61 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         persistAndRender()
         reconcileLeftoverSleepBlock()
         startUpdateChecks()
+        startBatteryWatch()
+    }
+
+    /// Watches the battery in every mode, not just Smart — Absolute NoSleep can
+    /// flatten a Mac just as thoroughly, and did on 2026-08-17. One minute is
+    /// fine-grained enough: the last 10% of a battery takes far longer than that
+    /// to spend, and the check is a cheap IOKit snapshot.
+    private func startBatteryWatch() {
+        let timer = Timer(timeInterval: 60, repeats: true) { [weak self] _ in
+            self?.checkBattery()
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        batteryTimer = timer
+        // The battery notice fires in every mode, including Absolute, where the
+        // agent monitor never runs to ask for permission.
+        requestNotificationAuthOnce()
+        checkBattery()
+    }
+
+    /// Releases the sleep block on a nearly-empty battery and re-engages it once
+    /// the Mac is charging again. This runs underneath every other decision:
+    /// whatever the user or the agent monitor wants, a Mac that shuts down from
+    /// an empty battery keeps nothing awake.
+    private func checkBattery() {
+        let state = BatteryGuard.read()
+        let log = Logger(subsystem: "com.nosleep", category: "battery")
+        if manager.isActive, BatteryGuard.shouldRelease(state) {
+            // Unattended path only: this fires with the lid shut and nobody
+            // watching, so a failure means "try again in a minute", never a
+            // password prompt.
+            guard manager.deactivateUnattended() else {
+                log.error("battery at \(state?.percent ?? -1)% — release failed, retrying")
+                return
+            }
+            batteryHold = true
+            timer.cancel()
+            currentExpiry = nil
+            log.info("battery at \(state?.percent ?? -1)% — released the sleep block")
+            notifyBatteryRelease(percent: state?.percent ?? BatteryGuard.releasePercent)
+            persistAndRender()
+        } else if batteryHold, BatteryGuard.shouldResume(state) {
+            if manager.activateUnattended() {
+                batteryHold = false
+                log.info("battery recovered — sleep block re-engaged")
+            }
+            persistAndRender()
+        }
+    }
+
+    private func notifyBatteryRelease(percent: Int) {
+        notify(title: "NoSleep let your Mac sleep to save the battery",
+               body: "Your battery was down to \(percent)% on battery power, so NoSleep "
+                   + "released the sleep block rather than let the Mac shut down empty. "
+                   + "It re-engages by itself once you plug back in.",
+               identifier: "com.nosleep.battery-hold")
     }
 
     /// Daily update check. The first check waits a few seconds so launch isn't
@@ -193,6 +256,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if manager.isActive || smartDozing {
             timer.cancel(); currentExpiry = nil
             smartDozing = false         // manual off fully disarms
+            batteryHold = false
             store.clearPendingRecap()
             manager.deactivate()        // pmset disablesleep 0 (admin prompt)
             persistAndRender()
@@ -214,6 +278,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func activateClosedLid() {
         guard confirmClosedLidIfNeeded() else { return }
         smartDozing = false             // manual on = fully engaged
+        batteryHold = false             // explicit user intent clears the brake
         store.clearPendingRecap()       // user is here and re-arming — no recap needed
         manager.activate()              // triggers the admin prompt via PMSetSleepBlocker
     }
@@ -329,7 +394,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// sudo -n only, so a missing sudoers rule means "stay dozing", never a
     /// password prompt looping once per tick at 3 AM.
     private func handleAgentsBusy(_ agents: [String]) {
-        guard smartDozing, !manager.isActive else { return }
+        // A nearly-empty battery outranks busy agents: re-engaging here would
+        // undo the battery release once a minute until the Mac died anyway.
+        guard smartDozing, !manager.isActive, !batteryHold else { return }
         if manager.activateUnattended() {
             smartDozing = false
         }
@@ -385,7 +452,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         body += " Still armed — it re-engages when agents work again."
 
-        let title = "Smart NoSleep is letting your Mac sleep"
+        notify(title: "Smart NoSleep is letting your Mac sleep",
+               body: body,
+               identifier: "com.nosleep.agents-idle")
+    }
+
+    /// System notification with an in-app toast fallback. These fire with the
+    /// lid closed, so Notification Center is the only place the user will ever
+    /// read them — but auth is denied often enough (ad-hoc-signed builds) that
+    /// the toast has to cover for it.
+    private func notify(title: String, body: String, identifier: String) {
         // UNUserNotificationCenter traps in un-bundled dev runs (swift run):
         // go straight to the in-app toast there.
         guard Bundle.main.bundleIdentifier != nil else {
@@ -398,12 +474,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 let content = UNMutableNotificationContent()
                 content.title = title
                 content.body = body
-                center.add(UNNotificationRequest(identifier: "com.nosleep.agents-idle",
+                center.add(UNNotificationRequest(identifier: identifier,
                                                  content: content, trigger: nil))
             } else {
-                // Auth denied/never granted (common for ad-hoc-signed builds):
-                // fall back to our own floating toast so the user still sees
-                // when and why the Mac went to sleep.
                 DispatchQueue.main.async {
                     ToastPanel.show(title: title, body: body)
                 }
@@ -423,6 +496,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             case .off:
                 self.timer.cancel(); self.currentExpiry = nil
                 self.smartDozing = false
+                self.batteryHold = false
                 self.store.clearPendingRecap()
                 self.manager.deactivate()
                 self.persistAndRender()

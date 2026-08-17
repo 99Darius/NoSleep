@@ -27,6 +27,26 @@ public struct DisplaySignals: Equatable {
     /// could never conclude the user had left on those machines.
     public static let headlessIdleFallback: TimeInterval = 30 * 60
 
+    /// Past this much input silence, nothing gets to claim the user is present.
+    ///
+    /// A lit panel and a held display-sleep assertion are both evidence of
+    /// presence right up until they aren't: a stuck recording assertion from a
+    /// transcription app pinned the display on for a whole night on
+    /// 2026-08-16→17, so NoSleep held the sleep block until the battery hit
+    /// zero and the Mac hard-shut-down. A person watching a film still exists —
+    /// they shift, they scrub, they touch the trackpad. Hours of literally zero
+    /// events do not happen with someone in the chair, whatever the screen says.
+    public static let absenceCeiling: TimeInterval = 2 * 3600
+
+    /// The ceiling for these signals. Someone who set a 3-hour display-sleep
+    /// timeout has told macOS how long their idle stretches run; respect that
+    /// rather than overruling them after two hours. Capped so a "never sleep
+    /// the display" setting can't push the ceiling out of reach.
+    public static func absenceCeiling(for signals: DisplaySignals) -> TimeInterval {
+        let scaled = 2 * signals.displaySleepTimeout
+        return min(max(absenceCeiling, scaled), 6 * 3600)
+    }
+
     public init(notifiedAsleep: Bool? = nil,
                 cgReportsAsleep: Bool = false,
                 displaysAllOff: Bool? = nil,
@@ -55,17 +75,24 @@ public enum DisplayJudge {
         if s.notifiedAsleep == true { return true }
         if s.cgReportsAsleep { return true }
 
-        // 2. Live hardware evidence of a lit panel outranks the heuristic.
+        // 2. Beyond the absence ceiling nothing gets to vouch for the user.
+        // A lit screen is only evidence of presence while presence is still
+        // physically plausible; after hours without a single event it is
+        // evidence of a stuck assertion or a monitor nobody is sitting at.
+        // Skipping this is what drained the battery flat on 2026-08-17.
+        if s.hidIdleSeconds >= DisplaySignals.absenceCeiling(for: s) { return true }
+
+        // 3. Live hardware evidence of a lit panel outranks the heuristic.
         if s.displaysAllOff == false { return false }
 
-        // 3. Something is deliberately holding the screen on — a film, a video
+        // 4. Something is deliberately holding the screen on — a film, a video
         // call, a presentation. macOS's idle timer is suspended, so no amount of
         // keyboard silence implies the user left. Inferring absence here is the
         // 2026-08-07 / 08-10 complaint: a "letting your Mac sleep" notice in the
         // face of someone who is sitting right there watching.
         if s.displaySleepAssertionHeld { return false }
 
-        // 4. Nothing is holding the screen on, so macOS's own idle timer is
+        // 5. Nothing is holding the screen on, so macOS's own idle timer is
         // running. Once the user has been idle past it, the screen is dark
         // whatever the other signals claim — that claim is what kept the Mac
         // awake all night on 2026-08-16. With no timeout to go by (display set
