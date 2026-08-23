@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pmset disablesleep explicado: la única forma de mantener un Mac despierto con la tapa cerrada — y su trampa para la batería</title>
+<meta name="description" content="Qué hace realmente «sudo pmset -a disablesleep 1» en macOS, por qué es la única configuración que resiste una tapa cerrada y el efecto secundario poco conocido que puede descargar por completo la batería de un MacBook hasta un apagado forzado.">
+<link rel="canonical" href="https://site-ten-blond-47.vercel.app/es/pmset-disablesleep">
+<link rel="alternate" hreflang="en" href="https://site-ten-blond-47.vercel.app/pmset-disablesleep">
+<link rel="alternate" hreflang="de" href="https://site-ten-blond-47.vercel.app/de/pmset-disablesleep">
+<link rel="alternate" hreflang="es" href="https://site-ten-blond-47.vercel.app/es/pmset-disablesleep">
+<link rel="alternate" hreflang="fr" href="https://site-ten-blond-47.vercel.app/fr/pmset-disablesleep">
+<link rel="alternate" hreflang="ja" href="https://site-ten-blond-47.vercel.app/ja/pmset-disablesleep">
+<link rel="alternate" hreflang="ko" href="https://site-ten-blond-47.vercel.app/ko/pmset-disablesleep">
+<link rel="alternate" hreflang="pt-BR" href="https://site-ten-blond-47.vercel.app/pt/pmset-disablesleep">
+<link rel="alternate" hreflang="zh-Hans" href="https://site-ten-blond-47.vercel.app/zh/pmset-disablesleep">
+<link rel="alternate" hreflang="x-default" href="https://site-ten-blond-47.vercel.app/pmset-disablesleep">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="NoSleep">
+<meta property="og:title" content="pmset disablesleep explicado: la única forma de mantener un Mac despierto con la tapa cerrada — y su trampa para la batería">
+<meta property="og:description" content="Qué hace realmente «sudo pmset -a disablesleep 1» en macOS, por qué es la única configuración que resiste una tapa cerrada y el efecto secundario poco conocido que puede descargar por completo la batería de un MacBook hasta un apagado forzado.">
+<meta property="og:url" content="https://site-ten-blond-47.vercel.app/es/pmset-disablesleep">
+<meta property="og:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_ES">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="pmset disablesleep explicado: la única forma de mantener un Mac despierto con la tapa cerrada — y su trampa para la batería">
+<meta name="twitter:description" content="Qué hace realmente «sudo pmset -a disablesleep 1» en macOS, por qué es la única configuración que resiste una tapa cerrada y el efecto secundario poco conocido que puede descargar por completo la batería de un MacBook hasta un apagado forzado.">
+<meta name="twitter:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"TechArticle","headline":"pmset disablesleep: qué hace y la trampa para la batería que nadie menciona","description":"Qué hace realmente «sudo pmset -a disablesleep 1» en macOS, por qué es la única configuración que resiste una tapa cerrada y el efecto secundario poco conocido que puede descargar por completo la batería de un MacBook hasta un apagado forzado.","inLanguage":"es","datePublished":"2026-08-23","dateModified":"2026-08-23","author":{"@type":"Person","name":"Darius Cheung","url":"https://github.com/99Darius"},"publisher":{"@type":"Organization","name":"NoSleep","url":"https://site-ten-blond-47.vercel.app"},"mainEntityOfPage":"https://site-ten-blond-47.vercel.app/es/pmset-disablesleep","image":"https://site-ten-blond-47.vercel.app/og.jpg","about":{"@type":"SoftwareApplication","name":"NoSleep","operatingSystem":"macOS"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"NoSleep","item":"https://site-ten-blond-47.vercel.app/es/"},{"@type":"ListItem","position":2,"name":"pmset disablesleep: qué hace y la trampa para la batería que nadie menciona","item":"https://site-ten-blond-47.vercel.app/es/pmset-disablesleep"}]}]}</script>
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --card: #ffffff;
+    --text: #1d1d1f;
+    --muted: #6b6b70;
+    --accent: #5566ff;
+    --accent-deep: #2c3bb0;
+    --accent-soft: #eef1ff;
+    --accent-border: #d4d9ff;
+    --shadow: 0 10px 40px rgba(40, 50, 120, 0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e0f17;
+      --card: #181a26;
+      --text: #f5f5f7;
+      --muted: #a0a0aa;
+      --accent: #8190ff;
+      --accent-deep: #cdd5ff;
+      --accent-soft: #20243f;
+      --accent-border: #353a66;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 22px; }
+
+  /* Hero */
+  header { text-align: center; padding: 72px 0 48px; }
+  .logo {
+    width: 92px; height: 92px; margin: 0 auto 26px;
+    border-radius: 22px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .logo span {
+    font-size: 52px; font-weight: 800; color: #fff; line-height: 1;
+  }
+  .logo .strike {
+    position: absolute; width: 70%; height: 4px; background: rgba(255,255,255,0.92);
+    border-radius: 3px; transform: rotate(-45deg);
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.5px; }
+  .tagline { font-size: 19px; color: var(--muted); margin: 0 auto 34px; max-width: 520px; }
+
+  .cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent); color: #fff; text-decoration: none;
+    font-size: 17px; font-weight: 600;
+    padding: 15px 30px; border-radius: 13px;
+    box-shadow: var(--shadow); transition: transform .12s ease, background .12s ease;
+  }
+  .cta:hover { transform: translateY(-1px); background: var(--accent-deep); }
+  .cta-sub { display: block; font-size: 13px; color: var(--muted); margin-top: 14px; }
+
+  /* Email-gate download form */
+  .dl-form {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    max-width: 480px; margin: 0 auto;
+  }
+  .dl-form input[type="email"] {
+    flex: 1 1 200px; min-width: 0;
+    font: inherit; font-size: 16px; color: var(--text);
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 13px; padding: 14px 16px; outline: none;
+  }
+  .dl-form input[type="email"]:focus { border-color: var(--accent); }
+  .dl-form .cta { border: 0; cursor: pointer; font-family: inherit; }
+  .gh-link {
+    display: inline-block; margin-top: 12px; font-size: 14px; font-weight: 600;
+    color: var(--accent); text-decoration: none;
+  }
+  .gh-link:hover { text-decoration: underline; }
+  kbd {
+    font-family: inherit; font-weight: 700;
+    background: var(--accent-soft); color: var(--accent-deep);
+    border: 1px solid var(--accent-border); border-radius: 7px;
+    padding: 2px 8px; font-size: 0.92em; white-space: nowrap;
+  }
+
+  /* Cards */
+  section { padding: 14px 0; }
+  .card {
+    background: var(--card); border-radius: 18px; padding: 28px 30px;
+    box-shadow: var(--shadow); margin: 18px 0;
+  }
+  .card h2 { font-size: 21px; margin: 0 0 16px; }
+  .feature { display: flex; gap: 14px; margin: 14px 0; align-items: flex-start; }
+  .feature .ico {
+    flex: 0 0 38px; width: 38px; height: 38px; border-radius: 11px;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    display: flex; align-items: center; justify-content: center; font-size: 19px;
+  }
+  .feature b { display: block; font-size: 15px; }
+  .feature p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+
+  ol { padding-left: 22px; margin: 0; }
+  ol li { margin: 10px 0; font-size: 15px; }
+  .note {
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 12px; padding: 16px 18px; font-size: 14px; margin-top: 8px;
+  }
+  code {
+    font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.88em;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 6px; padding: 2px 7px;
+  }
+
+  /* Smart NoSleep showcase (faithful macOS mockups) */
+  .shots { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  .shot { flex: 1 1 260px; max-width: 330px; }
+  .shot .cap { font-size: 13px; color: var(--muted); text-align: center; margin-top: 12px; }
+  .macmenu {
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 10px; box-shadow: var(--shadow);
+    padding: 5px; font-size: 13.5px; line-height: 1.25;
+  }
+  .macmenu .mi { padding: 5px 12px 5px 26px; border-radius: 6px; position: relative; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .macmenu .mi.dim { color: var(--muted); font-size: 12.5px; }
+  .macmenu .mi.checked::before { content: "✓"; position: absolute; left: 9px; font-weight: 700; }
+  .macmenu .mi.sel { background: var(--accent); color: #fff; }
+  .macmenu .mi .sub { float: right; color: var(--muted); margin-left: 14px; }
+  .macmenu .mi.sel .sub { color: rgba(255,255,255,0.8); }
+  .macmenu hr { border: 0; border-top: 1px solid var(--accent-border); margin: 5px 10px; }
+  .macnotif {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 16px; box-shadow: var(--shadow); padding: 14px 16px;
+  }
+  .macnotif .nicon {
+    flex: 0 0 40px; width: 40px; height: 40px; border-radius: 9px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 22px; position: relative;
+  }
+  .macnotif .nicon i {
+    position: absolute; width: 66%; height: 2.5px; background: rgba(255,255,255,0.92);
+    border-radius: 2px; transform: rotate(-45deg); display: block;
+  }
+  .macnotif b { display: block; font-size: 13.5px; }
+  .macnotif p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0 56px; }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 560px) {
+    h1 { font-size: 31px; }
+    header { padding: 52px 0 36px; }
+    .card { padding: 22px 20px; }
+  }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="top"><a href="/es/">NoSleep</a><a href="https://github.com/99Darius/NoSleep">GitHub</a></nav>
+
+<article>
+  <h1>pmset disablesleep: qué hace y la trampa para la batería que nadie menciona</h1>
+  <p class="intro">Si has buscado cómo mantener un MacBook despierto con la tapa cerrada, ya habrás visto este comando. Funciona. Y es, de hecho, lo único que funciona. Pero tiene un efecto secundario no documentado explícitamente en ninguna parte, y nos costó una batería.</p>
+  <h2>Qué hace esta opción</h2><pre><code>sudo pmset -a disablesleep 1   # nunca dormir, ni siquiera con la tapa cerrada
+sudo pmset -a disablesleep 0   # volver al comportamiento normal</code></pre><p><code>pmset</code> es la herramienta de gestión de energía de Apple. <code>disablesleep</code> es una clave oculta que le indica al gestor de energía del kernel que rechace <em>todas</em> las solicitudes de sueño: tiempos de inactividad, el comando Dormir del menú Apple y también el sueño en modo «clamshell». La opción <code>-a</code> lo aplica tanto con batería como conectado a la corriente. Sobrevive a los reinicios, y eso es precisamente por lo que olvidar restablecerla es tan común.</p>
+<h2>Por qué nada más resiste una tapa cerrada</h2><p>Aplicaciones como Amphetamine y el comando <code>caffeinate</code> funcionan mediante <em>afirmaciones de energía</em> (<code>IOPMAssertionCreateWithName</code>). Una afirmación dice: «está ocurriendo algo, no entres en sueño por inactividad». Sin embargo, el flujo de sueño en modo «clamshell» no consulta esas afirmaciones: el interruptor de la tapa se trata como una acción del usuario, como seleccionar Dormir desde el menú. Por eso las afirmaciones se ignoran y el Mac entra en sueño. <code>disablesleep</code>, en cambio, opera a un nivel inferior, dentro de la política del gestor de energía, y por eso es la única configuración que se mantiene activa.</p>
+<h2>La trampa: también desactiva el sueño por baja batería</h2><p>Normalmente, macOS fuerza al Mac a entrar en sueño cuando la batería alcanza un nivel crítico, para poder hibernar de forma limpia y evitar perder energía en mitad de una escritura. Ese sueño de emergencia es, desde el punto de vista del gestor de energía, simplemente otra solicitud de sueño —y <code>disablesleep 1</code> la rechaza también.</p><p>Lo confirmamos en un registro del 2026-08-17: la advertencia del 10 % apareció a las 01:32, no hubo ningún evento «Entrando en sueño» después, y la siguiente entrada fue un arranque en frío a las 06:39. El Mac había seguido funcionando hasta que la batería se agotó por completo. La salud de la batería, que antes decía «Buena», pasó a «Pobre» a la mañana siguiente.</p><p>Así que si usas esta opción en un portátil, <strong>tú</strong> debes vigilar la batería, porque macOS ya no lo hará por ti.</p>
+<h2>Cómo usarla con seguridad</h2><p>Tres reglas si la usas en tus propios scripts:</p><ol><li>Siempre combina <code>disablesleep 1</code> con un <code>disablesleep 0</code> garantizado: al salir, ante un error o tras un temporizador.</li><li>Consulta periódicamente el estado de la batería (<code>pmset -g batt</code> o <code>IOPSCopyPowerSourcesInfo</code>) y restablece la opción cuando caiga por debajo del umbral que consideres seguro.</li><li>No confíes en que «la pantalla esté encendida» como prueba de que hay alguien presente. Una afirmación atascada de una app de grabación o transcripción puede mantener la pantalla encendida toda la noche.</li></ol><p>O déjalo en manos de <a href="/">NoSleep</a>: activa la opción al activar «mantener despierto», la desactiva al desactivarla o al salir, la libera automáticamente al llegar al 5 % de batería en todos los modos y, en modo Inteligente, también la desactiva cuando tus agentes de IA entran en inactividad. Es de código abierto, así que puedes ver exactamente cómo lo hace.</p>
+  <div class="cta-box">
+    <p style="color:var(--muted);font-size:14px;margin:0 0 12px">Prueba NoSleep — gratis, de código abierto, sin necesidad de cuenta</p>
+    <form id="dl-form" class="dl-form" novalidate>
+  <input type="email" id="dl-email" placeholder="tú@ejemplo.com" autocomplete="email" aria-label="Email" required>
+  <button class="cta" type="submit">⬇&nbsp; Descargar para macOS</button>
+</form>
+<span class="cta-sub">Indica tu correo electrónico para recibir el instalador y actualizaciones ocasionales — sin spam.<br>Gratis y de código abierto · Compatible con Apple Silicon e Intel · <kbd>⌃⌘S</kbd></span>
+<a class="gh-link" href="https://github.com/99Darius/NoSleep">Código abierto en GitHub →</a>
+  </div>
+</article>
+<section><div class="card"><h2>Guías</h2><ul class="guides"><li><a href="/es/keep-macbook-awake-lid-closed">Cómo mantener un MacBook despierto con la tapa cerrada — sin monitor externo</a></li><li><a href="/es/amphetamine-alternative">Alternativas a Amphetamine para Mac: ¿qué aplicación keep-awake funciona realmente con la tapa cerrada?</a></li><li><a href="/es/claude-code-mac-sleep">Evita que Claude Code se detenga cuando tu Mac entre en modo de reposo</a></li><li><a href="/es/pmset-disablesleep">pmset disablesleep: qué hace y la trampa para la batería que nadie menciona</a></li></ul></div></section>
+<footer>
+  Hecho para macOS · <a href="https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg">Descargar para macOS</a> · <a href="https://github.com/99Darius/NoSleep">Código fuente en GitHub</a>
+  <div class="langs"><a href="/pmset-disablesleep" hreflang="en" class="">English</a><a href="/de/pmset-disablesleep" hreflang="de" class="">Deutsch</a><a href="/es/pmset-disablesleep" hreflang="es" class="cur">Español</a><a href="/fr/pmset-disablesleep" hreflang="fr" class="">Français</a><a href="/ja/pmset-disablesleep" hreflang="ja" class="">日本語</a><a href="/ko/pmset-disablesleep" hreflang="ko" class="">한국어</a><a href="/pt/pmset-disablesleep" hreflang="pt-BR" class="">Português</a><a href="/zh/pmset-disablesleep" hreflang="zh-Hans" class="">简体中文</a></div>
+</footer>
+</div>
+<script>
+(function () {
+  var PKG = "https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg";
+  var form = document.getElementById('dl-form'); if (!form) return;
+  var input = document.getElementById('dl-email');
+  var saved = null; try { saved = localStorage.getItem('nosleepEmail'); } catch (e) {}
+  if (saved) { var a = document.createElement('a'); a.className = 'cta'; a.href = PKG; a.textContent = form.querySelector('button').textContent; form.replaceWith(a); return; }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault(); var email = input.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { input.reportValidity(); return; }
+    try { localStorage.setItem('nosleepEmail', email); } catch (err) {}
+    try { fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }), keepalive: true }).catch(function(){}); } catch (err) {}
+    window.location.href = PKG;
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comment empêcher un MacBook de passer en veille avec le capot fermé (sans écran externe)</title>
+<meta name="description" content="Toutes les méthodes pour éviter que votre MacBook ne passe en veille lorsque vous fermez le capot — mode coquille, commande caffeinate, désactivation de la veille via pmset — et l’unique application gratuite qui le fait en toute sécurité, même sur batterie.">
+<link rel="canonical" href="https://site-ten-blond-47.vercel.app/fr/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="en" href="https://site-ten-blond-47.vercel.app/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="de" href="https://site-ten-blond-47.vercel.app/de/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="es" href="https://site-ten-blond-47.vercel.app/es/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="fr" href="https://site-ten-blond-47.vercel.app/fr/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="ja" href="https://site-ten-blond-47.vercel.app/ja/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="ko" href="https://site-ten-blond-47.vercel.app/ko/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="pt-BR" href="https://site-ten-blond-47.vercel.app/pt/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="zh-Hans" href="https://site-ten-blond-47.vercel.app/zh/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="x-default" href="https://site-ten-blond-47.vercel.app/keep-macbook-awake-lid-closed">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="NoSleep">
+<meta property="og:title" content="Comment empêcher un MacBook de passer en veille avec le capot fermé (sans écran externe)">
+<meta property="og:description" content="Toutes les méthodes pour éviter que votre MacBook ne passe en veille lorsque vous fermez le capot — mode coquille, commande caffeinate, désactivation de la veille via pmset — et l’unique application gratuite qui le fait en toute sécurité, même sur batterie.">
+<meta property="og:url" content="https://site-ten-blond-47.vercel.app/fr/keep-macbook-awake-lid-closed">
+<meta property="og:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Comment empêcher un MacBook de passer en veille avec le capot fermé (sans écran externe)">
+<meta name="twitter:description" content="Toutes les méthodes pour éviter que votre MacBook ne passe en veille lorsque vous fermez le capot — mode coquille, commande caffeinate, désactivation de la veille via pmset — et l’unique application gratuite qui le fait en toute sécurité, même sur batterie.">
+<meta name="twitter:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"TechArticle","headline":"Comment empêcher un MacBook de passer en veille avec le capot fermé — sans écran externe","description":"Toutes les méthodes pour éviter que votre MacBook ne passe en veille lorsque vous fermez le capot — mode coquille, commande caffeinate, désactivation de la veille via pmset — et l’unique application gratuite qui le fait en toute sécurité, même sur batterie.","inLanguage":"fr","datePublished":"2026-08-23","dateModified":"2026-08-23","author":{"@type":"Person","name":"Darius Cheung","url":"https://github.com/99Darius"},"publisher":{"@type":"Organization","name":"NoSleep","url":"https://site-ten-blond-47.vercel.app"},"mainEntityOfPage":"https://site-ten-blond-47.vercel.app/fr/keep-macbook-awake-lid-closed","image":"https://site-ten-blond-47.vercel.app/og.jpg","about":{"@type":"SoftwareApplication","name":"NoSleep","operatingSystem":"macOS"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"NoSleep","item":"https://site-ten-blond-47.vercel.app/fr/"},{"@type":"ListItem","position":2,"name":"Comment empêcher un MacBook de passer en veille avec le capot fermé — sans écran externe","item":"https://site-ten-blond-47.vercel.app/fr/keep-macbook-awake-lid-closed"}]}]}</script>
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --card: #ffffff;
+    --text: #1d1d1f;
+    --muted: #6b6b70;
+    --accent: #5566ff;
+    --accent-deep: #2c3bb0;
+    --accent-soft: #eef1ff;
+    --accent-border: #d4d9ff;
+    --shadow: 0 10px 40px rgba(40, 50, 120, 0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e0f17;
+      --card: #181a26;
+      --text: #f5f5f7;
+      --muted: #a0a0aa;
+      --accent: #8190ff;
+      --accent-deep: #cdd5ff;
+      --accent-soft: #20243f;
+      --accent-border: #353a66;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 22px; }
+
+  /* Hero */
+  header { text-align: center; padding: 72px 0 48px; }
+  .logo {
+    width: 92px; height: 92px; margin: 0 auto 26px;
+    border-radius: 22px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .logo span {
+    font-size: 52px; font-weight: 800; color: #fff; line-height: 1;
+  }
+  .logo .strike {
+    position: absolute; width: 70%; height: 4px; background: rgba(255,255,255,0.92);
+    border-radius: 3px; transform: rotate(-45deg);
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.5px; }
+  .tagline { font-size: 19px; color: var(--muted); margin: 0 auto 34px; max-width: 520px; }
+
+  .cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent); color: #fff; text-decoration: none;
+    font-size: 17px; font-weight: 600;
+    padding: 15px 30px; border-radius: 13px;
+    box-shadow: var(--shadow); transition: transform .12s ease, background .12s ease;
+  }
+  .cta:hover { transform: translateY(-1px); background: var(--accent-deep); }
+  .cta-sub { display: block; font-size: 13px; color: var(--muted); margin-top: 14px; }
+
+  /* Email-gate download form */
+  .dl-form {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    max-width: 480px; margin: 0 auto;
+  }
+  .dl-form input[type="email"] {
+    flex: 1 1 200px; min-width: 0;
+    font: inherit; font-size: 16px; color: var(--text);
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 13px; padding: 14px 16px; outline: none;
+  }
+  .dl-form input[type="email"]:focus { border-color: var(--accent); }
+  .dl-form .cta { border: 0; cursor: pointer; font-family: inherit; }
+  .gh-link {
+    display: inline-block; margin-top: 12px; font-size: 14px; font-weight: 600;
+    color: var(--accent); text-decoration: none;
+  }
+  .gh-link:hover { text-decoration: underline; }
+  kbd {
+    font-family: inherit; font-weight: 700;
+    background: var(--accent-soft); color: var(--accent-deep);
+    border: 1px solid var(--accent-border); border-radius: 7px;
+    padding: 2px 8px; font-size: 0.92em; white-space: nowrap;
+  }
+
+  /* Cards */
+  section { padding: 14px 0; }
+  .card {
+    background: var(--card); border-radius: 18px; padding: 28px 30px;
+    box-shadow: var(--shadow); margin: 18px 0;
+  }
+  .card h2 { font-size: 21px; margin: 0 0 16px; }
+  .feature { display: flex; gap: 14px; margin: 14px 0; align-items: flex-start; }
+  .feature .ico {
+    flex: 0 0 38px; width: 38px; height: 38px; border-radius: 11px;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    display: flex; align-items: center; justify-content: center; font-size: 19px;
+  }
+  .feature b { display: block; font-size: 15px; }
+  .feature p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+
+  ol { padding-left: 22px; margin: 0; }
+  ol li { margin: 10px 0; font-size: 15px; }
+  .note {
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 12px; padding: 16px 18px; font-size: 14px; margin-top: 8px;
+  }
+  code {
+    font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.88em;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 6px; padding: 2px 7px;
+  }
+
+  /* Smart NoSleep showcase (faithful macOS mockups) */
+  .shots { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  .shot { flex: 1 1 260px; max-width: 330px; }
+  .shot .cap { font-size: 13px; color: var(--muted); text-align: center; margin-top: 12px; }
+  .macmenu {
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 10px; box-shadow: var(--shadow);
+    padding: 5px; font-size: 13.5px; line-height: 1.25;
+  }
+  .macmenu .mi { padding: 5px 12px 5px 26px; border-radius: 6px; position: relative; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .macmenu .mi.dim { color: var(--muted); font-size: 12.5px; }
+  .macmenu .mi.checked::before { content: "✓"; position: absolute; left: 9px; font-weight: 700; }
+  .macmenu .mi.sel { background: var(--accent); color: #fff; }
+  .macmenu .mi .sub { float: right; color: var(--muted); margin-left: 14px; }
+  .macmenu .mi.sel .sub { color: rgba(255,255,255,0.8); }
+  .macmenu hr { border: 0; border-top: 1px solid var(--accent-border); margin: 5px 10px; }
+  .macnotif {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 16px; box-shadow: var(--shadow); padding: 14px 16px;
+  }
+  .macnotif .nicon {
+    flex: 0 0 40px; width: 40px; height: 40px; border-radius: 9px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 22px; position: relative;
+  }
+  .macnotif .nicon i {
+    position: absolute; width: 66%; height: 2.5px; background: rgba(255,255,255,0.92);
+    border-radius: 2px; transform: rotate(-45deg); display: block;
+  }
+  .macnotif b { display: block; font-size: 13.5px; }
+  .macnotif p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0 56px; }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 560px) {
+    h1 { font-size: 31px; }
+    header { padding: 52px 0 36px; }
+    .card { padding: 22px 20px; }
+  }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="top"><a href="/fr/">NoSleep</a><a href="https://github.com/99Darius/NoSleep">GitHub</a></nav>
+
+<article>
+  <h1>Comment empêcher un MacBook de passer en veille avec le capot fermé — sans écran externe</h1>
+  <p class="intro">Fermez le capot d’un MacBook et il passe en veille en quelques secondes. Les téléchargements s’arrêtent, les sessions SSH sont coupées, et tout agent IA en cours d’exécution meurt en plein milieu de sa tâche. Voici pourquoi cela se produit — et toutes les solutions pour y remédier, du mode coquille intégré d’Apple à une application gratuite qui gère tout en un seul clic.</p>
+  <h2>Pourquoi un MacBook passe-t-il en veille dès que le capot est fermé ?</h2><p>macOS interprète la fermeture du capot comme une demande explicite de passer en veille. Ce n’est pas un délai d’inactivité que vous pouvez rallonger — c’est un mécanisme distinct appelé <strong>veille en mode coquille</strong>, qui s’active immédiatement, quel que soit ce qui tourne sur la machine. C’est pourquoi les outils qui « empêchent uniquement la veille par inactivité » deviennent inefficaces dès que le capot est fermé.</p>
+<h2>Option 1 : Le mode coquille d’Apple (nécessite une alimentation + un écran)</h2><p>Apple permet effectivement d’utiliser un Mac avec le capot fermé, mais uniquement si <em>les deux conditions suivantes</em> sont remplies : le Mac est branché sur secteur, et un écran externe, un clavier ou une souris est connecté(e). Débranchez l’un ou l’autre, et le Mac passe en veille. Cette solution ne fonctionne donc pas si vous utilisez votre ordinateur portable dans un sac, sur un bureau sans écran, ou sur batterie.</p>
+<h2>Option 2 : La commande caffeinate (ne résiste pas à la fermeture du capot)</h2><p>La commande intégrée <code>caffeinate</code> et la plupart des applications en barre de menus (Amphetamine, KeepingYouAwake, Caffeine) créent une <em>assertion de puissance</em>. Cela empêche la veille par inactivité — l’écran reste allumé pendant votre absence — mais une assertion de puissance ne peut pas outrepasser la veille en mode coquille. Fermez le capot, et le Mac passe quand même en veille.</p>
+<h2>Option 3 : pmset disablesleep (fonctionne, mais dangereux)</h2><p>La seule chose capable de résister à la fermeture du capot est un drapeau système :</p><pre><code>sudo pmset -a disablesleep 1</code></pre><p>Cette commande maintient effectivement le Mac éveillé avec le capot fermé, même sans aucun périphérique connecté. Deux problèmes. Premièrement, vous devez absolument penser à exécuter <code>sudo pmset -a disablesleep 0</code> ensuite, sinon votre Mac ne passera plus jamais en veille. Deuxièmement — et c’est là que ça devient sérieux — <strong>cette commande désactive aussi la veille d’urgence liée à la batterie intégrée à macOS</strong>. Sur batterie, le Mac continuera de fonctionner jusqu’à atteindre 0 %, puis s’éteindra brutalement. Nous l’avons appris à nos dépens : une exécution nocturne, une batterie complètement déchargée, et son état de santé est passé de « Bon » à « Médiocre ».</p>
+<h2>Option 4 : NoSleep (exécute la commande pmset en toute sécurité)</h2><p><a href="/">NoSleep</a> est une application gratuite et open-source en barre de menus qui intègre la commande <code>pmset disablesleep</code> dans un cadre sécurisé, justement absent par défaut :</p><ul><li><strong>Un seul raccourci</strong> (⌃⌘S) active ou désactive la veille avec capot fermé, et restaure systématiquement le comportement normal de veille dès que l’option est désactivée ou que l’application quitte.</li><li><strong>Protection de la batterie</strong> : la commande est automatiquement levée à 5 % de charge, afin que le Mac puisse passer en veille normalement au lieu de s’éteindre brutalement.</li><li><strong>Mode intelligent</strong> : surveille les agents IA en cours d’exécution (Claude Code, Codex, Ollama, Cursor…) et autorise la veille dès qu’ils deviennent inactifs, sans que vous ayez à y penser.</li><li><strong>Minuteries</strong> préréglées (15 min / 1 h / 2 h) si vous avez juste besoin de terminer un téléchargement.</li></ul><p>L’application est écrite en Swift natif, universelle (compatible Apple Silicon et Intel), et ne vous demande votre mot de passe qu’une seule fois.</p>
+<h2>Laquelle choisir ?</h2><ul><li>Vous êtes en station fixe, avec un écran et une alimentation ? Le mode coquille d’Apple convient parfaitement.</li><li>Vous souhaitez simplement garder l’écran allumé pendant que vous regardez une vidéo ? Utilisez <code>caffeinate</code> ou n’importe quelle application anti-veille.</li><li>Vous avez besoin que le Mac continue de fonctionner avec le capot réellement fermé — dans un sac, sur batterie, sans écran ? Vous avez besoin de <code>pmset disablesleep</code>, et vous voulez un outil qui la désactive automatiquement pour vous tout en protégeant votre batterie. C’est exactement le rôle de NoSleep.</li></ul>
+  <div class="cta-box">
+    <p style="color:var(--muted);font-size:14px;margin:0 0 12px">Essayez NoSleep — gratuit, open source, sans compte</p>
+    <form id="dl-form" class="dl-form" novalidate>
+  <input type="email" id="dl-email" placeholder="vous@exemple.com" autocomplete="email" aria-label="Email" required>
+  <button class="cta" type="submit">⬇&nbsp; Télécharger pour macOS</button>
+</form>
+<span class="cta-sub">Indiquez votre adresse e-mail pour recevoir l’installateur et des nouvelles occasionnelles sur les mises à jour — zéro spam.<br>Gratuit et open source · Compatible Apple Silicon et Intel · <kbd>⌃⌘S</kbd></span>
+<a class="gh-link" href="https://github.com/99Darius/NoSleep">Code source ouvert sur GitHub →</a>
+  </div>
+</article>
+<section><div class="card"><h2>Guides</h2><ul class="guides"><li><a href="/fr/keep-macbook-awake-lid-closed">Comment empêcher un MacBook de passer en veille avec le capot fermé — sans écran externe</a></li><li><a href="/fr/amphetamine-alternative">Alternatives à Amphetamine pour Mac : quelle application « keep-awake » fonctionne vraiment avec le couvercle fermé ?</a></li><li><a href="/fr/claude-code-mac-sleep">Empêchez Claude Code de s’arrêter quand votre Mac passe en veille</a></li><li><a href="/fr/pmset-disablesleep">pmset disablesleep : à quoi ça sert, et le piège batterie dont personne ne parle</a></li></ul></div></section>
+<footer>
+  Conçu pour macOS · <a href="https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg">Télécharger pour macOS</a> · <a href="https://github.com/99Darius/NoSleep">Code source sur GitHub</a>
+  <div class="langs"><a href="/keep-macbook-awake-lid-closed" hreflang="en" class="">English</a><a href="/de/keep-macbook-awake-lid-closed" hreflang="de" class="">Deutsch</a><a href="/es/keep-macbook-awake-lid-closed" hreflang="es" class="">Español</a><a href="/fr/keep-macbook-awake-lid-closed" hreflang="fr" class="cur">Français</a><a href="/ja/keep-macbook-awake-lid-closed" hreflang="ja" class="">日本語</a><a href="/ko/keep-macbook-awake-lid-closed" hreflang="ko" class="">한국어</a><a href="/pt/keep-macbook-awake-lid-closed" hreflang="pt-BR" class="">Português</a><a href="/zh/keep-macbook-awake-lid-closed" hreflang="zh-Hans" class="">简体中文</a></div>
+</footer>
+</div>
+<script>
+(function () {
+  var PKG = "https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg";
+  var form = document.getElementById('dl-form'); if (!form) return;
+  var input = document.getElementById('dl-email');
+  var saved = null; try { saved = localStorage.getItem('nosleepEmail'); } catch (e) {}
+  if (saved) { var a = document.createElement('a'); a.className = 'cta'; a.href = PKG; a.textContent = form.querySelector('button').textContent; form.replaceWith(a); return; }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault(); var email = input.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { input.reportValidity(); return; }
+    try { localStorage.setItem('nosleepEmail', email); } catch (err) {}
+    try { fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }), keepalive: true }).catch(function(){}); } catch (err) {}
+    window.location.href = PKG;
+  });
+})();
+</script>
+</body>
+</html>

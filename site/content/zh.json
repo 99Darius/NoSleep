@@ -1,0 +1,205 @@
+{
+  "lang": "zh",
+  "hreflang": "zh-Hans",
+  "native": "简体中文",
+  "ui": {
+    "download": "下载 macOS 版本",
+    "emailPlaceholder": "you@example.com",
+    "emailNote": "留下邮箱，即可获取安装程序及偶尔的更新资讯 — 绝不发送垃圾邮件。",
+    "free": "免费且开源 · 支持 Apple Silicon 与 Intel 芯片",
+    "github": "GitHub 开源项目 →",
+    "guides": "使用指南",
+    "home": "首页",
+    "madeFor": "专为 macOS 打造",
+    "source": "GitHub 源码",
+    "languages": "语言",
+    "backHome": "← NoSleep 首页",
+    "tryIt": "立即体验 NoSleep — 免费、开源、无需注册"
+  },
+  "home": {
+    "title": "NoSleep — 在合盖状态下保持 Mac 醒着，让 AI 代理持续工作",
+    "description": "一款免费开源的 macOS 应用，无需外接显示器，即可在合盖状态下保持 MacBook 醒着——专为 Claude Code、Codex 或任意 AI 代理运行而设计；代理任务完成后自动恢复睡眠，永不耗尽电池。",
+    "h1": "代理工作时保持清醒，任务完成即刻休眠。",
+    "tagline": "一款轻量级菜单栏应用：即使合上盖子，也能让 Mac 保持清醒——无论是运行 Claude Code、Codex、Ollama 还是其他 AI 代理。Smart NoSleep 能智能感知代理何时空闲，并立即解除唤醒锁定，既省电又降温。",
+    "featuresTitle": "它能做什么",
+    "features": [
+      {
+        "icon": "🤖",
+        "title": "Smart NoSleep（智能唤醒）",
+        "body": "专为整夜 AI 编程任务打造：代理忙碌时保持唤醒，空闲后立即允许 Mac 进入睡眠，并通知你任务已结束。"
+      },
+      {
+        "icon": "💤",
+        "title": "合盖唤醒",
+        "body": "即使合上笔记本盖子也能保持唤醒——完全无需外接显示器。"
+      },
+      {
+        "icon": "🔋",
+        "title": "电池安全保护",
+        "body": "电量降至 5% 时自动解除唤醒锁定，确保 Mac 绝不会因耗尽电量而强制关机。"
+      },
+      {
+        "icon": "⌨️",
+        "title": "一键切换",
+        "body": " anywhere 按下 ⌃⌘S 即可开启或关闭唤醒状态，或直接点击菜单栏图标。"
+      },
+      {
+        "icon": "⏱️",
+        "title": "定时唤醒",
+        "body": "可设定 15 分钟、1 小时或 2 小时后自动关闭唤醒状态。"
+      },
+      {
+        "icon": "🪶",
+        "title": "极致轻量",
+        "body": "原生 Swift 编写，非 Electron 构建；CPU 与内存占用几乎为零。"
+      }
+    ],
+    "installTitle": "安装方法",
+    "installIntro": "NoSleep 是开源软件，未使用付费 Apple 开发者证书签名，因此 macOS 首次运行时会显示「无法验证开发者」警告——这完全正常。只需在 Terminal 中执行一次命令即可解决：",
+    "installSteps": [
+      "下载安装包 —— 它将默认保存至「下载」文件夹。",
+      "打开 Terminal（访达 → 应用程序 → 实用工具），粘贴并运行下方命令。",
+      "双击 .pkg 文件 —— 此时即可正常打开安装器。",
+      "按提示完成安装 —— 安装完毕后 NoSleep 将自动启动。"
+    ],
+    "usingTitle": "如何使用",
+    "usingSteps": [
+      "按下 ⌃⌘S 或点击菜单栏图标，即可切换唤醒/休眠状态。",
+      "选择 Smart NoSleep（默认）、Absolute NoSleep 或定时模式。",
+      "合上盖子——你的 AI 代理继续运行；稍后打开盖子，即可查看任务完成时间。"
+    ],
+    "faqTitle": "常见问题",
+    "faq": [
+      {
+        "q": "合盖且不接外接显示器时能用吗？",
+        "a": "可以。这正是 NoSleep 的核心功能。普通唤醒工具仅能阻止空闲休眠；而 NoSleep 还能阻止「合盖休眠」——即你在无任何外设连接时一合盖就触发的系统休眠。"
+      },
+      {
+        "q": "会把电池耗尽吗？",
+        "a": "不会耗尽。所有模式下，NoSleep 均会在电量跌至 5% 时自动释放唤醒锁；当电量回升至 25% 以上或接入电源后，唤醒锁将重新生效。Smart 模式更进一步：一旦检测到 AI 代理进入空闲状态，立即允许 Mac 进入睡眠。"
+      },
+      {
+        "q": "安全吗？为什么 macOS 会弹出警告？",
+        "a": "本项目采用 MIT 开源协议，所有代码均可公开查阅。警告出现的原因仅是该应用未使用付费 Apple 开发者证书签名。执行一条 xattr 命令即可永久消除该提示。"
+      },
+      {
+        "q": "需要管理员权限吗？",
+        "a": "仅需一次。合盖唤醒依赖系统命令 pmset，首次调用时需输入密码授权；之后全程静默运行，无需再次输入。"
+      }
+    ]
+  },
+  "pages": {
+    "keep-macbook-awake-lid-closed": {
+      "title": "如何在合上 MacBook 盖子（无外接显示器）时保持其唤醒",
+      "description": "所有让 MacBook 在合盖后不休眠的方法：Clamshell 模式、caffeinate、pmset disablesleep，以及唯一一款能在电池供电下安全实现此功能的免费应用。",
+      "h1": "如何在合上 MacBook 盖子时保持其唤醒 —— 无需外接显示器",
+      "intro": "合上 MacBook 盖子，它几秒内就会进入休眠。下载中断、SSH 连接断开，甚至正在运行的 AI 代理也会在任务中途戛然而止。本文解释这一行为背后的原因，并为你梳理全部绕过方案：从苹果原生的 Clamshell 模式，到只需一键操作的免费应用。",
+      "sections": [
+        {
+          "h2": "为什么 MacBook 合盖就会休眠",
+          "html": "<p>macOS 将合盖视为明确的休眠指令。这并非可通过设置延长的空闲超时，而是一条独立触发路径，称为 <strong>Clamshell 休眠</strong>——无论当前运行什么任务，它都会立即生效。正因如此，那些仅能「防止空闲休眠」的工具，在盖子合上后完全失效。</p>"
+        },
+        {
+          "h2": "方案一：苹果原生 Clamshell 模式（需电源 + 显示器）",
+          "html": "<p>苹果确实支持合盖运行，但前提是 <em>同时满足以下两个条件</em>：Mac 已连接电源，且已接入外接显示器、键盘或鼠标。任一条件断开，Mac 即刻休眠。对于装在包里的笔记本、桌面无显示器场景，或仅靠电池供电的情况，此方案毫无帮助。</p>"
+        },
+        {
+          "h2": "方案二：caffeinate（无法抵御合盖休眠）",
+          "html": "<p>系统内置的 <code>caffeinate</code> 命令，以及大多数菜单栏应用（如 Amphetamine、KeepingYouAwake、Caffeine）会创建一种 <em>电源断言（power assertion）</em>。这类断言可阻止空闲休眠——例如你暂时离开时屏幕仍保持亮起；但它**无法覆盖 Clamshell 休眠**。一旦合盖，Mac 依然会休眠。</p>"
+        },
+        {
+          "h2": "方案三：pmset disablesleep（有效但危险）",
+          "html": "<p>唯一能真正扛住合盖休眠的，是系统级标志位：</p><pre><code>sudo pmset -a disablesleep 1</code></pre><p>该命令确实能让 Mac 在合盖且无任何外设连接时持续保持唤醒。但存在两大问题：第一，你必须手动执行 <code>sudo pmset -a disablesleep 0</code> 来恢复休眠功能，否则 Mac 将永远无法休眠；第二——更严重的是——<strong>它同时禁用了 macOS 自带的低电量紧急休眠机制</strong>。在电池供电下，Mac 会持续运行直至电量耗尽并强制关机。我们曾亲身踩坑：一次通宵运行后，电池彻底没电，健康度直接从「良好」跌至「较差」。</p>"
+        },
+        {
+          "h2": "方案四：NoSleep（自动安全执行 pmset 操作）",
+          "html": "<p><a href=\"/\">NoSleep</a> 是一款免费开源的菜单栏应用，它为 <code>pmset disablesleep</code> 补齐了缺失的安全防护机制：</p><ul><li><strong>一键开关</strong>（快捷键 ⌃⌘S）即可启用/禁用合盖唤醒，且在关闭或退出应用时自动恢复系统正常休眠行为。</li><li><strong>电池保护</strong>：电量降至 5% 时自动解除锁定，确保 Mac 能按常规休眠，而非硬关机。</li><li><strong>智能模式</strong>：实时监测 AI 代理进程（如 Claude Code、Codex、Ollama、Cursor…），一旦它们进入空闲状态，即刻允许 Mac 正常休眠，无需你手动干预。</li><li><strong>倒计时定时器</strong>：支持 15 分钟 / 1 小时 / 2 小时，专为完成下载等短期任务设计。</li></ul><p>它采用原生 Swift 编写，兼容 Apple Silicon 与 Intel 芯片，且仅需在首次使用时输入一次密码。</p>"
+        },
+        {
+          "h2": "该选哪个？",
+          "html": "<ul><li>在桌面固定使用，配有显示器和电源？苹果原生 Clamshell 模式完全够用。</li><li>需要屏幕常亮（比如观看视频）？用 <code>caffeinate</code> 或任意防休眠应用即可。</li><li>需要 Mac 在<strong>真正合盖状态下持续工作</strong>——比如放在包里、仅靠电池、没有外接显示器？那你必须用 <code>pmset disablesleep</code>，而 NoSleep 正是为此而生：它帮你自动开关、守护电池，安全可靠。</li></ul>"
+        }
+      ]
+    },
+    "amphetamine-alternative": {
+      "title": "Mac 上 Amphetamine 的替代方案（2026 年）：NoSleep 对比 Amphetamine、Caffeine 和 KeepingYouAwake",
+      "description": "对比 macOS 上最佳的防休眠应用——Amphetamine、Caffeine、KeepingYouAwake 与 NoSleep——在合盖运行、电池保护、AI 代理任务完成感知及价格方面的表现。",
+      "h1": "Mac 上的 Amphetamine 替代方案：哪款防休眠应用真正在合盖状态下有效？",
+      "intro": "Amphetamine 常被默认视为「如何阻止 Mac 进入休眠」的答案，它确实是一款不错的应用。但它的设计初衷是保持屏幕常亮，而非让合盖的笔记本持续运行。如果你正面临这类问题——比如整夜编译、长时间下载或运行 AI 代理——那么下面这些选项的实际表现值得一看。",
+      "sections": [
+        {
+          "h2": "横向对比",
+          "html": "<table><thead><tr><th>应用</th><th>价格</th><th>仅合盖（无外接显示器）</th><th>电池保护</th><th>可感知 AI 代理任务结束</th><th>开源</th></tr></thead><tbody><tr><td><strong>NoSleep</strong></td><td>免费</td><td>是</td><td>是 — 电量降至 5% 时自动释放</td><td>是（Smart 模式）</td><td>是，MIT 协议</td></tr><tr><td>Amphetamine</td><td>免费</td><td>仅支持外接电源 + 外接显示器（Closed-Display 模式）</td><td>可选触发器</td><td>否</td><td>否</td></tr><tr><td>KeepingYouAwake</td><td>免费</td><td>否</td><td>否</td><td>否</td><td>是</td></tr><tr><td>Caffeine</td><td>免费</td><td>否</td><td>否</td><td>否</td><td>是</td></tr><tr><td>caffeinate（命令行）</td><td>系统内置</td><td>否</td><td>否</td><td>否</td><td>—</td></tr></tbody></table>"
+        },
+        {
+          "h2": "Amphetamine",
+          "html": "<p>功能最丰富的选择：支持触发器、定时任务、按应用启动会话，并提供可隐藏的 Dock 图标。其 <em>Closed-Display 模式</em> 可让 MacBook 在合盖状态下继续运行——但它依赖 Apple 的「合盖模式」（clamshell mode）路径，因此必须连接电源并外接显示器或输入设备。若仅靠电池供电且未连接任何外设，它会像其他 Mac 一样进入休眠。Reddit 上不乏对此感到意外的用户。</p>"
+        },
+        {
+          "h2": "KeepingYouAwake 与 Caffeine",
+          "html": "<p>两者均为轻量级开源工具，只做一件事：持有系统电源断言（power assertion），防止 Mac 因空闲而休眠。非常适合演示或保持屏幕常亮。但它们均不支持合盖运行，也从未为此场景设计过。</p>"
+        },
+        {
+          "h2": "NoSleep",
+          "html": "<p><a href=\"/\">NoSleep</a> 起源于一个截然不同的需求：一台需在合盖、仅靠电池供电的状态下持续运行的笔记本，同时承载着正在进行中的 AI 编程代理任务。它调用真正能在合盖状态下生效的系统标志（<code>pmset disablesleep</code>），并补足了该标志缺失的两大关键能力——电池防护机制（避免电量耗尽导致强制关机），以及 Smart 模式（当你的 AI 代理进入空闲状态时，立即恢复休眠）。相比 Amphetamine，NoSleep 故意精简了控制项：一个快捷键、三种模式，足够了。</p>"
+        },
+        {
+          "h2": "结论",
+          "html": "<p>如果你需要为长期固定使用的 Mac 配置定时任务和复杂触发逻辑，Amphetamine 依然是极佳之选。但如果你希望 MacBook 在合盖、仅靠电池供电的情况下持续工作，并在任务完成后自动恢复休眠——NoSleep 正是为此而生。</p>"
+        }
+      ]
+    },
+    "claude-code-mac-sleep": {
+      "title": "防止 Claude Code（或其他 AI 代理）在 Mac 睡眠时中断",
+      "description": "Claude Code、Codex、Cursor 和 Ollama 在 MacBook 进入睡眠或合上盖子时都会停止运行。本文解释原因、指出常见无效方案，并介绍一款免费应用——它能让 AI 代理整夜持续运行，同时在任务完成后自动让 Mac 进入睡眠。",
+      "h1": "防止 Claude Code 在 Mac 睡眠时中断",
+      "intro": "你启动一个耗时 20 分钟的 AI 代理任务，合上笔记本去煮杯咖啡，回来却发现会话已死。所有 AI 编程工具都有这个问题：Claude Code、Codex CLI、Cursor 代理、Ollama、Aider……但这并非工具本身的错——根源在于 macOS。",
+      "sections": [
+        {
+          "h2": "为什么代理会中断",
+          "html": "<p>当 Mac 进入睡眠状态时，所有进程都会被冻结：网络连接超时，AI 代理的 API 流中断；唤醒后，工具通常无法恢复到中断前的那一步。合上盖子会立即触发睡眠；保持开盖则会在闲置超时后触发。无论哪种方式，任务都会丢失。</p>"
+        },
+        {
+          "h2": "人们常试但无效的方法",
+          "html": "<ul><li><strong>系统设置中「显示器关闭时防止睡眠」</strong>仅在接通电源时生效，且无法阻止合盖睡眠。</li><li><strong>caffeinate</strong> 或 Amphetamine 可阻止屏幕关闭，但在电池供电且合盖时完全失效。</li><li><strong>半开合着笔记本四处走动</strong>。确实管用，但看起来很滑稽——NoSleep 最初就是这么诞生的。</li><li><strong>tmux / nohup</strong> 能在 SSH 断连后保持进程运行，却无法抵御整机睡眠。</li></ul>"
+        },
+        {
+          "h2": "真正有效的方案",
+          "html": "<p>必须在系统层面告诉 Mac 不要睡眠（<code>pmset disablesleep</code>），并在任务完成后主动让它恢复睡眠——否则它会整夜运行，彻底耗尽电量。<a href=\"/\">NoSleep</a> 正是为此而生：</p><ol><li>按下 ⌃⌘S。智能模式（Smart NoSleep）即刻启用。</li><li>合上盖子。Claude Code 继续运行。</li><li>NoSleep 持续监控 AI 代理进程：一旦检测到它们连续空闲 15 分钟（可自定义），便自动允许 Mac 睡眠，并推送通知，告知睡眠时间及当时运行的任务。</li><li>若电池电量降至 5%，无论当前处于何种模式，NoSleep 都会立即释放睡眠限制。</li></ol>"
+        },
+        {
+          "h2": "智能模式支持检测哪些代理？",
+          "html": "<p>任何作为进程运行的工具均可识别：<code>claude</code>、<code>codex</code>、<code>cursor</code>、<code>ollama</code>、<code>aider</code>、<code>gemini</code> 等主流 CLI 代理。检测基于进程名，因此你自己的脚本只要指定名称，同样适用。如不希望依赖进程检测，也可选用 Absolute NoSleep 或固定计时模式。</p>"
+        },
+        {
+          "h2": "免费、开源、无需账号",
+          "html": "<p>NoSleep 采用 MIT 协议，原生 Swift 编写，体积仅约 1 MB，且不含任何遥测功能。它未签名——首次安装只需一行 <code>xattr</code> 命令（详情见 <a href=\"/\">下载页</a>）。</p>"
+        }
+      ]
+    },
+    "pmset-disablesleep": {
+      "title": "pmset disablesleep 详解：唯一能让 Mac 合盖不休眠的方法——以及那个没人提起的电池陷阱",
+      "description": "sudo pmset -a disablesleep 1 在 macOS 上的真实作用、为何它是唯一能在合盖时持续生效的设置，以及那个鲜为人知的副作用：它会让 MacBook 的电池耗尽至强制关机。",
+      "h1": "pmset disablesleep：它究竟做了什么，还有那个无人提及的电池陷阱",
+      "intro": "如果你搜索过「如何让 MacBook 合盖时不休眠」，一定见过这条命令。它确实有效，而且是唯一真正有效的方案。但它有个未被明确记录的副作用——我们曾因此损坏了一块电池。",
+      "sections": [
+        {
+          "h2": "这个标志的作用",
+          "html": "<pre><code>sudo pmset -a disablesleep 1   # 永不休眠，即使合上盖子\nsudo pmset -a disablesleep 0   # 恢复默认行为</code></pre><p><code>pmset</code> 是 Apple 提供的电源管理工具。<code>disablesleep</code> 是一个隐藏参数，它会指示内核级电源管理器拒绝<strong>所有</strong>休眠请求——包括空闲超时、苹果菜单中的「睡眠」命令，以及合盖休眠（clamshell sleep）。<code>-a</code> 表示该设置同时对电池供电和接通电源两种状态生效。它还会在重启后持续生效，这正是人们常常忘记关闭它的原因。</p>"
+        },
+        {
+          "h2": "为什么其他方法在合盖时统统失效",
+          "html": "<p>像 Amphetamine 这样的 App，或 <code>caffeinate</code> 命令，都是通过「电源断言」（<code>IOPMAssertionCreateWithName</code>）来工作的。断言相当于告诉系统：「当前有任务在运行，请勿因空闲而休眠」。但合盖路径（clamshell path）并不会检查这些断言——盖子开关被视为一种用户操作（就像从菜单中选择「睡眠」），因此所有断言都会被忽略，Mac 依然会休眠。<code>disablesleep</code> 则工作在更低层级，直接介入电源管理策略本身，所以它是唯一能真正「扛住」合盖的设置。</p>"
+        },
+        {
+          "h2": "陷阱：它同时禁用了低电量强制休眠",
+          "html": "<p>macOS 通常会在电池电量极低时强制 Mac 进入休眠，以便安全地执行休眠写盘（hibernate），避免断电导致数据损坏。而这次「紧急休眠」在电源管理器看来，也只是一次普通的休眠请求——<code>disablesleep 1</code> 同样会把它一并拒绝。</p><p>我们在 2026-08-17 的日志中确认了这一点：01:32 触发了 10% 电量警告，之后日志中再无「Entering Sleep」事件，下一条记录是 06:39 的冷启动。Mac 一直运行到电池彻底耗尽。此前电池健康度显示为「良好」，第二天早上则变成了「较差」。</p><p>因此，如果你在笔记本电脑上启用此标志，<strong>你必须亲自盯紧电量</strong>——因为 macOS 已经不再替你代劳了。</p>"
+        },
+        {
+          "h2": "安全使用建议",
+          "html": "<p>如果你自己编写脚本调用它，请务必遵守三条规则：</p><ol><li>始终将 <code>disablesleep 1</code> 与「确保执行」的 <code>disablesleep 0</code> 配对使用——例如在脚本退出、出错或定时器到期时自动关闭。</li><li>定期轮询电池状态（用 <code>pmset -g batt</code> 或 <code>IOPSCopyPowerSourcesInfo</code>），并在电量低于你设定的安全阈值时主动重置该标志。</li><li>切勿以「屏幕是否亮着」作为「有人在使用」的判断依据。录音或转录类 App 可能因断言卡住，导致屏幕整夜不灭。</li></ol><p>或者，交由 <a href=\"/\">NoSleep</a> 来处理：它会在你开启「保持唤醒」时自动设置该标志，关闭或退出时立即清除；在任何模式下电量跌至 5% 时自动释放；Smart 模式下还会在你的 AI 代理进入空闲状态后主动清除。开源可查，代码完全透明。</p>"
+        }
+      ]
+    }
+  }
+}

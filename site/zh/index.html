@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NoSleep — 在合盖状态下保持 Mac 醒着，让 AI 代理持续工作</title>
+<meta name="description" content="一款免费开源的 macOS 应用，无需外接显示器，即可在合盖状态下保持 MacBook 醒着——专为 Claude Code、Codex 或任意 AI 代理运行而设计；代理任务完成后自动恢复睡眠，永不耗尽电池。">
+<link rel="canonical" href="https://site-ten-blond-47.vercel.app/zh/">
+<link rel="alternate" hreflang="en" href="https://site-ten-blond-47.vercel.app/">
+<link rel="alternate" hreflang="de" href="https://site-ten-blond-47.vercel.app/de/">
+<link rel="alternate" hreflang="es" href="https://site-ten-blond-47.vercel.app/es/">
+<link rel="alternate" hreflang="fr" href="https://site-ten-blond-47.vercel.app/fr/">
+<link rel="alternate" hreflang="ja" href="https://site-ten-blond-47.vercel.app/ja/">
+<link rel="alternate" hreflang="ko" href="https://site-ten-blond-47.vercel.app/ko/">
+<link rel="alternate" hreflang="pt-BR" href="https://site-ten-blond-47.vercel.app/pt/">
+<link rel="alternate" hreflang="zh-Hans" href="https://site-ten-blond-47.vercel.app/zh/">
+<link rel="alternate" hreflang="x-default" href="https://site-ten-blond-47.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NoSleep">
+<meta property="og:title" content="NoSleep — 在合盖状态下保持 Mac 醒着，让 AI 代理持续工作">
+<meta property="og:description" content="一款免费开源的 macOS 应用，无需外接显示器，即可在合盖状态下保持 MacBook 醒着——专为 Claude Code、Codex 或任意 AI 代理运行而设计；代理任务完成后自动恢复睡眠，永不耗尽电池。">
+<meta property="og:url" content="https://site-ten-blond-47.vercel.app/zh/">
+<meta property="og:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NoSleep — 在合盖状态下保持 Mac 醒着，让 AI 代理持续工作">
+<meta name="twitter:description" content="一款免费开源的 macOS 应用，无需外接显示器，即可在合盖状态下保持 MacBook 醒着——专为 Claude Code、Codex 或任意 AI 代理运行而设计；代理任务完成后自动恢复睡眠，永不耗尽电池。">
+<meta name="twitter:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"NoSleep","operatingSystem":"macOS 13+","applicationCategory":"UtilitiesApplication","description":"一款免费开源的 macOS 应用，无需外接显示器，即可在合盖状态下保持 MacBook 醒着——专为 Claude Code、Codex 或任意 AI 代理运行而设计；代理任务完成后自动恢复睡眠，永不耗尽电池。","softwareVersion":"1.1.11","downloadUrl":"https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg","url":"https://site-ten-blond-47.vercel.app/zh/","image":"https://site-ten-blond-47.vercel.app/og.jpg","license":"https://opensource.org/licenses/MIT","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Darius Cheung","url":"https://github.com/99Darius"},"codeRepository":"https://github.com/99Darius/NoSleep","inLanguage":"zh-Hans"}</script>
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --card: #ffffff;
+    --text: #1d1d1f;
+    --muted: #6b6b70;
+    --accent: #5566ff;
+    --accent-deep: #2c3bb0;
+    --accent-soft: #eef1ff;
+    --accent-border: #d4d9ff;
+    --shadow: 0 10px 40px rgba(40, 50, 120, 0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e0f17;
+      --card: #181a26;
+      --text: #f5f5f7;
+      --muted: #a0a0aa;
+      --accent: #8190ff;
+      --accent-deep: #cdd5ff;
+      --accent-soft: #20243f;
+      --accent-border: #353a66;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 22px; }
+
+  /* Hero */
+  header { text-align: center; padding: 72px 0 48px; }
+  .logo {
+    width: 92px; height: 92px; margin: 0 auto 26px;
+    border-radius: 22px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .logo span {
+    font-size: 52px; font-weight: 800; color: #fff; line-height: 1;
+  }
+  .logo .strike {
+    position: absolute; width: 70%; height: 4px; background: rgba(255,255,255,0.92);
+    border-radius: 3px; transform: rotate(-45deg);
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.5px; }
+  .tagline { font-size: 19px; color: var(--muted); margin: 0 auto 34px; max-width: 520px; }
+
+  .cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent); color: #fff; text-decoration: none;
+    font-size: 17px; font-weight: 600;
+    padding: 15px 30px; border-radius: 13px;
+    box-shadow: var(--shadow); transition: transform .12s ease, background .12s ease;
+  }
+  .cta:hover { transform: translateY(-1px); background: var(--accent-deep); }
+  .cta-sub { display: block; font-size: 13px; color: var(--muted); margin-top: 14px; }
+
+  /* Email-gate download form */
+  .dl-form {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    max-width: 480px; margin: 0 auto;
+  }
+  .dl-form input[type="email"] {
+    flex: 1 1 200px; min-width: 0;
+    font: inherit; font-size: 16px; color: var(--text);
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 13px; padding: 14px 16px; outline: none;
+  }
+  .dl-form input[type="email"]:focus { border-color: var(--accent); }
+  .dl-form .cta { border: 0; cursor: pointer; font-family: inherit; }
+  .gh-link {
+    display: inline-block; margin-top: 12px; font-size: 14px; font-weight: 600;
+    color: var(--accent); text-decoration: none;
+  }
+  .gh-link:hover { text-decoration: underline; }
+  kbd {
+    font-family: inherit; font-weight: 700;
+    background: var(--accent-soft); color: var(--accent-deep);
+    border: 1px solid var(--accent-border); border-radius: 7px;
+    padding: 2px 8px; font-size: 0.92em; white-space: nowrap;
+  }
+
+  /* Cards */
+  section { padding: 14px 0; }
+  .card {
+    background: var(--card); border-radius: 18px; padding: 28px 30px;
+    box-shadow: var(--shadow); margin: 18px 0;
+  }
+  .card h2 { font-size: 21px; margin: 0 0 16px; }
+  .feature { display: flex; gap: 14px; margin: 14px 0; align-items: flex-start; }
+  .feature .ico {
+    flex: 0 0 38px; width: 38px; height: 38px; border-radius: 11px;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    display: flex; align-items: center; justify-content: center; font-size: 19px;
+  }
+  .feature b { display: block; font-size: 15px; }
+  .feature p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+
+  ol { padding-left: 22px; margin: 0; }
+  ol li { margin: 10px 0; font-size: 15px; }
+  .note {
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 12px; padding: 16px 18px; font-size: 14px; margin-top: 8px;
+  }
+  code {
+    font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.88em;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 6px; padding: 2px 7px;
+  }
+
+  /* Smart NoSleep showcase (faithful macOS mockups) */
+  .shots { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  .shot { flex: 1 1 260px; max-width: 330px; }
+  .shot .cap { font-size: 13px; color: var(--muted); text-align: center; margin-top: 12px; }
+  .macmenu {
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 10px; box-shadow: var(--shadow);
+    padding: 5px; font-size: 13.5px; line-height: 1.25;
+  }
+  .macmenu .mi { padding: 5px 12px 5px 26px; border-radius: 6px; position: relative; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .macmenu .mi.dim { color: var(--muted); font-size: 12.5px; }
+  .macmenu .mi.checked::before { content: "✓"; position: absolute; left: 9px; font-weight: 700; }
+  .macmenu .mi.sel { background: var(--accent); color: #fff; }
+  .macmenu .mi .sub { float: right; color: var(--muted); margin-left: 14px; }
+  .macmenu .mi.sel .sub { color: rgba(255,255,255,0.8); }
+  .macmenu hr { border: 0; border-top: 1px solid var(--accent-border); margin: 5px 10px; }
+  .macnotif {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 16px; box-shadow: var(--shadow); padding: 14px 16px;
+  }
+  .macnotif .nicon {
+    flex: 0 0 40px; width: 40px; height: 40px; border-radius: 9px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 22px; position: relative;
+  }
+  .macnotif .nicon i {
+    position: absolute; width: 66%; height: 2.5px; background: rgba(255,255,255,0.92);
+    border-radius: 2px; transform: rotate(-45deg); display: block;
+  }
+  .macnotif b { display: block; font-size: 13.5px; }
+  .macnotif p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0 56px; }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 560px) {
+    h1 { font-size: 31px; }
+    header { padding: 52px 0 36px; }
+    .card { padding: 22px 20px; }
+  }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="top"><a href="/zh/">NoSleep</a><a href="https://github.com/99Darius/NoSleep">GitHub</a></nav>
+
+<header>
+  <div class="logo"><span>S</span><div class="strike"></div></div>
+  <h1>代理工作时保持清醒，任务完成即刻休眠。</h1>
+  <p class="tagline">一款轻量级菜单栏应用：即使合上盖子，也能让 Mac 保持清醒——无论是运行 Claude Code、Codex、Ollama 还是其他 AI 代理。Smart NoSleep 能智能感知代理何时空闲，并立即解除唤醒锁定，既省电又降温。</p>
+  <form id="dl-form" class="dl-form" novalidate>
+  <input type="email" id="dl-email" placeholder="you@example.com" autocomplete="email" aria-label="Email" required>
+  <button class="cta" type="submit">⬇&nbsp; 下载 macOS 版本</button>
+</form>
+<span class="cta-sub">留下邮箱，即可获取安装程序及偶尔的更新资讯 — 绝不发送垃圾邮件。<br>免费且开源 · 支持 Apple Silicon 与 Intel 芯片 · <kbd>⌃⌘S</kbd></span>
+<a class="gh-link" href="https://github.com/99Darius/NoSleep">GitHub 开源项目 →</a>
+</header>
+<section><div class="card">
+  <h2>它能做什么</h2>
+  <div class="feature"><div class="ico">🤖</div><div><b>Smart NoSleep（智能唤醒）</b><p>专为整夜 AI 编程任务打造：代理忙碌时保持唤醒，空闲后立即允许 Mac 进入睡眠，并通知你任务已结束。</p></div></div><div class="feature"><div class="ico">💤</div><div><b>合盖唤醒</b><p>即使合上笔记本盖子也能保持唤醒——完全无需外接显示器。</p></div></div><div class="feature"><div class="ico">🔋</div><div><b>电池安全保护</b><p>电量降至 5% 时自动解除唤醒锁定，确保 Mac 绝不会因耗尽电量而强制关机。</p></div></div><div class="feature"><div class="ico">⌨️</div><div><b>一键切换</b><p> anywhere 按下 ⌃⌘S 即可开启或关闭唤醒状态，或直接点击菜单栏图标。</p></div></div><div class="feature"><div class="ico">⏱️</div><div><b>定时唤醒</b><p>可设定 15 分钟、1 小时或 2 小时后自动关闭唤醒状态。</p></div></div><div class="feature"><div class="ico">🪶</div><div><b>极致轻量</b><p>原生 Swift 编写，非 Electron 构建；CPU 与内存占用几乎为零。</p></div></div>
+</div></section>
+<section><div class="card">
+  <h2>安装方法</h2>
+  <p style="margin-top:0;color:var(--muted);font-size:14px;">NoSleep 是开源软件，未使用付费 Apple 开发者证书签名，因此 macOS 首次运行时会显示「无法验证开发者」警告——这完全正常。只需在 Terminal 中执行一次命令即可解决：</p>
+  <ol><li>下载安装包 —— 它将默认保存至「下载」文件夹。</li><li>打开 Terminal（访达 → 应用程序 → 实用工具），粘贴并运行下方命令。</li><li>双击 .pkg 文件 —— 此时即可正常打开安装器。</li><li>按提示完成安装 —— 安装完毕后 NoSleep 将自动启动。</li></ol>
+  <pre><code>xattr -d com.apple.quarantine ~/Downloads/NoSleep-Installer-1.1.11.pkg</code></pre>
+</div></section>
+<section><div class="card">
+  <h2>如何使用</h2>
+  <ol><li>按下 ⌃⌘S 或点击菜单栏图标，即可切换唤醒/休眠状态。</li><li>选择 Smart NoSleep（默认）、Absolute NoSleep 或定时模式。</li><li>合上盖子——你的 AI 代理继续运行；稍后打开盖子，即可查看任务完成时间。</li></ol>
+</div></section>
+<section><div class="card faq">
+  <h2>常见问题</h2>
+  <details><summary>合盖且不接外接显示器时能用吗？</summary><p>可以。这正是 NoSleep 的核心功能。普通唤醒工具仅能阻止空闲休眠；而 NoSleep 还能阻止「合盖休眠」——即你在无任何外设连接时一合盖就触发的系统休眠。</p></details><details><summary>会把电池耗尽吗？</summary><p>不会耗尽。所有模式下，NoSleep 均会在电量跌至 5% 时自动释放唤醒锁；当电量回升至 25% 以上或接入电源后，唤醒锁将重新生效。Smart 模式更进一步：一旦检测到 AI 代理进入空闲状态，立即允许 Mac 进入睡眠。</p></details><details><summary>安全吗？为什么 macOS 会弹出警告？</summary><p>本项目采用 MIT 开源协议，所有代码均可公开查阅。警告出现的原因仅是该应用未使用付费 Apple 开发者证书签名。执行一条 xattr 命令即可永久消除该提示。</p></details><details><summary>需要管理员权限吗？</summary><p>仅需一次。合盖唤醒依赖系统命令 pmset，首次调用时需输入密码授权；之后全程静默运行，无需再次输入。</p></details>
+</div></section>
+<section><div class="card">
+  <h2>使用指南</h2>
+  <ul class="guides"><li><a href="/zh/keep-macbook-awake-lid-closed">如何在合上 MacBook 盖子时保持其唤醒 —— 无需外接显示器</a></li><li><a href="/zh/amphetamine-alternative">Mac 上的 Amphetamine 替代方案：哪款防休眠应用真正在合盖状态下有效？</a></li><li><a href="/zh/claude-code-mac-sleep">防止 Claude Code 在 Mac 睡眠时中断</a></li><li><a href="/zh/pmset-disablesleep">pmset disablesleep：它究竟做了什么，还有那个无人提及的电池陷阱</a></li></ul>
+</div></section>
+<footer>
+  专为 macOS 打造 · <a href="https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg">下载 macOS 版本</a> · <a href="https://github.com/99Darius/NoSleep">GitHub 源码</a>
+  <div class="langs"><a href="/" hreflang="en" class="">English</a><a href="/de/" hreflang="de" class="">Deutsch</a><a href="/es/" hreflang="es" class="">Español</a><a href="/fr/" hreflang="fr" class="">Français</a><a href="/ja/" hreflang="ja" class="">日本語</a><a href="/ko/" hreflang="ko" class="">한국어</a><a href="/pt/" hreflang="pt-BR" class="">Português</a><a href="/zh/" hreflang="zh-Hans" class="cur">简体中文</a></div>
+</footer>
+</div>
+<script>
+(function () {
+  var PKG = "https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg";
+  var form = document.getElementById('dl-form'); if (!form) return;
+  var input = document.getElementById('dl-email');
+  var saved = null; try { saved = localStorage.getItem('nosleepEmail'); } catch (e) {}
+  if (saved) { var a = document.createElement('a'); a.className = 'cta'; a.href = PKG; a.textContent = form.querySelector('button').textContent; form.replaceWith(a); return; }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault(); var email = input.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { input.reportValidity(); return; }
+    try { localStorage.setItem('nosleepEmail', email); } catch (err) {}
+    try { fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }), keepalive: true }).catch(function(){}); } catch (err) {}
+    window.location.href = PKG;
+  });
+})();
+</script>
+</body>
+</html>

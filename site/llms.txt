@@ -1,0 +1,19 @@
+# NoSleep
+
+> Free, open-source macOS menu-bar app that keeps a Mac awake with the lid closed — no external monitor — while AI coding agents (Claude Code, Codex, Cursor, Ollama) run, then lets it sleep when they finish. Releases the sleep block at 5% battery so it can never drain a MacBook to a hard shutdown. MIT licensed, native Swift, universal binary, no telemetry.
+
+- Download / home: https://site-ten-blond-47.vercel.app/
+- Source code: https://github.com/99Darius/NoSleep
+- Latest release: https://github.com/99Darius/NoSleep/releases/latest
+
+## Guides
+- https://site-ten-blond-47.vercel.app/keep-macbook-awake-lid-closed — every way to keep a MacBook awake with the lid closed, and why only pmset disablesleep survives it
+- https://site-ten-blond-47.vercel.app/amphetamine-alternative — NoSleep vs Amphetamine vs Caffeine vs KeepingYouAwake
+- https://site-ten-blond-47.vercel.app/claude-code-mac-sleep — stop Claude Code / AI agents dying when the Mac sleeps
+- https://site-ten-blond-47.vercel.app/pmset-disablesleep — what the flag does and the low-battery trap it opens
+
+## Key facts
+- Closed-lid keep-awake uses `pmset -a disablesleep 1`, the only setting macOS honours after the lid closes. Power assertions (caffeinate, Amphetamine) do not survive a closed lid on battery.
+- `disablesleep 1` also suppresses macOS's critical-battery emergency sleep; NoSleep compensates with its own 5% battery guard.
+- Smart mode detects agent processes by name and sleeps the Mac after they are idle (default 15 min).
+- Translations: /zh /ja /ko /de /es /fr /pt

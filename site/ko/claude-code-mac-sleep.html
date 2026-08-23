@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mac이 절전 모드로 전환될 때 Claude Code(또는 다른 AI 에이전트)가 종료되는 것을 막기</title>
+<meta name="description" content="Claude Code, Codex, Cursor, Ollama는 모두 MacBook이 절전 모드가 되거나 뚜껑을 닫으면 작동을 멈춥니다. 그 이유와 실패하는 해결법, 그리고 AI 에이전트를 밤새 실행시키면서도 작업 완료 후 Mac은 정상적으로 절전 모드로 전환하게 해주는 무료 앱을 소개합니다.">
+<link rel="canonical" href="https://site-ten-blond-47.vercel.app/ko/claude-code-mac-sleep">
+<link rel="alternate" hreflang="en" href="https://site-ten-blond-47.vercel.app/claude-code-mac-sleep">
+<link rel="alternate" hreflang="de" href="https://site-ten-blond-47.vercel.app/de/claude-code-mac-sleep">
+<link rel="alternate" hreflang="es" href="https://site-ten-blond-47.vercel.app/es/claude-code-mac-sleep">
+<link rel="alternate" hreflang="fr" href="https://site-ten-blond-47.vercel.app/fr/claude-code-mac-sleep">
+<link rel="alternate" hreflang="ja" href="https://site-ten-blond-47.vercel.app/ja/claude-code-mac-sleep">
+<link rel="alternate" hreflang="ko" href="https://site-ten-blond-47.vercel.app/ko/claude-code-mac-sleep">
+<link rel="alternate" hreflang="pt-BR" href="https://site-ten-blond-47.vercel.app/pt/claude-code-mac-sleep">
+<link rel="alternate" hreflang="zh-Hans" href="https://site-ten-blond-47.vercel.app/zh/claude-code-mac-sleep">
+<link rel="alternate" hreflang="x-default" href="https://site-ten-blond-47.vercel.app/claude-code-mac-sleep">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="NoSleep">
+<meta property="og:title" content="Mac이 절전 모드로 전환될 때 Claude Code(또는 다른 AI 에이전트)가 종료되는 것을 막기">
+<meta property="og:description" content="Claude Code, Codex, Cursor, Ollama는 모두 MacBook이 절전 모드가 되거나 뚜껑을 닫으면 작동을 멈춥니다. 그 이유와 실패하는 해결법, 그리고 AI 에이전트를 밤새 실행시키면서도 작업 완료 후 Mac은 정상적으로 절전 모드로 전환하게 해주는 무료 앱을 소개합니다.">
+<meta property="og:url" content="https://site-ten-blond-47.vercel.app/ko/claude-code-mac-sleep">
+<meta property="og:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Mac이 절전 모드로 전환될 때 Claude Code(또는 다른 AI 에이전트)가 종료되는 것을 막기">
+<meta name="twitter:description" content="Claude Code, Codex, Cursor, Ollama는 모두 MacBook이 절전 모드가 되거나 뚜껑을 닫으면 작동을 멈춥니다. 그 이유와 실패하는 해결법, 그리고 AI 에이전트를 밤새 실행시키면서도 작업 완료 후 Mac은 정상적으로 절전 모드로 전환하게 해주는 무료 앱을 소개합니다.">
+<meta name="twitter:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"TechArticle","headline":"Mac이 절전 모드로 전환될 때 Claude Code가 종료되는 것을 막기","description":"Claude Code, Codex, Cursor, Ollama는 모두 MacBook이 절전 모드가 되거나 뚜껑을 닫으면 작동을 멈춥니다. 그 이유와 실패하는 해결법, 그리고 AI 에이전트를 밤새 실행시키면서도 작업 완료 후 Mac은 정상적으로 절전 모드로 전환하게 해주는 무료 앱을 소개합니다.","inLanguage":"ko","datePublished":"2026-08-23","dateModified":"2026-08-23","author":{"@type":"Person","name":"Darius Cheung","url":"https://github.com/99Darius"},"publisher":{"@type":"Organization","name":"NoSleep","url":"https://site-ten-blond-47.vercel.app"},"mainEntityOfPage":"https://site-ten-blond-47.vercel.app/ko/claude-code-mac-sleep","image":"https://site-ten-blond-47.vercel.app/og.jpg","about":{"@type":"SoftwareApplication","name":"NoSleep","operatingSystem":"macOS"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"NoSleep","item":"https://site-ten-blond-47.vercel.app/ko/"},{"@type":"ListItem","position":2,"name":"Mac이 절전 모드로 전환될 때 Claude Code가 종료되는 것을 막기","item":"https://site-ten-blond-47.vercel.app/ko/claude-code-mac-sleep"}]}]}</script>
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --card: #ffffff;
+    --text: #1d1d1f;
+    --muted: #6b6b70;
+    --accent: #5566ff;
+    --accent-deep: #2c3bb0;
+    --accent-soft: #eef1ff;
+    --accent-border: #d4d9ff;
+    --shadow: 0 10px 40px rgba(40, 50, 120, 0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e0f17;
+      --card: #181a26;
+      --text: #f5f5f7;
+      --muted: #a0a0aa;
+      --accent: #8190ff;
+      --accent-deep: #cdd5ff;
+      --accent-soft: #20243f;
+      --accent-border: #353a66;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 22px; }
+
+  /* Hero */
+  header { text-align: center; padding: 72px 0 48px; }
+  .logo {
+    width: 92px; height: 92px; margin: 0 auto 26px;
+    border-radius: 22px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .logo span {
+    font-size: 52px; font-weight: 800; color: #fff; line-height: 1;
+  }
+  .logo .strike {
+    position: absolute; width: 70%; height: 4px; background: rgba(255,255,255,0.92);
+    border-radius: 3px; transform: rotate(-45deg);
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.5px; }
+  .tagline { font-size: 19px; color: var(--muted); margin: 0 auto 34px; max-width: 520px; }
+
+  .cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent); color: #fff; text-decoration: none;
+    font-size: 17px; font-weight: 600;
+    padding: 15px 30px; border-radius: 13px;
+    box-shadow: var(--shadow); transition: transform .12s ease, background .12s ease;
+  }
+  .cta:hover { transform: translateY(-1px); background: var(--accent-deep); }
+  .cta-sub { display: block; font-size: 13px; color: var(--muted); margin-top: 14px; }
+
+  /* Email-gate download form */
+  .dl-form {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    max-width: 480px; margin: 0 auto;
+  }
+  .dl-form input[type="email"] {
+    flex: 1 1 200px; min-width: 0;
+    font: inherit; font-size: 16px; color: var(--text);
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 13px; padding: 14px 16px; outline: none;
+  }
+  .dl-form input[type="email"]:focus { border-color: var(--accent); }
+  .dl-form .cta { border: 0; cursor: pointer; font-family: inherit; }
+  .gh-link {
+    display: inline-block; margin-top: 12px; font-size: 14px; font-weight: 600;
+    color: var(--accent); text-decoration: none;
+  }
+  .gh-link:hover { text-decoration: underline; }
+  kbd {
+    font-family: inherit; font-weight: 700;
+    background: var(--accent-soft); color: var(--accent-deep);
+    border: 1px solid var(--accent-border); border-radius: 7px;
+    padding: 2px 8px; font-size: 0.92em; white-space: nowrap;
+  }
+
+  /* Cards */
+  section { padding: 14px 0; }
+  .card {
+    background: var(--card); border-radius: 18px; padding: 28px 30px;
+    box-shadow: var(--shadow); margin: 18px 0;
+  }
+  .card h2 { font-size: 21px; margin: 0 0 16px; }
+  .feature { display: flex; gap: 14px; margin: 14px 0; align-items: flex-start; }
+  .feature .ico {
+    flex: 0 0 38px; width: 38px; height: 38px; border-radius: 11px;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    display: flex; align-items: center; justify-content: center; font-size: 19px;
+  }
+  .feature b { display: block; font-size: 15px; }
+  .feature p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+
+  ol { padding-left: 22px; margin: 0; }
+  ol li { margin: 10px 0; font-size: 15px; }
+  .note {
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 12px; padding: 16px 18px; font-size: 14px; margin-top: 8px;
+  }
+  code {
+    font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.88em;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 6px; padding: 2px 7px;
+  }
+
+  /* Smart NoSleep showcase (faithful macOS mockups) */
+  .shots { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  .shot { flex: 1 1 260px; max-width: 330px; }
+  .shot .cap { font-size: 13px; color: var(--muted); text-align: center; margin-top: 12px; }
+  .macmenu {
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 10px; box-shadow: var(--shadow);
+    padding: 5px; font-size: 13.5px; line-height: 1.25;
+  }
+  .macmenu .mi { padding: 5px 12px 5px 26px; border-radius: 6px; position: relative; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .macmenu .mi.dim { color: var(--muted); font-size: 12.5px; }
+  .macmenu .mi.checked::before { content: "✓"; position: absolute; left: 9px; font-weight: 700; }
+  .macmenu .mi.sel { background: var(--accent); color: #fff; }
+  .macmenu .mi .sub { float: right; color: var(--muted); margin-left: 14px; }
+  .macmenu .mi.sel .sub { color: rgba(255,255,255,0.8); }
+  .macmenu hr { border: 0; border-top: 1px solid var(--accent-border); margin: 5px 10px; }
+  .macnotif {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 16px; box-shadow: var(--shadow); padding: 14px 16px;
+  }
+  .macnotif .nicon {
+    flex: 0 0 40px; width: 40px; height: 40px; border-radius: 9px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 22px; position: relative;
+  }
+  .macnotif .nicon i {
+    position: absolute; width: 66%; height: 2.5px; background: rgba(255,255,255,0.92);
+    border-radius: 2px; transform: rotate(-45deg); display: block;
+  }
+  .macnotif b { display: block; font-size: 13.5px; }
+  .macnotif p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0 56px; }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 560px) {
+    h1 { font-size: 31px; }
+    header { padding: 52px 0 36px; }
+    .card { padding: 22px 20px; }
+  }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="top"><a href="/ko/">NoSleep</a><a href="https://github.com/99Darius/NoSleep">GitHub</a></nav>
+
+<article>
+  <h1>Mac이 절전 모드로 전환될 때 Claude Code가 종료되는 것을 막기</h1>
+  <p class="intro">20분짜리 AI 에이전트 작업을 시작하고 커피를 마시러 노트북 뚜껑을 닫았다가 돌아오면, 세션이 이미 죽어 있습니다. Claude Code, Codex CLI, Cursor 에이전트, Ollama, Aider 등 모든 AI 코딩 도구에서 이 문제가 발생하는데, 이는 도구 탓이 아닙니다. macOS의 동작 방식 때문입니다.</p>
+  <h2>왜 에이전트가 중단되는가</h2><p>Mac이 절전 모드로 전환되면 모든 프로세스가 일시 중지됩니다. 네트워크 연결은 타임아웃되고, 에이전트의 API 스트림은 끊어지며, Mac을 깨운 후에도 대부분의 도구는 이전에 수행 중이던 단계를 재개할 수 없습니다. 뚜껑을 닫으면 즉시 절전 모드로 진입하고, 열린 상태로 두면 유휴 시간 초과 후 절전 모드로 전환됩니다. 어느 경우든 작업은 사라집니다.</p>
+<h2>사람들이 시도했지만 효과 없는 방법들</h2><ul><li><strong>시스템 설정 > '디스플레이가 꺼질 때 절전 모드 방지'</strong> 옵션은 전원 어댑터 연결 시에만 적용되며, 뚜껑을 닫는 클램셸 절전 모드는 막지 못합니다.</li><li><strong>caffeinate</strong>나 Amphetamine은 화면을 켜두긴 하지만, 배터리 사용 중 뚜껑을 닫으면 작동하지 않습니다.</li><li><strong>노트북을 반쯤 열어놓은 채 들고 다니기</strong>. 실제로는 작동하지만, 매우 어색해 보입니다. 사실 NoSleep의 개발 계기는 바로 이 방법이었습니다.</li><li><strong>tmux / nohup</strong>은 SSH 연결 끊김 시 프로세스를 유지하지만, 기기 자체가 절전 모드로 전환되는 상황에서는 무용지물입니다.</li></ul>
+<h2>실제로 작동하는 해결책</h2><p>Mac이 절전 모드로 전환되지 않도록 시스템 차원에서 명령해야 합니다(<code>pmset disablesleep</code>). 그러나 작업이 끝난 후 다시 절전 모드로 전환하지 않으면 밤새 계속 실행되어 배터리를 완전히 소진시킬 수 있습니다. <a href="/">NoSleep</a>은 이 두 가지를 모두 처리합니다:</p><ol><li>⌃⌘S 키를 누르세요. 스마트 NoSleep이 활성화됩니다.</li><li>뚜껑을 닫으세요. Claude Code는 계속 실행됩니다.</li><li>NoSleep은 AI 에이전트 프로세스를 감시합니다. 프로세스가 15분 이상 유휴 상태일 경우(설정 가능), Mac을 절전 모드로 전환하고, 언제 어떤 작업이 실행되었는지 알리는 알림을 표시합니다.</li><li>배터리 잔량이 5%에 도달하면, 현재 모드와 관계없이 즉시 절전 모드로 전환됩니다.</li></ol>
+<h2>스마트 모드에서 감지하는 에이전트는?</h2><p>실행 중인 프로세스로 나타나는 모든 도구: <code>claude</code>, <code>codex</code>, <code>cursor</code>, <code>ollama</code>, <code>aider</code>, <code>gemini</code> 및 유사한 CLI 기반 에이전트입니다. 감지는 프로세스 이름을 기준으로 하므로, 직접 만든 스크립트도 이름을 지정하면 동작합니다. 자동 감지보다 확실한 제어를 원한다면 Absolute NoSleep 또는 고정 타이머를 사용하세요.</p>
+<h2>무료, 오픈소스, 계정 불필요</h2><p>NoSleep은 MIT 라이선스로 제공되며, 네이티브 Swift로 작성된 앱으로 용량은 약 1MB입니다. 어떤 원격 분석(telemetry)도 포함하지 않으며, 서명되지 않은 앱입니다 — 첫 설치 시 <a href="/">다운로드 페이지</a>에 설명된 대로 한 줄짜리 <code>xattr</code> 명령어를 실행해야 합니다.</p>
+  <div class="cta-box">
+    <p style="color:var(--muted);font-size:14px;margin:0 0 12px">NoSleep 사용해 보기 — 무료, 오픈소스, 계정 불필요</p>
+    <form id="dl-form" class="dl-form" novalidate>
+  <input type="email" id="dl-email" placeholder="you@example.com" autocomplete="email" aria-label="Email" required>
+  <button class="cta" type="submit">⬇&nbsp; macOS용 다운로드</button>
+</form>
+<span class="cta-sub">설치 파일과 정기적인 업데이트 소식을 받아보려면 이메일 주소를 입력하세요 — 스팸은 전혀 없습니다.<br>무료 &amp; 오픈소스 · Apple Silicon 및 Intel 지원 · <kbd>⌃⌘S</kbd></span>
+<a class="gh-link" href="https://github.com/99Darius/NoSleep">GitHub에서 오픈소스 보기 →</a>
+  </div>
+</article>
+<section><div class="card"><h2>가이드</h2><ul class="guides"><li><a href="/ko/keep-macbook-awake-lid-closed">외부 모니터 없이 맥북 뚜껑을 닫은 상태로 깨어 있게 하는 법</a></li><li><a href="/ko/amphetamine-alternative">Mac용 Amphetamine 대체 앱: 뚜껑을 닫은 상태에서도 실제로 작동하는 '깨어있기' 앱은 무엇인가?</a></li><li><a href="/ko/claude-code-mac-sleep">Mac이 절전 모드로 전환될 때 Claude Code가 종료되는 것을 막기</a></li><li><a href="/ko/pmset-disablesleep">pmset disablesleep: 그 기능과 아무도 언급하지 않는 배터리 함정</a></li></ul></div></section>
+<footer>
+  macOS를 위해 제작됨 · <a href="https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg">macOS용 다운로드</a> · <a href="https://github.com/99Darius/NoSleep">GitHub 소스 코드</a>
+  <div class="langs"><a href="/claude-code-mac-sleep" hreflang="en" class="">English</a><a href="/de/claude-code-mac-sleep" hreflang="de" class="">Deutsch</a><a href="/es/claude-code-mac-sleep" hreflang="es" class="">Español</a><a href="/fr/claude-code-mac-sleep" hreflang="fr" class="">Français</a><a href="/ja/claude-code-mac-sleep" hreflang="ja" class="">日本語</a><a href="/ko/claude-code-mac-sleep" hreflang="ko" class="cur">한국어</a><a href="/pt/claude-code-mac-sleep" hreflang="pt-BR" class="">Português</a><a href="/zh/claude-code-mac-sleep" hreflang="zh-Hans" class="">简体中文</a></div>
+</footer>
+</div>
+<script>
+(function () {
+  var PKG = "https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg";
+  var form = document.getElementById('dl-form'); if (!form) return;
+  var input = document.getElementById('dl-email');
+  var saved = null; try { saved = localStorage.getItem('nosleepEmail'); } catch (e) {}
+  if (saved) { var a = document.createElement('a'); a.className = 'cta'; a.href = PKG; a.textContent = form.querySelector('button').textContent; form.replaceWith(a); return; }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault(); var email = input.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { input.reportValidity(); return; }
+    try { localStorage.setItem('nosleepEmail', email); } catch (err) {}
+    try { fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }), keepalive: true }).catch(function(){}); } catch (err) {}
+    window.location.href = PKG;
+  });
+})();
+</script>
+</body>
+</html>

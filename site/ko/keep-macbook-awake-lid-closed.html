@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>외부 모니터 없이 맥북 뚜껑을 닫은 상태로 깨어 있게 하는 방법</title>
+<meta name="description" content="뚜껑을 닫은 상태에서도 맥북이 절전 모드로 전환되지 않도록 하는 모든 방법 — 클램쉘 모드, caffeinate, pmset disablesleep — 그리고 배터리 사용 시에도 안전하게 작동하는 유일한 무료 앱.">
+<link rel="canonical" href="https://site-ten-blond-47.vercel.app/ko/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="en" href="https://site-ten-blond-47.vercel.app/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="de" href="https://site-ten-blond-47.vercel.app/de/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="es" href="https://site-ten-blond-47.vercel.app/es/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="fr" href="https://site-ten-blond-47.vercel.app/fr/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="ja" href="https://site-ten-blond-47.vercel.app/ja/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="ko" href="https://site-ten-blond-47.vercel.app/ko/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="pt-BR" href="https://site-ten-blond-47.vercel.app/pt/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="zh-Hans" href="https://site-ten-blond-47.vercel.app/zh/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="x-default" href="https://site-ten-blond-47.vercel.app/keep-macbook-awake-lid-closed">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="NoSleep">
+<meta property="og:title" content="외부 모니터 없이 맥북 뚜껑을 닫은 상태로 깨어 있게 하는 방법">
+<meta property="og:description" content="뚜껑을 닫은 상태에서도 맥북이 절전 모드로 전환되지 않도록 하는 모든 방법 — 클램쉘 모드, caffeinate, pmset disablesleep — 그리고 배터리 사용 시에도 안전하게 작동하는 유일한 무료 앱.">
+<meta property="og:url" content="https://site-ten-blond-47.vercel.app/ko/keep-macbook-awake-lid-closed">
+<meta property="og:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="외부 모니터 없이 맥북 뚜껑을 닫은 상태로 깨어 있게 하는 방법">
+<meta name="twitter:description" content="뚜껑을 닫은 상태에서도 맥북이 절전 모드로 전환되지 않도록 하는 모든 방법 — 클램쉘 모드, caffeinate, pmset disablesleep — 그리고 배터리 사용 시에도 안전하게 작동하는 유일한 무료 앱.">
+<meta name="twitter:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"TechArticle","headline":"외부 모니터 없이 맥북 뚜껑을 닫은 상태로 깨어 있게 하는 법","description":"뚜껑을 닫은 상태에서도 맥북이 절전 모드로 전환되지 않도록 하는 모든 방법 — 클램쉘 모드, caffeinate, pmset disablesleep — 그리고 배터리 사용 시에도 안전하게 작동하는 유일한 무료 앱.","inLanguage":"ko","datePublished":"2026-08-23","dateModified":"2026-08-23","author":{"@type":"Person","name":"Darius Cheung","url":"https://github.com/99Darius"},"publisher":{"@type":"Organization","name":"NoSleep","url":"https://site-ten-blond-47.vercel.app"},"mainEntityOfPage":"https://site-ten-blond-47.vercel.app/ko/keep-macbook-awake-lid-closed","image":"https://site-ten-blond-47.vercel.app/og.jpg","about":{"@type":"SoftwareApplication","name":"NoSleep","operatingSystem":"macOS"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"NoSleep","item":"https://site-ten-blond-47.vercel.app/ko/"},{"@type":"ListItem","position":2,"name":"외부 모니터 없이 맥북 뚜껑을 닫은 상태로 깨어 있게 하는 법","item":"https://site-ten-blond-47.vercel.app/ko/keep-macbook-awake-lid-closed"}]}]}</script>
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --card: #ffffff;
+    --text: #1d1d1f;
+    --muted: #6b6b70;
+    --accent: #5566ff;
+    --accent-deep: #2c3bb0;
+    --accent-soft: #eef1ff;
+    --accent-border: #d4d9ff;
+    --shadow: 0 10px 40px rgba(40, 50, 120, 0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e0f17;
+      --card: #181a26;
+      --text: #f5f5f7;
+      --muted: #a0a0aa;
+      --accent: #8190ff;
+      --accent-deep: #cdd5ff;
+      --accent-soft: #20243f;
+      --accent-border: #353a66;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 22px; }
+
+  /* Hero */
+  header { text-align: center; padding: 72px 0 48px; }
+  .logo {
+    width: 92px; height: 92px; margin: 0 auto 26px;
+    border-radius: 22px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .logo span {
+    font-size: 52px; font-weight: 800; color: #fff; line-height: 1;
+  }
+  .logo .strike {
+    position: absolute; width: 70%; height: 4px; background: rgba(255,255,255,0.92);
+    border-radius: 3px; transform: rotate(-45deg);
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.5px; }
+  .tagline { font-size: 19px; color: var(--muted); margin: 0 auto 34px; max-width: 520px; }
+
+  .cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent); color: #fff; text-decoration: none;
+    font-size: 17px; font-weight: 600;
+    padding: 15px 30px; border-radius: 13px;
+    box-shadow: var(--shadow); transition: transform .12s ease, background .12s ease;
+  }
+  .cta:hover { transform: translateY(-1px); background: var(--accent-deep); }
+  .cta-sub { display: block; font-size: 13px; color: var(--muted); margin-top: 14px; }
+
+  /* Email-gate download form */
+  .dl-form {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    max-width: 480px; margin: 0 auto;
+  }
+  .dl-form input[type="email"] {
+    flex: 1 1 200px; min-width: 0;
+    font: inherit; font-size: 16px; color: var(--text);
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 13px; padding: 14px 16px; outline: none;
+  }
+  .dl-form input[type="email"]:focus { border-color: var(--accent); }
+  .dl-form .cta { border: 0; cursor: pointer; font-family: inherit; }
+  .gh-link {
+    display: inline-block; margin-top: 12px; font-size: 14px; font-weight: 600;
+    color: var(--accent); text-decoration: none;
+  }
+  .gh-link:hover { text-decoration: underline; }
+  kbd {
+    font-family: inherit; font-weight: 700;
+    background: var(--accent-soft); color: var(--accent-deep);
+    border: 1px solid var(--accent-border); border-radius: 7px;
+    padding: 2px 8px; font-size: 0.92em; white-space: nowrap;
+  }
+
+  /* Cards */
+  section { padding: 14px 0; }
+  .card {
+    background: var(--card); border-radius: 18px; padding: 28px 30px;
+    box-shadow: var(--shadow); margin: 18px 0;
+  }
+  .card h2 { font-size: 21px; margin: 0 0 16px; }
+  .feature { display: flex; gap: 14px; margin: 14px 0; align-items: flex-start; }
+  .feature .ico {
+    flex: 0 0 38px; width: 38px; height: 38px; border-radius: 11px;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    display: flex; align-items: center; justify-content: center; font-size: 19px;
+  }
+  .feature b { display: block; font-size: 15px; }
+  .feature p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+
+  ol { padding-left: 22px; margin: 0; }
+  ol li { margin: 10px 0; font-size: 15px; }
+  .note {
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 12px; padding: 16px 18px; font-size: 14px; margin-top: 8px;
+  }
+  code {
+    font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.88em;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 6px; padding: 2px 7px;
+  }
+
+  /* Smart NoSleep showcase (faithful macOS mockups) */
+  .shots { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  .shot { flex: 1 1 260px; max-width: 330px; }
+  .shot .cap { font-size: 13px; color: var(--muted); text-align: center; margin-top: 12px; }
+  .macmenu {
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 10px; box-shadow: var(--shadow);
+    padding: 5px; font-size: 13.5px; line-height: 1.25;
+  }
+  .macmenu .mi { padding: 5px 12px 5px 26px; border-radius: 6px; position: relative; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .macmenu .mi.dim { color: var(--muted); font-size: 12.5px; }
+  .macmenu .mi.checked::before { content: "✓"; position: absolute; left: 9px; font-weight: 700; }
+  .macmenu .mi.sel { background: var(--accent); color: #fff; }
+  .macmenu .mi .sub { float: right; color: var(--muted); margin-left: 14px; }
+  .macmenu .mi.sel .sub { color: rgba(255,255,255,0.8); }
+  .macmenu hr { border: 0; border-top: 1px solid var(--accent-border); margin: 5px 10px; }
+  .macnotif {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 16px; box-shadow: var(--shadow); padding: 14px 16px;
+  }
+  .macnotif .nicon {
+    flex: 0 0 40px; width: 40px; height: 40px; border-radius: 9px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 22px; position: relative;
+  }
+  .macnotif .nicon i {
+    position: absolute; width: 66%; height: 2.5px; background: rgba(255,255,255,0.92);
+    border-radius: 2px; transform: rotate(-45deg); display: block;
+  }
+  .macnotif b { display: block; font-size: 13.5px; }
+  .macnotif p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0 56px; }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 560px) {
+    h1 { font-size: 31px; }
+    header { padding: 52px 0 36px; }
+    .card { padding: 22px 20px; }
+  }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="top"><a href="/ko/">NoSleep</a><a href="https://github.com/99Darius/NoSleep">GitHub</a></nav>
+
+<article>
+  <h1>외부 모니터 없이 맥북 뚜껑을 닫은 상태로 깨어 있게 하는 법</h1>
+  <p class="intro">맥북의 뚜껑을 닫으면 몇 초 이내에 절전 모드로 전환됩니다. 다운로드가 중단되고, SSH 세션이 끊기며, 실행 중이던 AI 에이전트도 작업 도중 멈춰버립니다. 이 현상이 발생하는 이유와 이를 우회하는 모든 방법을 살펴보겠습니다. 애플 공식 클램쉘 모드부터 한 번의 클릭으로 해결해주는 무료 앱까지 모두 다룹니다.</p>
+  <h2>왜 맥북은 뚜껑을 닫으면 절전 모드로 전환될까?</h2><p>macOS는 뚜껑을 닫는 동작을 ‘즉시 절전 모드로 진입하라’는 명령으로 해석합니다. 이는 단순한 유휴 시간 타임아웃이 아니라, <strong>클램쉘 절전 모드(clamshell sleep)</strong>라는 별도의 경로이며, 어떤 프로세스가 실행 중이든 관계없이 즉시 발동됩니다. 따라서 단순히 ‘유휴 절전 모드 방지’ 기능만 제공하는 도구들은 뚜껑이 닫히면 전혀 효과가 없습니다.</p>
+<h2>옵션 1: 애플의 클램쉘 모드(전원 + 외부 디스플레이 필요)</h2><p>애플은 뚜껑을 닫은 상태에서 맥북을 작동시키는 것을 지원하지만, 다음 두 조건을 <em>모두</em> 충족해야 합니다: 맥북이 전원에 연결되어 있어야 하고, 외부 디스플레이 또는 키보드/마우스가 연결되어 있어야 합니다. 이 중 하나라도 해제되면 맥북은 즉시 절전 모드로 전환됩니다. 가방 속에 넣은 맥북, 외부 모니터 없이 책상 위에 놓인 맥북, 혹은 배터리로 작동 중인 맥북에는 이 방법이 적용되지 않습니다.</p>
+<h2>옵션 2: caffeinate(뚜껑 닫으면 작동하지 않음)</h2><p>내장된 <code>caffeinate</code> 명령어 및 대부분의 메뉴 바 앱(예: Amphetamine, KeepingYouAwake, Caffeine)은 <em>전원 어설션(power assertion)</em>을 생성합니다. 이는 유휴 절전 모드를 방지하여 사용자가 자리를 비울 때도 화면이 꺼지지 않게 하지만, 전원 어설션은 클램쉘 절전 모드를 무시할 수 없습니다. 뚜껑을 닫으면 맥북은 여전히 절전 모드로 전환됩니다.</p>
+<h2>옵션 3: pmset disablesleep(작동은 하지만 위험함)</h2><p>뚜껑을 닫은 상태에서도 맥북을 깨어 있게 하는 유일한 시스템 수준 플래그입니다:</p><pre><code>sudo pmset -a disablesleep 1</code></pre><p>이 설정은 뚜껑을 닫고 아무것도 연결하지 않은 상태에서도 맥북을 실제로 깨어 있게 유지합니다. 그러나 두 가지 심각한 문제가 있습니다. 첫째, 이 설정을 해제하려면 반드시 <code>sudo pmset -a disablesleep 0</code>을 실행해야 하며, 그렇지 않으면 맥북은 영원히 절전 모드로 진입하지 못합니다. 둘째 — 이 문제는 특히 치명적입니다 — <strong>macOS 자체의 저전력 긴급 절전 기능도 함께 비활성화됩니다.</strong> 배터리로 작동 중일 때 맥북은 전량 소진(0%)까지 계속 작동하다가 강제 종료됩니다. 우리는 이를 직접 경험했는데요: 하룻밤 동안 실행한 결과 배터리가 완전히 방전되었고, 배터리 건강 상태는 ‘양호(Good)’에서 ‘불량(Poor)’으로 떨어졌습니다.</p>
+<h2>옵션 4: NoSleep(pmset을 안전하게 자동 관리)</h2><p><a href="/">NoSleep</a>은 무료이고 오픈소스인 메뉴 바 앱으로, 부재한 보호 장치를 갖춘 채 <code>pmset disablesleep</code>을 감싸고 있습니다:</p><ul><li><strong>한 번의 토글</strong>(⌃⌘S)로 뚜껑 닫은 상태 유지 기능을 켜고 끌 수 있으며, 앱이 꺼지거나 기능이 해제되면 항상 정상적인 절전 모드를 자동으로 복원합니다.</li><li><strong>배터리 보호 기능</strong>은 배터리 잔량이 5%에 도달하면 자동으로 차단을 해제하여 맥북이 정상적으로 절전 모드로 진입하도록 합니다.</li><li><strong>스마트 모드</strong>는 실행 중인 AI 에이전트(Claude Code, Codex, Ollama, Cursor 등)를 감시하고, 이들이 유휴 상태가 되는 즉시 맥북이 절전 모드로 전환되도록 해줍니다. 따라서 수동으로 끄는 걸 잊어도 괜찮습니다.</li><li><strong>타이머 기능</strong>은 15분 / 1시간 / 2시간 등 필요한 만큼만 일시적으로 유지할 수 있도록 해줍니다(예: 다운로드 완료까지).</li></ul><p>Swift로 개발된 네이티브 앱이며, Apple Silicon과 Intel 모두 지원합니다. 암호 입력은 정확히 한 번만 요청됩니다.</p>
+<h2>어떤 옵션을 선택해야 할까?</h2><ul><li>모니터와 전원이 연결된 상태에서 책상에 고정해 사용한다면, 애플의 클램쉘 모드로 충분합니다.</li><li>무언가를 보고 있을 때 화면이 꺼지지 않게 하려면 <code>caffeinate</code>나 다른 절전 유지 앱을 사용하세요.</li><li>실제로 뚜껑을 닫은 상태(가방 속, 배터리 사용, 외부 모니터 없음)에서도 맥북이 계속 작동해야 한다면 <code>pmset disablesleep</code>이 필요하며, 이를 안전하게 해제해주고 배터리를 보호해주는 도구가 반드시 필요합니다. 바로 그 역할을 NoSleep이 수행합니다.</li></ul>
+  <div class="cta-box">
+    <p style="color:var(--muted);font-size:14px;margin:0 0 12px">NoSleep 사용해 보기 — 무료, 오픈소스, 계정 불필요</p>
+    <form id="dl-form" class="dl-form" novalidate>
+  <input type="email" id="dl-email" placeholder="you@example.com" autocomplete="email" aria-label="Email" required>
+  <button class="cta" type="submit">⬇&nbsp; macOS용 다운로드</button>
+</form>
+<span class="cta-sub">설치 파일과 정기적인 업데이트 소식을 받아보려면 이메일 주소를 입력하세요 — 스팸은 전혀 없습니다.<br>무료 &amp; 오픈소스 · Apple Silicon 및 Intel 지원 · <kbd>⌃⌘S</kbd></span>
+<a class="gh-link" href="https://github.com/99Darius/NoSleep">GitHub에서 오픈소스 보기 →</a>
+  </div>
+</article>
+<section><div class="card"><h2>가이드</h2><ul class="guides"><li><a href="/ko/keep-macbook-awake-lid-closed">외부 모니터 없이 맥북 뚜껑을 닫은 상태로 깨어 있게 하는 법</a></li><li><a href="/ko/amphetamine-alternative">Mac용 Amphetamine 대체 앱: 뚜껑을 닫은 상태에서도 실제로 작동하는 '깨어있기' 앱은 무엇인가?</a></li><li><a href="/ko/claude-code-mac-sleep">Mac이 절전 모드로 전환될 때 Claude Code가 종료되는 것을 막기</a></li><li><a href="/ko/pmset-disablesleep">pmset disablesleep: 그 기능과 아무도 언급하지 않는 배터리 함정</a></li></ul></div></section>
+<footer>
+  macOS를 위해 제작됨 · <a href="https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg">macOS용 다운로드</a> · <a href="https://github.com/99Darius/NoSleep">GitHub 소스 코드</a>
+  <div class="langs"><a href="/keep-macbook-awake-lid-closed" hreflang="en" class="">English</a><a href="/de/keep-macbook-awake-lid-closed" hreflang="de" class="">Deutsch</a><a href="/es/keep-macbook-awake-lid-closed" hreflang="es" class="">Español</a><a href="/fr/keep-macbook-awake-lid-closed" hreflang="fr" class="">Français</a><a href="/ja/keep-macbook-awake-lid-closed" hreflang="ja" class="">日本語</a><a href="/ko/keep-macbook-awake-lid-closed" hreflang="ko" class="cur">한국어</a><a href="/pt/keep-macbook-awake-lid-closed" hreflang="pt-BR" class="">Português</a><a href="/zh/keep-macbook-awake-lid-closed" hreflang="zh-Hans" class="">简体中文</a></div>
+</footer>
+</div>
+<script>
+(function () {
+  var PKG = "https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg";
+  var form = document.getElementById('dl-form'); if (!form) return;
+  var input = document.getElementById('dl-email');
+  var saved = null; try { saved = localStorage.getItem('nosleepEmail'); } catch (e) {}
+  if (saved) { var a = document.createElement('a'); a.className = 'cta'; a.href = PKG; a.textContent = form.querySelector('button').textContent; form.replaceWith(a); return; }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault(); var email = input.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { input.reportValidity(); return; }
+    try { localStorage.setItem('nosleepEmail', email); } catch (err) {}
+    try { fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }), keepalive: true }).catch(function(){}); } catch (err) {}
+    window.location.href = PKG;
+  });
+})();
+</script>
+</body>
+</html>

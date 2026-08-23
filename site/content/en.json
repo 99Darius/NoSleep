@@ -1,0 +1,127 @@
+{
+  "lang": "en",
+  "ui": {
+    "download": "Download for macOS",
+    "emailPlaceholder": "you@example.com",
+    "emailNote": "Drop your email to get the installer and occasional update news — no spam.",
+    "free": "Free & open-source · Apple Silicon & Intel",
+    "github": "Open source on GitHub →",
+    "guides": "Guides",
+    "home": "Home",
+    "madeFor": "Made for macOS",
+    "source": "Source on GitHub",
+    "languages": "Languages",
+    "backHome": "← NoSleep home",
+    "tryIt": "Try NoSleep — free, open source, no account"
+  },
+  "home": {
+    "title": "NoSleep — keep your Mac awake with the lid closed while AI agents work",
+    "description": "Free open-source Mac app that keeps your MacBook awake with the lid closed — no external monitor — while Claude Code, Codex or any AI agent runs, then lets it sleep when they finish. Never drains the battery to zero.",
+    "h1": "Awake while your agents work. Asleep when they're done.",
+    "tagline": "A tiny menu bar app that keeps your Mac awake — even with the lid closed — while Claude Code, Codex, Ollama or any AI agent runs. Smart NoSleep notices when they finish and lets your Mac sleep again, saving battery and heat.",
+    "featuresTitle": "What it does",
+    "features": [
+      {"icon": "🤖", "title": "Smart NoSleep", "body": "Made for overnight AI coding runs: stays awake while your agents are busy, lets the Mac sleep once they go idle, and tells you when that happened."},
+      {"icon": "💤", "title": "Closed-lid keep-awake", "body": "Stays awake even with the lid shut — no external display needed."},
+      {"icon": "🔋", "title": "Battery-safe", "body": "Releases the sleep block at 5% battery so the Mac can never drain to a hard shutdown."},
+      {"icon": "⌨️", "title": "One shortcut", "body": "Press ⌃⌘S anywhere to flip keep-awake on or off, or click the menu bar icon."},
+      {"icon": "⏱️", "title": "Timers", "body": "Keep awake for 15 minutes, 1 hour, or 2 hours, then auto-off."},
+      {"icon": "🪶", "title": "Lightweight", "body": "Native Swift, no Electron. Negligible CPU and memory."}
+    ],
+    "installTitle": "Installing",
+    "installIntro": "NoSleep is open-source and isn't signed with a paid Apple certificate, so macOS shows a “can't verify” warning the first time. That's normal. Use Terminal once:",
+    "installSteps": [
+      "Download the installer — it lands in your Downloads folder.",
+      "Open Terminal (Applications → Utilities), then paste and run the command shown below.",
+      "Double-click the .pkg — it now opens normally.",
+      "Follow the installer — NoSleep launches automatically when done."
+    ],
+    "usingTitle": "Using it",
+    "usingSteps": [
+      "Press ⌃⌘S or click the menu bar icon to toggle keep-awake.",
+      "Pick Smart NoSleep (default), Absolute NoSleep, or a timer.",
+      "Close the lid. Your agents keep running. Open it later to see when they finished."
+    ],
+    "faqTitle": "Common questions",
+    "faq": [
+      {"q": "Does it work with the lid closed and no external monitor?", "a": "Yes. That's the whole point. Normal keep-awake tools only stop idle sleep; NoSleep also stops the clamshell sleep that fires the moment you close the lid, with nothing plugged in."},
+      {"q": "Will it drain my battery?", "a": "Not to zero. NoSleep releases the sleep block at 5% battery in every mode and re-engages once you're above 25% or on power. Smart mode also lets the Mac sleep as soon as your agents go idle."},
+      {"q": "Is it safe? Why the macOS warning?", "a": "It's open source under MIT — you can read every line. The warning appears because the app isn't signed with a paid Apple Developer certificate. One xattr command clears it."},
+      {"q": "Does it need admin rights?", "a": "Once. Keeping a Mac awake with the lid closed requires pmset, which needs your password the first time. After that it's silent."}
+    ]
+  },
+  "pages": {
+    "keep-macbook-awake-lid-closed": {
+      "title": "How to keep a MacBook awake with the lid closed (no external monitor)",
+      "description": "Every way to stop a MacBook sleeping when you close the lid — clamshell mode, caffeinate, pmset disablesleep — and the one free app that does it safely on battery.",
+      "h1": "How to keep a MacBook awake with the lid closed — without an external monitor",
+      "intro": "Close the lid on a MacBook and it goes to sleep within seconds. Downloads stop, SSH sessions drop, and any AI agent you had running dies mid-task. Here's why that happens and every way around it, from Apple's built-in clamshell mode to a free app that handles it in one click.",
+      "sections": [
+        {"h2": "Why a MacBook sleeps when you close the lid",
+         "html": "<p>macOS treats a closed lid as a direct request to sleep. It isn't an idle timeout you can extend — it's a separate path called <strong>clamshell sleep</strong>, and it fires immediately regardless of what's running. That's why tools that merely \"prevent idle sleep\" do nothing once the lid is down.</p>"},
+        {"h2": "Option 1: Apple's clamshell mode (needs power + a display)",
+         "html": "<p>Apple does support running with the lid shut, but only when <em>both</em> of these are true: the Mac is connected to power, and an external display, keyboard or mouse is attached. Unplug either and it sleeps. For a laptop in a bag, on a desk with no monitor, or on battery, this doesn't help.</p>"},
+        {"h2": "Option 2: caffeinate (doesn't survive the lid)",
+         "html": "<p>The built-in <code>caffeinate</code> command and most menu-bar apps (Amphetamine, KeepingYouAwake, Caffeine) create a <em>power assertion</em>. That stops idle sleep — the screen stays on while you're away — but a power assertion cannot override clamshell sleep. Close the lid and the Mac sleeps anyway.</p>"},
+        {"h2": "Option 3: pmset disablesleep (works, but dangerous)",
+         "html": "<p>The only thing that survives a closed lid is a system-level flag:</p><pre><code>sudo pmset -a disablesleep 1</code></pre><p>This genuinely keeps the Mac awake with the lid shut and nothing attached. Two problems. First, you have to remember to run <code>sudo pmset -a disablesleep 0</code> afterwards or your Mac will never sleep again. Second — and this one is nasty — <strong>it also switches off macOS's own low-battery emergency sleep</strong>. On battery, the Mac will run until it hits 0% and hard-shuts-down. We found this the hard way: one overnight run, a dead battery, and battery health dropped from \"Good\" to \"Poor\".</p>"},
+        {"h2": "Option 4: NoSleep (does the pmset dance for you, safely)",
+         "html": "<p><a href=\"/\">NoSleep</a> is a free, open-source menu-bar app that wraps <code>pmset disablesleep</code> in the guardrails it's missing:</p><ul><li><strong>One toggle</strong> (⌃⌘S) turns closed-lid keep-awake on and off, and always restores normal sleep when it's off or the app quits.</li><li><strong>Battery guard</strong> releases the block at 5% so the Mac can sleep normally instead of dying.</li><li><strong>Smart mode</strong> watches for running AI agents (Claude Code, Codex, Ollama, Cursor…) and lets the Mac sleep as soon as they go idle, so you don't have to remember to turn it off.</li><li><strong>Timers</strong> for 15 min / 1 h / 2 h if you just need a download to finish.</li></ul><p>It's native Swift, universal (Apple Silicon and Intel), and asks for your password exactly once.</p>"},
+        {"h2": "Which should you use?",
+         "html": "<ul><li>Docked at a desk with a monitor and power? Apple's clamshell mode is fine.</li><li>Need the screen to stay on while you watch something? <code>caffeinate</code> or any keep-awake app.</li><li>Need the Mac to keep working with the lid actually closed — in a bag, on battery, no monitor? You need <code>pmset disablesleep</code>, and you want something that turns it off for you and protects the battery. That's what NoSleep is for.</li></ul>"}
+      ]
+    },
+    "amphetamine-alternative": {
+      "title": "Amphetamine alternatives for Mac (2026): NoSleep vs Amphetamine vs Caffeine vs KeepingYouAwake",
+      "description": "Comparing the best keep-awake apps for macOS — Amphetamine, Caffeine, KeepingYouAwake and NoSleep — on closed-lid support, battery safety, AI-agent awareness and price.",
+      "h1": "Amphetamine alternatives for Mac: which keep-awake app actually works with the lid closed?",
+      "intro": "Amphetamine is the default answer to \"how do I stop my Mac sleeping\", and it's a fine app. But it was designed around keeping the screen on, not keeping a closed laptop working. If that's your problem — overnight builds, long downloads, AI agents — here's how the options compare.",
+      "sections": [
+        {"h2": "The comparison",
+         "html": "<table><thead><tr><th>App</th><th>Price</th><th>Lid closed, no monitor</th><th>Battery protection</th><th>Knows when agents finish</th><th>Open source</th></tr></thead><tbody><tr><td><strong>NoSleep</strong></td><td>Free</td><td>Yes</td><td>Yes — releases at 5%</td><td>Yes (Smart mode)</td><td>Yes, MIT</td></tr><tr><td>Amphetamine</td><td>Free</td><td>Only with power + display (Closed-Display Mode)</td><td>Optional trigger</td><td>No</td><td>No</td></tr><tr><td>KeepingYouAwake</td><td>Free</td><td>No</td><td>No</td><td>No</td><td>Yes</td></tr><tr><td>Caffeine</td><td>Free</td><td>No</td><td>No</td><td>No</td><td>Yes</td></tr><tr><td>caffeinate (CLI)</td><td>Built in</td><td>No</td><td>No</td><td>No</td><td>—</td></tr></tbody></table>"},
+        {"h2": "Amphetamine",
+         "html": "<p>The most featureful option by far: triggers, schedules, app-based sessions, a Dock icon you can hide. Its <em>Closed-Display Mode</em> keeps a MacBook running with the lid shut — but it relies on Apple's clamshell path, so it needs external power and an attached display or input device. On battery with nothing plugged in, it sleeps like any other Mac. Reddit is full of people surprised by this.</p>"},
+        {"h2": "KeepingYouAwake and Caffeine",
+         "html": "<p>Both are small, open-source, and do exactly one thing: hold a power assertion so the Mac doesn't idle-sleep. Great for presentations or keeping the screen on. Neither does anything about a closed lid, and neither was meant to.</p>"},
+        {"h2": "NoSleep",
+         "html": "<p><a href=\"/\">NoSleep</a> started from the opposite problem: a laptop that had to keep running <em>closed</em>, on battery, with an AI coding agent mid-task. It uses the system flag that actually survives a closed lid (<code>pmset disablesleep</code>) and adds the two things that flag lacks — a battery guard so the Mac never drains to a hard shutdown, and a Smart mode that lets the Mac sleep the moment your agents go idle. It has fewer knobs than Amphetamine on purpose: one shortcut, three modes, done.</p>"},
+        {"h2": "Bottom line",
+         "html": "<p>If you want scheduling and triggers for an always-docked Mac, Amphetamine is still excellent. If you want a MacBook to keep working with the lid shut, on battery, and go back to sleep by itself when the work is done, NoSleep is the one built for that.</p>"}
+      ]
+    },
+    "claude-code-mac-sleep": {
+      "title": "Stop Claude Code (or any AI agent) from dying when your Mac sleeps",
+      "description": "Claude Code, Codex, Cursor and Ollama all stop when a MacBook sleeps or the lid closes. Here's why, what doesn't work, and the free app that keeps agents running overnight and lets the Mac sleep when they finish.",
+      "h1": "Stop Claude Code from dying when your Mac goes to sleep",
+      "intro": "You kick off a 20-minute agent run, close the laptop to go make coffee, and come back to a dead session. Every AI coding tool has this problem — Claude Code, Codex CLI, Cursor agents, Ollama, Aider — because it isn't the tool's fault. It's macOS.",
+      "sections": [
+        {"h2": "Why the agent stops",
+         "html": "<p>When a Mac sleeps, every process is frozen. Network connections time out, the agent's API stream breaks, and when you wake the Mac the tool usually can't resume the turn it was in. Closing the lid triggers sleep immediately; leaving the Mac open triggers it after your idle timeout. Either way the run is gone.</p>"},
+        {"h2": "Things people try that don't work",
+         "html": "<ul><li><strong>\"Prevent sleep when display is off\"</strong> in System Settings only applies when plugged in, and doesn't stop clamshell sleep.</li><li><strong>caffeinate</strong> or Amphetamine keep the screen on but don't survive a closed lid on battery.</li><li><strong>Carrying the laptop around half-open</strong>. Works. Looks ridiculous. This is genuinely how NoSleep got started.</li><li><strong>tmux / nohup</strong> keep the process alive across SSH disconnects, but not across the machine itself sleeping.</li></ul>"},
+        {"h2": "What actually works",
+         "html": "<p>The Mac has to be told not to sleep at the system level (<code>pmset disablesleep</code>) — and then told to sleep again when the work is done, or it'll run all night and flatten the battery. <a href=\"/\">NoSleep</a> does both:</p><ol><li>Press ⌃⌘S. Smart NoSleep is on.</li><li>Close the lid. Claude Code keeps running.</li><li>NoSleep watches for agent processes. When they've been idle for 15 minutes (configurable), it lets the Mac sleep and leaves a notification saying when and what was running.</li><li>If the battery ever reaches 5%, it releases immediately regardless of mode.</li></ol>"},
+        {"h2": "Which agents does Smart mode detect?",
+         "html": "<p>Anything that shows up as a running process: <code>claude</code>, <code>codex</code>, <code>cursor</code>, <code>ollama</code>, <code>aider</code>, <code>gemini</code>, and similar CLI agents. Detection is by process name, so it also works with your own scripts if you tell it the name. If you'd rather not rely on detection, use Absolute NoSleep or a fixed timer.</p>"},
+        {"h2": "Free, open source, no account",
+         "html": "<p>NoSleep is MIT-licensed, native Swift, about 1 MB, and has no telemetry. It's unsigned — there's a one-line <code>xattr</code> step on first install, explained on the <a href=\"/\">download page</a>.</p>"}
+      ]
+    },
+    "pmset-disablesleep": {
+      "title": "pmset disablesleep explained: the only way a Mac stays awake with the lid closed — and its battery trap",
+      "description": "What sudo pmset -a disablesleep 1 actually does on macOS, why it's the only setting that survives a closed lid, and the little-known side effect that lets it drain a MacBook to a hard shutdown.",
+      "h1": "pmset disablesleep: what it does, and the battery trap nobody mentions",
+      "intro": "If you've searched for how to keep a MacBook awake with the lid closed, you've seen this command. It works. It's also the only thing that works. But it has a side effect that isn't documented anywhere obvious, and it cost us a battery.",
+      "sections": [
+        {"h2": "What the flag does",
+         "html": "<pre><code>sudo pmset -a disablesleep 1   # never sleep, even with the lid closed\nsudo pmset -a disablesleep 0   # back to normal</code></pre><p><code>pmset</code> is Apple's power-management tool. <code>disablesleep</code> is a hidden key that tells the kernel's power manager to reject <em>all</em> sleep requests — idle timeouts, the Apple-menu Sleep command, and clamshell sleep alike. <code>-a</code> applies it on battery and on charger. It survives reboots, which is exactly why forgetting to reset it is so common.</p>"},
+        {"h2": "Why nothing else survives a closed lid",
+         "html": "<p>Apps like Amphetamine and the <code>caffeinate</code> command work through <em>power assertions</em> (<code>IOPMAssertionCreateWithName</code>). An assertion says \"something is happening, don't idle-sleep\". The clamshell path doesn't consult assertions — the lid switch is treated as a user action, like choosing Sleep from the menu. So assertions are ignored and the Mac sleeps. <code>disablesleep</code> operates a level below that, in the power-manager policy, which is why it's the only setting that holds.</p>"},
+        {"h2": "The trap: it also disables low-battery sleep",
+         "html": "<p>macOS normally forces the Mac to sleep when the battery gets critically low, so it can hibernate cleanly instead of losing power mid-write. That emergency sleep is, as far as the power manager is concerned, just another sleep request — and <code>disablesleep 1</code> rejects it too.</p><p>We confirmed this on a 2026-08-17 log: the 10% warning fired at 01:32, there was no \"Entering Sleep\" event afterwards, and the next entry was a cold boot at 06:39. The Mac had run until the battery hit zero. Battery health, which had read \"Good\", read \"Poor\" the next morning.</p><p>So if you use this flag on a laptop, <strong>you</strong> have to watch the battery, because macOS no longer will.</p>"},
+        {"h2": "Using it safely",
+         "html": "<p>Three rules if you script this yourself:</p><ol><li>Always pair <code>disablesleep 1</code> with a guaranteed <code>disablesleep 0</code> — on exit, on error, on a timer.</li><li>Poll the battery (<code>pmset -g batt</code> or <code>IOPSCopyPowerSourcesInfo</code>) and reset the flag below a threshold you're comfortable with.</li><li>Don't rely on \"the display is on\" as proof someone is there. A stuck assertion from a recording or transcription app can hold the screen on all night.</li></ol><p>Or let <a href=\"/\">NoSleep</a> do it: it sets the flag when you toggle keep-awake on, clears it when you toggle off or quit, releases at 5% battery in every mode, and in Smart mode also clears it once your AI agents go idle. It's open source if you want to see exactly how.</p>"}
+      ]
+    }
+  }
+}

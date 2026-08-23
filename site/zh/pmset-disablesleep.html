@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pmset disablesleep 详解：唯一能让 Mac 合盖不休眠的方法——以及那个没人提起的电池陷阱</title>
+<meta name="description" content="sudo pmset -a disablesleep 1 在 macOS 上的真实作用、为何它是唯一能在合盖时持续生效的设置，以及那个鲜为人知的副作用：它会让 MacBook 的电池耗尽至强制关机。">
+<link rel="canonical" href="https://site-ten-blond-47.vercel.app/zh/pmset-disablesleep">
+<link rel="alternate" hreflang="en" href="https://site-ten-blond-47.vercel.app/pmset-disablesleep">
+<link rel="alternate" hreflang="de" href="https://site-ten-blond-47.vercel.app/de/pmset-disablesleep">
+<link rel="alternate" hreflang="es" href="https://site-ten-blond-47.vercel.app/es/pmset-disablesleep">
+<link rel="alternate" hreflang="fr" href="https://site-ten-blond-47.vercel.app/fr/pmset-disablesleep">
+<link rel="alternate" hreflang="ja" href="https://site-ten-blond-47.vercel.app/ja/pmset-disablesleep">
+<link rel="alternate" hreflang="ko" href="https://site-ten-blond-47.vercel.app/ko/pmset-disablesleep">
+<link rel="alternate" hreflang="pt-BR" href="https://site-ten-blond-47.vercel.app/pt/pmset-disablesleep">
+<link rel="alternate" hreflang="zh-Hans" href="https://site-ten-blond-47.vercel.app/zh/pmset-disablesleep">
+<link rel="alternate" hreflang="x-default" href="https://site-ten-blond-47.vercel.app/pmset-disablesleep">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="NoSleep">
+<meta property="og:title" content="pmset disablesleep 详解：唯一能让 Mac 合盖不休眠的方法——以及那个没人提起的电池陷阱">
+<meta property="og:description" content="sudo pmset -a disablesleep 1 在 macOS 上的真实作用、为何它是唯一能在合盖时持续生效的设置，以及那个鲜为人知的副作用：它会让 MacBook 的电池耗尽至强制关机。">
+<meta property="og:url" content="https://site-ten-blond-47.vercel.app/zh/pmset-disablesleep">
+<meta property="og:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="pmset disablesleep 详解：唯一能让 Mac 合盖不休眠的方法——以及那个没人提起的电池陷阱">
+<meta name="twitter:description" content="sudo pmset -a disablesleep 1 在 macOS 上的真实作用、为何它是唯一能在合盖时持续生效的设置，以及那个鲜为人知的副作用：它会让 MacBook 的电池耗尽至强制关机。">
+<meta name="twitter:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"TechArticle","headline":"pmset disablesleep：它究竟做了什么，还有那个无人提及的电池陷阱","description":"sudo pmset -a disablesleep 1 在 macOS 上的真实作用、为何它是唯一能在合盖时持续生效的设置，以及那个鲜为人知的副作用：它会让 MacBook 的电池耗尽至强制关机。","inLanguage":"zh-Hans","datePublished":"2026-08-23","dateModified":"2026-08-23","author":{"@type":"Person","name":"Darius Cheung","url":"https://github.com/99Darius"},"publisher":{"@type":"Organization","name":"NoSleep","url":"https://site-ten-blond-47.vercel.app"},"mainEntityOfPage":"https://site-ten-blond-47.vercel.app/zh/pmset-disablesleep","image":"https://site-ten-blond-47.vercel.app/og.jpg","about":{"@type":"SoftwareApplication","name":"NoSleep","operatingSystem":"macOS"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"NoSleep","item":"https://site-ten-blond-47.vercel.app/zh/"},{"@type":"ListItem","position":2,"name":"pmset disablesleep：它究竟做了什么，还有那个无人提及的电池陷阱","item":"https://site-ten-blond-47.vercel.app/zh/pmset-disablesleep"}]}]}</script>
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --card: #ffffff;
+    --text: #1d1d1f;
+    --muted: #6b6b70;
+    --accent: #5566ff;
+    --accent-deep: #2c3bb0;
+    --accent-soft: #eef1ff;
+    --accent-border: #d4d9ff;
+    --shadow: 0 10px 40px rgba(40, 50, 120, 0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e0f17;
+      --card: #181a26;
+      --text: #f5f5f7;
+      --muted: #a0a0aa;
+      --accent: #8190ff;
+      --accent-deep: #cdd5ff;
+      --accent-soft: #20243f;
+      --accent-border: #353a66;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 22px; }
+
+  /* Hero */
+  header { text-align: center; padding: 72px 0 48px; }
+  .logo {
+    width: 92px; height: 92px; margin: 0 auto 26px;
+    border-radius: 22px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .logo span {
+    font-size: 52px; font-weight: 800; color: #fff; line-height: 1;
+  }
+  .logo .strike {
+    position: absolute; width: 70%; height: 4px; background: rgba(255,255,255,0.92);
+    border-radius: 3px; transform: rotate(-45deg);
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.5px; }
+  .tagline { font-size: 19px; color: var(--muted); margin: 0 auto 34px; max-width: 520px; }
+
+  .cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent); color: #fff; text-decoration: none;
+    font-size: 17px; font-weight: 600;
+    padding: 15px 30px; border-radius: 13px;
+    box-shadow: var(--shadow); transition: transform .12s ease, background .12s ease;
+  }
+  .cta:hover { transform: translateY(-1px); background: var(--accent-deep); }
+  .cta-sub { display: block; font-size: 13px; color: var(--muted); margin-top: 14px; }
+
+  /* Email-gate download form */
+  .dl-form {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    max-width: 480px; margin: 0 auto;
+  }
+  .dl-form input[type="email"] {
+    flex: 1 1 200px; min-width: 0;
+    font: inherit; font-size: 16px; color: var(--text);
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 13px; padding: 14px 16px; outline: none;
+  }
+  .dl-form input[type="email"]:focus { border-color: var(--accent); }
+  .dl-form .cta { border: 0; cursor: pointer; font-family: inherit; }
+  .gh-link {
+    display: inline-block; margin-top: 12px; font-size: 14px; font-weight: 600;
+    color: var(--accent); text-decoration: none;
+  }
+  .gh-link:hover { text-decoration: underline; }
+  kbd {
+    font-family: inherit; font-weight: 700;
+    background: var(--accent-soft); color: var(--accent-deep);
+    border: 1px solid var(--accent-border); border-radius: 7px;
+    padding: 2px 8px; font-size: 0.92em; white-space: nowrap;
+  }
+
+  /* Cards */
+  section { padding: 14px 0; }
+  .card {
+    background: var(--card); border-radius: 18px; padding: 28px 30px;
+    box-shadow: var(--shadow); margin: 18px 0;
+  }
+  .card h2 { font-size: 21px; margin: 0 0 16px; }
+  .feature { display: flex; gap: 14px; margin: 14px 0; align-items: flex-start; }
+  .feature .ico {
+    flex: 0 0 38px; width: 38px; height: 38px; border-radius: 11px;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    display: flex; align-items: center; justify-content: center; font-size: 19px;
+  }
+  .feature b { display: block; font-size: 15px; }
+  .feature p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+
+  ol { padding-left: 22px; margin: 0; }
+  ol li { margin: 10px 0; font-size: 15px; }
+  .note {
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 12px; padding: 16px 18px; font-size: 14px; margin-top: 8px;
+  }
+  code {
+    font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.88em;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 6px; padding: 2px 7px;
+  }
+
+  /* Smart NoSleep showcase (faithful macOS mockups) */
+  .shots { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  .shot { flex: 1 1 260px; max-width: 330px; }
+  .shot .cap { font-size: 13px; color: var(--muted); text-align: center; margin-top: 12px; }
+  .macmenu {
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 10px; box-shadow: var(--shadow);
+    padding: 5px; font-size: 13.5px; line-height: 1.25;
+  }
+  .macmenu .mi { padding: 5px 12px 5px 26px; border-radius: 6px; position: relative; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .macmenu .mi.dim { color: var(--muted); font-size: 12.5px; }
+  .macmenu .mi.checked::before { content: "✓"; position: absolute; left: 9px; font-weight: 700; }
+  .macmenu .mi.sel { background: var(--accent); color: #fff; }
+  .macmenu .mi .sub { float: right; color: var(--muted); margin-left: 14px; }
+  .macmenu .mi.sel .sub { color: rgba(255,255,255,0.8); }
+  .macmenu hr { border: 0; border-top: 1px solid var(--accent-border); margin: 5px 10px; }
+  .macnotif {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 16px; box-shadow: var(--shadow); padding: 14px 16px;
+  }
+  .macnotif .nicon {
+    flex: 0 0 40px; width: 40px; height: 40px; border-radius: 9px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 22px; position: relative;
+  }
+  .macnotif .nicon i {
+    position: absolute; width: 66%; height: 2.5px; background: rgba(255,255,255,0.92);
+    border-radius: 2px; transform: rotate(-45deg); display: block;
+  }
+  .macnotif b { display: block; font-size: 13.5px; }
+  .macnotif p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0 56px; }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 560px) {
+    h1 { font-size: 31px; }
+    header { padding: 52px 0 36px; }
+    .card { padding: 22px 20px; }
+  }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="top"><a href="/zh/">NoSleep</a><a href="https://github.com/99Darius/NoSleep">GitHub</a></nav>
+
+<article>
+  <h1>pmset disablesleep：它究竟做了什么，还有那个无人提及的电池陷阱</h1>
+  <p class="intro">如果你搜索过「如何让 MacBook 合盖时不休眠」，一定见过这条命令。它确实有效，而且是唯一真正有效的方案。但它有个未被明确记录的副作用——我们曾因此损坏了一块电池。</p>
+  <h2>这个标志的作用</h2><pre><code>sudo pmset -a disablesleep 1   # 永不休眠，即使合上盖子
+sudo pmset -a disablesleep 0   # 恢复默认行为</code></pre><p><code>pmset</code> 是 Apple 提供的电源管理工具。<code>disablesleep</code> 是一个隐藏参数，它会指示内核级电源管理器拒绝<strong>所有</strong>休眠请求——包括空闲超时、苹果菜单中的「睡眠」命令，以及合盖休眠（clamshell sleep）。<code>-a</code> 表示该设置同时对电池供电和接通电源两种状态生效。它还会在重启后持续生效，这正是人们常常忘记关闭它的原因。</p>
+<h2>为什么其他方法在合盖时统统失效</h2><p>像 Amphetamine 这样的 App，或 <code>caffeinate</code> 命令，都是通过「电源断言」（<code>IOPMAssertionCreateWithName</code>）来工作的。断言相当于告诉系统：「当前有任务在运行，请勿因空闲而休眠」。但合盖路径（clamshell path）并不会检查这些断言——盖子开关被视为一种用户操作（就像从菜单中选择「睡眠」），因此所有断言都会被忽略，Mac 依然会休眠。<code>disablesleep</code> 则工作在更低层级，直接介入电源管理策略本身，所以它是唯一能真正「扛住」合盖的设置。</p>
+<h2>陷阱：它同时禁用了低电量强制休眠</h2><p>macOS 通常会在电池电量极低时强制 Mac 进入休眠，以便安全地执行休眠写盘（hibernate），避免断电导致数据损坏。而这次「紧急休眠」在电源管理器看来，也只是一次普通的休眠请求——<code>disablesleep 1</code> 同样会把它一并拒绝。</p><p>我们在 2026-08-17 的日志中确认了这一点：01:32 触发了 10% 电量警告，之后日志中再无「Entering Sleep」事件，下一条记录是 06:39 的冷启动。Mac 一直运行到电池彻底耗尽。此前电池健康度显示为「良好」，第二天早上则变成了「较差」。</p><p>因此，如果你在笔记本电脑上启用此标志，<strong>你必须亲自盯紧电量</strong>——因为 macOS 已经不再替你代劳了。</p>
+<h2>安全使用建议</h2><p>如果你自己编写脚本调用它，请务必遵守三条规则：</p><ol><li>始终将 <code>disablesleep 1</code> 与「确保执行」的 <code>disablesleep 0</code> 配对使用——例如在脚本退出、出错或定时器到期时自动关闭。</li><li>定期轮询电池状态（用 <code>pmset -g batt</code> 或 <code>IOPSCopyPowerSourcesInfo</code>），并在电量低于你设定的安全阈值时主动重置该标志。</li><li>切勿以「屏幕是否亮着」作为「有人在使用」的判断依据。录音或转录类 App 可能因断言卡住，导致屏幕整夜不灭。</li></ol><p>或者，交由 <a href="/">NoSleep</a> 来处理：它会在你开启「保持唤醒」时自动设置该标志，关闭或退出时立即清除；在任何模式下电量跌至 5% 时自动释放；Smart 模式下还会在你的 AI 代理进入空闲状态后主动清除。开源可查，代码完全透明。</p>
+  <div class="cta-box">
+    <p style="color:var(--muted);font-size:14px;margin:0 0 12px">立即体验 NoSleep — 免费、开源、无需注册</p>
+    <form id="dl-form" class="dl-form" novalidate>
+  <input type="email" id="dl-email" placeholder="you@example.com" autocomplete="email" aria-label="Email" required>
+  <button class="cta" type="submit">⬇&nbsp; 下载 macOS 版本</button>
+</form>
+<span class="cta-sub">留下邮箱，即可获取安装程序及偶尔的更新资讯 — 绝不发送垃圾邮件。<br>免费且开源 · 支持 Apple Silicon 与 Intel 芯片 · <kbd>⌃⌘S</kbd></span>
+<a class="gh-link" href="https://github.com/99Darius/NoSleep">GitHub 开源项目 →</a>
+  </div>
+</article>
+<section><div class="card"><h2>使用指南</h2><ul class="guides"><li><a href="/zh/keep-macbook-awake-lid-closed">如何在合上 MacBook 盖子时保持其唤醒 —— 无需外接显示器</a></li><li><a href="/zh/amphetamine-alternative">Mac 上的 Amphetamine 替代方案：哪款防休眠应用真正在合盖状态下有效？</a></li><li><a href="/zh/claude-code-mac-sleep">防止 Claude Code 在 Mac 睡眠时中断</a></li><li><a href="/zh/pmset-disablesleep">pmset disablesleep：它究竟做了什么，还有那个无人提及的电池陷阱</a></li></ul></div></section>
+<footer>
+  专为 macOS 打造 · <a href="https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg">下载 macOS 版本</a> · <a href="https://github.com/99Darius/NoSleep">GitHub 源码</a>
+  <div class="langs"><a href="/pmset-disablesleep" hreflang="en" class="">English</a><a href="/de/pmset-disablesleep" hreflang="de" class="">Deutsch</a><a href="/es/pmset-disablesleep" hreflang="es" class="">Español</a><a href="/fr/pmset-disablesleep" hreflang="fr" class="">Français</a><a href="/ja/pmset-disablesleep" hreflang="ja" class="">日本語</a><a href="/ko/pmset-disablesleep" hreflang="ko" class="">한국어</a><a href="/pt/pmset-disablesleep" hreflang="pt-BR" class="">Português</a><a href="/zh/pmset-disablesleep" hreflang="zh-Hans" class="cur">简体中文</a></div>
+</footer>
+</div>
+<script>
+(function () {
+  var PKG = "https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg";
+  var form = document.getElementById('dl-form'); if (!form) return;
+  var input = document.getElementById('dl-email');
+  var saved = null; try { saved = localStorage.getItem('nosleepEmail'); } catch (e) {}
+  if (saved) { var a = document.createElement('a'); a.className = 'cta'; a.href = PKG; a.textContent = form.querySelector('button').textContent; form.replaceWith(a); return; }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault(); var email = input.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { input.reportValidity(); return; }
+    try { localStorage.setItem('nosleepEmail', email); } catch (err) {}
+    try { fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }), keepalive: true }).catch(function(){}); } catch (err) {}
+    window.location.href = PKG;
+  });
+})();
+</script>
+</body>
+</html>

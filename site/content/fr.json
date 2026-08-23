@@ -1,0 +1,205 @@
+{
+  "lang": "fr",
+  "hreflang": "fr",
+  "native": "Français",
+  "ui": {
+    "download": "Télécharger pour macOS",
+    "emailPlaceholder": "vous@exemple.com",
+    "emailNote": "Indiquez votre adresse e-mail pour recevoir l’installateur et des nouvelles occasionnelles sur les mises à jour — zéro spam.",
+    "free": "Gratuit et open source · Compatible Apple Silicon et Intel",
+    "github": "Code source ouvert sur GitHub →",
+    "guides": "Guides",
+    "home": "Accueil",
+    "madeFor": "Conçu pour macOS",
+    "source": "Code source sur GitHub",
+    "languages": "Langues",
+    "backHome": "← Accueil de NoSleep",
+    "tryIt": "Essayez NoSleep — gratuit, open source, sans compte"
+  },
+  "home": {
+    "title": "NoSleep — Gardez votre Mac éveillé avec le capot fermé pendant que vos agents IA travaillent",
+    "description": "Application gratuite et open source pour Mac qui maintient votre MacBook éveillé même avec le capot fermé — sans moniteur externe — pendant que Claude Code, Codex ou tout autre agent IA s’exécute, puis laisse le Mac passer en veille dès qu’ils ont terminé. Évite toute décharge complète de la batterie.",
+    "h1": "Éveillé pendant que vos agents travaillent. En veille dès qu’ils ont fini.",
+    "tagline": "Une petite application dans la barre de menus qui maintient votre Mac éveillé — même avec le capot fermé — pendant que Claude Code, Codex, Ollama ou tout autre agent IA est actif. Smart NoSleep détecte automatiquement quand ils cessent leur activité et autorise à nouveau la veille, préservant ainsi la batterie et limitant la surchauffe.",
+    "featuresTitle": "Ce qu’il fait",
+    "features": [
+      {
+        "icon": "🤖",
+        "title": "Smart NoSleep",
+        "body": "Conçu pour les sessions de programmation IA nocturnes : reste éveillé tant que vos agents sont actifs, laisse le Mac passer en veille dès qu’ils deviennent inactifs, et vous en informe."
+      },
+      {
+        "icon": "💤",
+        "title": "Éveil avec capot fermé",
+        "body": "Reste éveillé même avec le capot fermé — aucun écran externe requis."
+      },
+      {
+        "icon": "🔋",
+        "title": "Sécurisé pour la batterie",
+        "body": "Relâche le blocage de la veille à 5 % de charge pour éviter toute coupure brutale due à une décharge totale."
+      },
+      {
+        "icon": "⌨️",
+        "title": "Un seul raccourci",
+        "body": "Appuyez sur ⌃⌘S n’importe où pour activer/désactiver le maintien de l’éveil, ou cliquez sur l’icône dans la barre de menus."
+      },
+      {
+        "icon": "⏱️",
+        "title": "Minuteries",
+        "body": "Maintenez l’éveil pendant 15 minutes, 1 heure ou 2 heures, puis désactivation automatique."
+      },
+      {
+        "icon": "🪶",
+        "title": "Léger comme une plume",
+        "body": "Développé nativement en Swift, sans Electron. Consommation CPU et mémoire négligeable."
+      }
+    ],
+    "installTitle": "Installation",
+    "installIntro": "NoSleep est open source et n’est pas signé avec un certificat Apple payant, donc macOS affiche un avertissement « impossible de vérifier » la première fois. C’est normal. Une seule commande Terminal suffit :",
+    "installSteps": [
+      "Téléchargez l’installeur — il atterrit dans votre dossier Téléchargements.",
+      "Ouvrez Terminal (Applications → Utilitaires), collez-y la commande ci-dessous, puis exécutez-la.",
+      "Double-cliquez sur le fichier .pkg — il s’ouvre désormais normalement.",
+      "Suivez l’assistant d’installation — NoSleep démarre automatiquement une fois terminé."
+    ],
+    "usingTitle": "Utilisation",
+    "usingSteps": [
+      "Appuyez sur ⌃⌘S ou cliquez sur l’icône dans la barre de menus pour basculer entre éveil et veille.",
+      "Choisissez Smart NoSleep (par défaut), Absolute NoSleep ou une minuterie.",
+      "Fermez le capot. Vos agents continuent de tourner. Ouvrez-le plus tard pour voir quand ils ont terminé."
+    ],
+    "faqTitle": "Questions fréquentes",
+    "faq": [
+      {
+        "q": "Fonctionne-t-il avec le capot fermé et sans moniteur externe ?",
+        "a": "Oui. C’est précisément son objectif. Les outils classiques de maintien de l’éveil ne bloquent que la veille par inactivité ; NoSleep bloque aussi la veille en mode « coquille » (clamshell) qui se déclenche immédiatement à la fermeture du capot, même sans aucun périphérique connecté."
+      },
+      {
+        "q": "Va-t-il vider ma batterie ?",
+        "a": "Pas jusqu’à zéro. NoSleep relâche systématiquement le blocage de la veille à 5 % de charge dans tous les modes, et le réactive dès que la batterie remonte au-dessus de 25 % ou que le Mac est branché. En mode Smart, il autorise aussi la veille dès que vos agents deviennent inactifs."
+      },
+      {
+        "q": "Est-ce sûr ? Pourquoi cet avertissement macOS ?",
+        "a": "Le code est entièrement open source sous licence MIT — vous pouvez lire chaque ligne. L’avertissement apparaît car l’application n’est pas signée avec un certificat Apple Developer payant. Une seule commande xattr suffit à le supprimer."
+      },
+      {
+        "q": "A-t-il besoin des droits administrateur ?",
+        "a": "Une seule fois. Maintenir un Mac éveillé avec le capot fermé nécessite pmset, qui demande votre mot de passe la première fois. Par la suite, tout se passe en silence."
+      }
+    ]
+  },
+  "pages": {
+    "keep-macbook-awake-lid-closed": {
+      "title": "Comment empêcher un MacBook de passer en veille avec le capot fermé (sans écran externe)",
+      "description": "Toutes les méthodes pour éviter que votre MacBook ne passe en veille lorsque vous fermez le capot — mode coquille, commande caffeinate, désactivation de la veille via pmset — et l’unique application gratuite qui le fait en toute sécurité, même sur batterie.",
+      "h1": "Comment empêcher un MacBook de passer en veille avec le capot fermé — sans écran externe",
+      "intro": "Fermez le capot d’un MacBook et il passe en veille en quelques secondes. Les téléchargements s’arrêtent, les sessions SSH sont coupées, et tout agent IA en cours d’exécution meurt en plein milieu de sa tâche. Voici pourquoi cela se produit — et toutes les solutions pour y remédier, du mode coquille intégré d’Apple à une application gratuite qui gère tout en un seul clic.",
+      "sections": [
+        {
+          "h2": "Pourquoi un MacBook passe-t-il en veille dès que le capot est fermé ?",
+          "html": "<p>macOS interprète la fermeture du capot comme une demande explicite de passer en veille. Ce n’est pas un délai d’inactivité que vous pouvez rallonger — c’est un mécanisme distinct appelé <strong>veille en mode coquille</strong>, qui s’active immédiatement, quel que soit ce qui tourne sur la machine. C’est pourquoi les outils qui « empêchent uniquement la veille par inactivité » deviennent inefficaces dès que le capot est fermé.</p>"
+        },
+        {
+          "h2": "Option 1 : Le mode coquille d’Apple (nécessite une alimentation + un écran)",
+          "html": "<p>Apple permet effectivement d’utiliser un Mac avec le capot fermé, mais uniquement si <em>les deux conditions suivantes</em> sont remplies : le Mac est branché sur secteur, et un écran externe, un clavier ou une souris est connecté(e). Débranchez l’un ou l’autre, et le Mac passe en veille. Cette solution ne fonctionne donc pas si vous utilisez votre ordinateur portable dans un sac, sur un bureau sans écran, ou sur batterie.</p>"
+        },
+        {
+          "h2": "Option 2 : La commande caffeinate (ne résiste pas à la fermeture du capot)",
+          "html": "<p>La commande intégrée <code>caffeinate</code> et la plupart des applications en barre de menus (Amphetamine, KeepingYouAwake, Caffeine) créent une <em>assertion de puissance</em>. Cela empêche la veille par inactivité — l’écran reste allumé pendant votre absence — mais une assertion de puissance ne peut pas outrepasser la veille en mode coquille. Fermez le capot, et le Mac passe quand même en veille.</p>"
+        },
+        {
+          "h2": "Option 3 : pmset disablesleep (fonctionne, mais dangereux)",
+          "html": "<p>La seule chose capable de résister à la fermeture du capot est un drapeau système :</p><pre><code>sudo pmset -a disablesleep 1</code></pre><p>Cette commande maintient effectivement le Mac éveillé avec le capot fermé, même sans aucun périphérique connecté. Deux problèmes. Premièrement, vous devez absolument penser à exécuter <code>sudo pmset -a disablesleep 0</code> ensuite, sinon votre Mac ne passera plus jamais en veille. Deuxièmement — et c’est là que ça devient sérieux — <strong>cette commande désactive aussi la veille d’urgence liée à la batterie intégrée à macOS</strong>. Sur batterie, le Mac continuera de fonctionner jusqu’à atteindre 0 %, puis s’éteindra brutalement. Nous l’avons appris à nos dépens : une exécution nocturne, une batterie complètement déchargée, et son état de santé est passé de « Bon » à « Médiocre ».</p>"
+        },
+        {
+          "h2": "Option 4 : NoSleep (exécute la commande pmset en toute sécurité)",
+          "html": "<p><a href=\"/\">NoSleep</a> est une application gratuite et open-source en barre de menus qui intègre la commande <code>pmset disablesleep</code> dans un cadre sécurisé, justement absent par défaut :</p><ul><li><strong>Un seul raccourci</strong> (⌃⌘S) active ou désactive la veille avec capot fermé, et restaure systématiquement le comportement normal de veille dès que l’option est désactivée ou que l’application quitte.</li><li><strong>Protection de la batterie</strong> : la commande est automatiquement levée à 5 % de charge, afin que le Mac puisse passer en veille normalement au lieu de s’éteindre brutalement.</li><li><strong>Mode intelligent</strong> : surveille les agents IA en cours d’exécution (Claude Code, Codex, Ollama, Cursor…) et autorise la veille dès qu’ils deviennent inactifs, sans que vous ayez à y penser.</li><li><strong>Minuteries</strong> préréglées (15 min / 1 h / 2 h) si vous avez juste besoin de terminer un téléchargement.</li></ul><p>L’application est écrite en Swift natif, universelle (compatible Apple Silicon et Intel), et ne vous demande votre mot de passe qu’une seule fois.</p>"
+        },
+        {
+          "h2": "Laquelle choisir ?",
+          "html": "<ul><li>Vous êtes en station fixe, avec un écran et une alimentation ? Le mode coquille d’Apple convient parfaitement.</li><li>Vous souhaitez simplement garder l’écran allumé pendant que vous regardez une vidéo ? Utilisez <code>caffeinate</code> ou n’importe quelle application anti-veille.</li><li>Vous avez besoin que le Mac continue de fonctionner avec le capot réellement fermé — dans un sac, sur batterie, sans écran ? Vous avez besoin de <code>pmset disablesleep</code>, et vous voulez un outil qui la désactive automatiquement pour vous tout en protégeant votre batterie. C’est exactement le rôle de NoSleep.</li></ul>"
+        }
+      ]
+    },
+    "amphetamine-alternative": {
+      "title": "Alternatives à Amphetamine pour Mac (2026) : NoSleep vs Amphetamine vs Caffeine vs KeepingYouAwake",
+      "description": "Comparaison des meilleures applications « keep-awake » pour macOS — Amphetamine, Caffeine, KeepingYouAwake et NoSleep — sur la prise en charge du couvercle fermé, la sécurité de la batterie, la détection de la fin des agents IA et le prix.",
+      "h1": "Alternatives à Amphetamine pour Mac : quelle application « keep-awake » fonctionne vraiment avec le couvercle fermé ?",
+      "intro": "Amphetamine est la réponse par défaut à la question « comment empêcher mon Mac de passer en veille », et c’est une excellente application. Mais elle a été conçue pour garder l’écran allumé, pas pour faire fonctionner un ordinateur portable fermé. Si c’est votre besoin — compilations nocturnes, téléchargements longs, agents IA — voici comment les différentes options se comparent.",
+      "sections": [
+        {
+          "h2": "La comparaison",
+          "html": "<table><thead><tr><th>Application</th><th>Prix</th><th>Couvercle fermé, sans écran externe</th><th>Protection de la batterie</th><th>Détecte la fin des agents</th><th>Open source</th></tr></thead><tbody><tr><td><strong>NoSleep</strong></td><td>Gratuit</td><td>Oui</td><td>Oui — relâche à 5 %</td><td>Oui (mode Smart)</td><td>Oui, licence MIT</td></tr><tr><td>Amphetamine</td><td>Gratuit</td><td>Uniquement avec alimentation + écran (mode Closed-Display)</td><td>Déclencheur optionnel</td><td>Non</td><td>Non</td></tr><tr><td>KeepingYouAwake</td><td>Gratuit</td><td>Non</td><td>Non</td><td>Non</td><td>Oui</td></tr><tr><td>Caffeine</td><td>Gratuit</td><td>Non</td><td>Non</td><td>Non</td><td>Oui</td></tr><tr><td>caffeinate (CLI)</td><td>Intégré</td><td>Non</td><td>Non</td><td>Non</td><td>—</td></tr></tbody></table>"
+        },
+        {
+          "h2": "Amphetamine",
+          "html": "<p>L’option la plus complète de loin : déclencheurs, planifications, sessions liées à des applications, icône dans le Dock que vous pouvez masquer. Son <em>mode Closed-Display</em> permet à un MacBook de rester actif même avec le couvercle fermé — mais il repose sur le mode « clamshell » d’Apple, ce qui exige une alimentation externe et un écran ou périphérique d’entrée connecté. En utilisation sur batterie, sans rien branché, il passe en veille comme n’importe quel autre Mac. Reddit regorge d’utilisateurs surpris par ce comportement.</p>"
+        },
+        {
+          "h2": "KeepingYouAwake et Caffeine",
+          "html": "<p>Les deux sont légères, open source, et font exactement une chose : maintenir une assertion de puissance pour empêcher le Mac de passer en veille par inactivité. Idéal pour les présentations ou pour garder l’écran allumé. Aucune des deux ne gère le couvercle fermé, ni n’a été conçue à cet effet.</p>"
+        },
+        {
+          "h2": "NoSleep",
+          "html": "<p><a href=\"/\">NoSleep</a> est né d’un problème inverse : un ordinateur portable qui devait continuer à fonctionner <em>à couvercle fermé</em>, sur batterie, pendant qu’un agent IA codait. Il utilise le drapeau système qui résiste réellement au couvercle fermé (<code>pmset disablesleep</code>) et y ajoute les deux éléments que ce drapeau ne fournit pas — une protection de la batterie pour éviter l’arrêt brutal à 0 %, et un mode Smart qui permet au Mac de passer en veille dès que vos agents deviennent inactifs. Il propose délibérément moins de réglages qu’Amphetamine : un seul raccourci clavier, trois modes, c’est tout.</p>"
+        },
+        {
+          "h2": "Conclusion",
+          "html": "<p>Si vous avez besoin de planification et de déclencheurs pour un Mac toujours connecté à un écran, Amphetamine reste excellent. Si vous voulez qu’un MacBook continue de travailler à couvercle fermé, sur batterie, puis repasse automatiquement en veille dès que la tâche est terminée, NoSleep est l’application conçue spécifiquement pour cela.</p>"
+        }
+      ]
+    },
+    "claude-code-mac-sleep": {
+      "title": "Empêchez Claude Code (ou tout autre agent IA) de s’arrêter lorsque votre Mac passe en veille",
+      "description": "Claude Code, Codex, Cursor et Ollama cessent tous de fonctionner dès que votre MacBook passe en veille ou que vous fermez le clapet. Voici pourquoi, ce qui ne marche pas, et l’application gratuite qui maintient vos agents actifs toute la nuit — tout en laissant votre Mac passer en veille une fois le travail terminé.",
+      "h1": "Empêchez Claude Code de s’arrêter quand votre Mac passe en veille",
+      "intro": "Vous lancez un agent pendant 20 minutes, fermez votre ordinateur pour aller préparer un café… et revenez sur une session morte. Ce problème touche tous les outils d’IA pour le développement — Claude Code, Codex CLI, les agents Cursor, Ollama, Aider — mais ce n’est pas leur faute. C’est macOS.",
+      "sections": [
+        {
+          "h2": "Pourquoi l’agent s’arrête",
+          "html": "<p>Lorsqu’un Mac passe en veille, tous les processus sont gelés. Les connexions réseau expirent, le flux d’API de l’agent est interrompu, et au réveil, l’outil ne parvient généralement pas à reprendre là où il en était. Fermer le clapet déclenche immédiatement la veille ; laisser l’ordinateur ouvert la déclenche après le délai d’inactivité configuré. Dans les deux cas, l’exécution est perdue.</p>"
+        },
+        {
+          "h2": "Ce que les gens essaient — sans succès",
+          "html": "<ul><li><strong>« Empêcher la mise en veille lorsque l’écran est éteint »</strong> dans les Préférences Système ne s’applique qu’avec l’alimentation branchée et n’empêche pas la veille en mode « clamshell ».</li><li><strong>caffeinate</strong> ou Amphetamine gardent l’écran allumé, mais ne survivent pas à la fermeture du clapet sous batterie.</li><li><strong>Transporter l’ordinateur à moitié ouvert</strong>. Ça marche. Ça fait ridicule. C’est vraiment ainsi que NoSleep a vu le jour.</li><li><strong>tmux / nohup</strong> maintiennent le processus vivant après une déconnexion SSH, mais pas après la mise en veille de la machine elle-même.</li></ul>"
+        },
+        {
+          "h2": "Ce qui fonctionne vraiment",
+          "html": "<p>Le Mac doit être explicitement informé de ne pas passer en veille au niveau système (<code>pmset disablesleep</code>) — puis informé de pouvoir y passer à nouveau une fois le travail terminé, sinon il restera allumé toute la nuit et videra complètement la batterie. <a href=\"/\">NoSleep</a> fait les deux :</p><ol><li>Appuyez sur ⌃⌘S. Le mode Smart NoSleep est activé.</li><li>Fermez le clapet. Claude Code continue de tourner.</li><li>NoSleep surveille les processus d’agents. Dès qu’ils restent inactifs pendant 15 minutes (paramétrable), il autorise la mise en veille du Mac et affiche une notification indiquant l’heure et le nom du processus concerné.</li><li>Si la batterie tombe à 5 %, NoSleep relâche immédiatement le verrou, quel que soit le mode actif.</li></ol>"
+        },
+        {
+          "h2": "Quels agents le mode Smart détecte-t-il ?",
+          "html": "<p>Tout processus apparaissant dans la liste des processus actifs : <code>claude</code>, <code>codex</code>, <code>cursor</code>, <code>ollama</code>, <code>aider</code>, <code>gemini</code>, et d’autres agents CLI similaires. La détection se fait par nom de processus, donc cela fonctionne aussi avec vos propres scripts si vous lui indiquez leur nom. Si vous préférez ne pas compter sur cette détection, utilisez Absolute NoSleep ou un minuteur fixe.</p>"
+        },
+        {
+          "h2": "Gratuit, open source, sans compte",
+          "html": "<p>NoSleep est publié sous licence MIT, écrit en Swift natif, pèse environ 1 Mo et n’envoie aucune donnée. Il n’est pas signé — une seule commande <code>xattr</code> est requise lors de la première installation, expliquée sur la <a href=\"/\">page de téléchargement</a>.</p>"
+        }
+      ]
+    },
+    "pmset-disablesleep": {
+      "title": "pmset disablesleep expliqué : la seule façon de garder un Mac éveillé avec le capot fermé — et le piège pour la batterie",
+      "description": "Ce que fait réellement « sudo pmset -a disablesleep 1 » sous macOS, pourquoi c’est le seul paramètre qui résiste au capot fermé, et l’effet secondaire méconnu qui peut vider complètement la batterie d’un MacBook jusqu’à un arrêt brutal.",
+      "h1": "pmset disablesleep : à quoi ça sert, et le piège batterie dont personne ne parle",
+      "intro": "Si vous avez cherché comment garder un MacBook éveillé avec le capot fermé, vous êtes tombé sur cette commande. Elle fonctionne. C’est même la seule qui fonctionne. Mais elle a un effet secondaire non documenté nulle part de façon évidente — et il nous a coûté une batterie.",
+      "sections": [
+        {
+          "h2": "À quoi sert ce drapeau",
+          "html": "<pre><code>sudo pmset -a disablesleep 1   # jamais dormir, même avec le capot fermé\nsudo pmset -a disablesleep 0   # retour au comportement normal</code></pre><p><code>pmset</code> est l’outil de gestion de l’alimentation d’Apple. <code>disablesleep</code> est une clé cachée qui indique au gestionnaire d’alimentation du noyau de rejeter <em>toutes</em> les demandes de veille — délais d’inactivité, commande « Mettre en veille » depuis le menu Pomme, ou veille en mode coquille (clamshell). L’option <code>-a</code> l’applique aussi bien sur batterie que sur secteur. Elle persiste après redémarrage — ce qui explique pourquoi on l’oublie si souvent de désactiver.</p>"
+        },
+        {
+          "h2": "Pourquoi rien d’autre ne résiste au capot fermé",
+          "html": "<p>Des applications comme Amphetamine ou la commande <code>caffeinate</code> agissent via des <em>assertions d’alimentation</em> (<code>IOPMAssertionCreateWithName</code>). Une assertion signifie « quelque chose se passe, ne pas entrer en veille par inactivité ». Le chemin de la veille en mode coquille ne consulte pas ces assertions — le capteur de capot est traité comme une action utilisateur, comme choisir « Mettre en veille » dans le menu. Les assertions sont donc ignorées, et le Mac passe en veille. <code>disablesleep</code>, lui, opère à un niveau inférieur, directement dans la politique du gestionnaire d’alimentation — ce qui explique pourquoi c’est le seul paramètre qui tient.</p>"
+        },
+        {
+          "h2": "Le piège : cela désactive aussi la veille d’urgence à faible batterie",
+          "html": "<p>Sous macOS, le Mac passe normalement en veille lorsque la batterie atteint un niveau critique, afin d’hiberner proprement plutôt que de perdre l’alimentation en plein écriture. Cette veille d’urgence est, du point de vue du gestionnaire d’alimentation, une simple demande de veille — que <code>disablesleep 1</code> rejette également.</p><p>Nous l’avons vérifié dans un journal daté du 2026-08-17 : l’alerte à 10 % s’est déclenchée à 01:32, aucun événement « Entrée en veille » ne l’a suivie, et la prochaine entrée était un démarrage à froid à 06:39. Le Mac avait tourné jusqu’à ce que la batterie tombe à zéro. Son état de santé, qui affichait « Bon », indiquait « Médiocre » le lendemain matin.</p><p>Donc, si vous utilisez ce drapeau sur un portable, <strong>c’est à vous</strong> de surveiller la batterie — car macOS ne le fera plus.</p>"
+        },
+        {
+          "h2": "L’utiliser en toute sécurité",
+          "html": "<p>Trois règles si vous l’intégrez à vos propres scripts :</p><ol><li>Associez toujours <code>disablesleep 1</code> à un <code>disablesleep 0</code> garanti — à la sortie, en cas d’erreur, ou via une minuterie.</li><li>Interrogez régulièrement la batterie (<code>pmset -g batt</code> ou <code>IOPSCopyPowerSourcesInfo</code>) et réinitialisez le drapeau dès que le niveau descend en dessous d’un seuil que vous jugez acceptable.</li><li>Ne vous fiez pas à « l’écran est allumé » comme preuve qu’un utilisateur est présent. Une assertion bloquée par une application d’enregistrement ou de transcription peut maintenir l’écran allumé toute la nuit.</li></ol><p>Ou laissez <a href=\"/\">NoSleep</a> s’en charger : il active le drapeau quand vous activez « garder éveillé », le désactive quand vous désactivez ou quittez l’app, le relâche automatiquement à 5 % de batterie dans tous les modes, et en mode Smart, le désactive aussi dès que vos agents IA deviennent inactifs. Il est open source si vous voulez voir exactement comment il fonctionne.</p>"
+        }
+      ]
+    }
+  }
+}

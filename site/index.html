@@ -3,11 +3,34 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NoSleep — awake while your AI agents work, asleep when they're done</title>
-<meta name="description" content="Smart NoSleep keeps your Mac awake — even lid closed — while Claude Code, Codex, or any AI agent works, then lets it sleep when they finish. Free and open-source.">
-<meta property="og:title" content="NoSleep for macOS — Smart NoSleep for AI agent runs">
-<meta property="og:description" content="Awake while your agents work. Asleep when they're done. Even with the lid closed.">
+<!-- seo:head -->
+<title>NoSleep — keep your Mac awake with the lid closed while AI agents work</title>
+<meta name="description" content="Free open-source Mac app that keeps your MacBook awake with the lid closed — no external monitor — while Claude Code, Codex or any AI agent runs, then lets it sleep when they finish. Never drains the battery to zero.">
+<link rel="canonical" href="https://site-ten-blond-47.vercel.app/">
+<link rel="alternate" hreflang="en" href="https://site-ten-blond-47.vercel.app/">
+<link rel="alternate" hreflang="de" href="https://site-ten-blond-47.vercel.app/de/">
+<link rel="alternate" hreflang="es" href="https://site-ten-blond-47.vercel.app/es/">
+<link rel="alternate" hreflang="fr" href="https://site-ten-blond-47.vercel.app/fr/">
+<link rel="alternate" hreflang="ja" href="https://site-ten-blond-47.vercel.app/ja/">
+<link rel="alternate" hreflang="ko" href="https://site-ten-blond-47.vercel.app/ko/">
+<link rel="alternate" hreflang="pt-BR" href="https://site-ten-blond-47.vercel.app/pt/">
+<link rel="alternate" hreflang="zh-Hans" href="https://site-ten-blond-47.vercel.app/zh/">
+<link rel="alternate" hreflang="x-default" href="https://site-ten-blond-47.vercel.app/">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="NoSleep">
+<meta property="og:title" content="NoSleep — keep your Mac awake with the lid closed while AI agents work">
+<meta property="og:description" content="Free open-source Mac app that keeps your MacBook awake with the lid closed — no external monitor — while Claude Code, Codex or any AI agent runs, then lets it sleep when they finish. Never drains the battery to zero.">
+<meta property="og:url" content="https://site-ten-blond-47.vercel.app/">
+<meta property="og:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NoSleep — keep your Mac awake with the lid closed while AI agents work">
+<meta name="twitter:description" content="Free open-source Mac app that keeps your MacBook awake with the lid closed — no external monitor — while Claude Code, Codex or any AI agent runs, then lets it sleep when they finish. Never drains the battery to zero.">
+<meta name="twitter:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"NoSleep","operatingSystem":"macOS 13+","applicationCategory":"UtilitiesApplication","description":"Free open-source Mac app that keeps your MacBook awake with the lid closed — no external monitor — while Claude Code, Codex or any AI agent runs, then lets it sleep when they finish. Never drains the battery to zero.","softwareVersion":"1.1.11","downloadUrl":"https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg","url":"https://site-ten-blond-47.vercel.app/","image":"https://site-ten-blond-47.vercel.app/og.jpg","license":"https://opensource.org/licenses/MIT","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Darius Cheung","url":"https://github.com/99Darius"},"codeRepository":"https://github.com/99Darius/NoSleep","inLanguage":"en"}</script>
+<!-- /seo:head -->
 <style>
   :root {
     --bg: #f5f6fa;
@@ -170,6 +193,29 @@
     header { padding: 52px 0 36px; }
     .card { padding: 22px 20px; }
   }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
 </style>
 </head>
 <body>
@@ -292,9 +338,15 @@
       </div>
     </section>
 
+    <!-- seo:guides -->
+<section><div class="card"><h2>Guides</h2><ul class="guides"><li><a href="/keep-macbook-awake-lid-closed">How to keep a MacBook awake with the lid closed — without an external monitor</a></li><li><a href="/amphetamine-alternative">Amphetamine alternatives for Mac: which keep-awake app actually works with the lid closed?</a></li><li><a href="/claude-code-mac-sleep">Stop Claude Code from dying when your Mac goes to sleep</a></li><li><a href="/pmset-disablesleep">pmset disablesleep: what it does, and the battery trap nobody mentions</a></li></ul></div></section>
+<!-- /seo:guides -->
     <footer>
       Made for macOS · <a href="https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg">Download NoSleep</a> · <a href="https://github.com/99Darius/NoSleep">Source on GitHub</a><br>
       Open-source. Give your Mac some airflow when keeping it awake with the lid closed.
+      <!-- seo:langs -->
+<div class="langs"><a href="/" hreflang="en" class="cur">English</a><a href="/de/" hreflang="de" class="">Deutsch</a><a href="/es/" hreflang="es" class="">Español</a><a href="/fr/" hreflang="fr" class="">Français</a><a href="/ja/" hreflang="ja" class="">日本語</a><a href="/ko/" hreflang="ko" class="">한국어</a><a href="/pt/" hreflang="pt-BR" class="">Português</a><a href="/zh/" hreflang="zh-Hans" class="">简体中文</a></div>
+<!-- /seo:langs -->
     </footer>
 
   </div>

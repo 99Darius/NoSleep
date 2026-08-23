@@ -1,0 +1,205 @@
+{
+  "lang": "de",
+  "hreflang": "de",
+  "native": "Deutsch",
+  "ui": {
+    "download": "Download für macOS",
+    "emailPlaceholder": "Sie@beispiel.com",
+    "emailNote": "Geben Sie Ihre E-Mail-Adresse ein, um den Installer und gelegentlich Neuigkeiten zu Updates zu erhalten – kein Spam.",
+    "free": "Kostenlos & Open Source · Apple Silicon & Intel",
+    "github": "Open Source auf GitHub →",
+    "guides": "Anleitungen",
+    "home": "Startseite",
+    "madeFor": "Entwickelt für macOS",
+    "source": "Quellcode auf GitHub",
+    "languages": "Sprachen",
+    "backHome": "← NoSleep-Startseite",
+    "tryIt": "Probieren Sie NoSleep aus – kostenlos, Open Source, ohne Account"
+  },
+  "home": {
+    "title": "NoSleep — Halten Sie Ihren Mac mit geschlossenem Deckel wach, während KI-Agenten arbeiten",
+    "description": "Kostenlose, quelloffene Mac-App, die Ihren MacBook mit geschlossenem Deckel wach hält – ohne externen Monitor – während Claude Code, Codex oder ein beliebiger KI-Agent läuft, und ihn danach wieder schlafen lässt. Entlädt den Akku niemals bis zum völligen Leerlauf.",
+    "h1": "Wach, während Ihre Agenten arbeiten. Schlafend, wenn sie fertig sind.",
+    "tagline": "Eine winzige Menüleisten-App, die Ihren Mac wach hält – sogar mit geschlossenem Deckel – solange Claude Code, Codex, Ollama oder ein anderer KI-Agent läuft. Smart NoSleep erkennt, wenn sie fertig sind, und lässt Ihren Mac wieder schlafen, um Akku und Wärme zu schonen.",
+    "featuresTitle": "Was es kann",
+    "features": [
+      {
+        "icon": "🤖",
+        "title": "Smart NoSleep",
+        "body": "Entwickelt für KI-Codier-Läufe über Nacht: Bleibt wach, solange Ihre Agenten aktiv sind, lässt den Mac schlafen, sobald sie inaktiv werden – und informiert Sie darüber."
+      },
+      {
+        "icon": "💤",
+        "title": "Wachhalten mit geschlossenem Deckel",
+        "body": "Bleibt auch bei geschlossenem Deckel wach – kein externer Bildschirm nötig."
+      },
+      {
+        "icon": "🔋",
+        "title": "Akku-sicher",
+        "body": "Löst die Schlafsperre bei 5 % Akkustand, sodass der Mac niemals bis zum kompletten Absturz entladen wird."
+      },
+      {
+        "icon": "⌨️",
+        "title": "Eine Tastenkombination",
+        "body": "Drücken Sie überall ⌃⌘S, um die Schlafsperre ein- oder auszuschalten, oder klicken Sie auf das Menüleistensymbol."
+      },
+      {
+        "icon": "⏱️",
+        "title": "Zeitgesteuert",
+        "body": "Halten Sie den Mac 15 Minuten, 1 Stunde oder 2 Stunden lang wach – dann schaltet sich die Sperre automatisch ab."
+      },
+      {
+        "icon": "🪶",
+        "title": "Leichtgewichtig",
+        "body": "Native Swift-App, keine Electron-Basis. Nahezu keine CPU- oder Speicherlast."
+      }
+    ],
+    "installTitle": "Installation",
+    "installIntro": "NoSleep ist quelloffen und nicht mit einem bezahlten Apple-Zertifikat signiert, daher zeigt macOS beim ersten Start eine Warnung „kann nicht verifiziert werden“. Das ist normal. Führen Sie einmal Terminal aus:",
+    "installSteps": [
+      "Laden Sie das Installationspaket herunter – es landet im Ordner „Downloads“.",
+      "Öffnen Sie Terminal (Anwendungen → Dienstprogramme) und fügen Sie den unten angezeigten Befehl ein und führen ihn aus.",
+      "Doppelklicken Sie auf die .pkg-Datei – sie öffnet sich nun problemlos.",
+      "Folgen Sie dem Installationsassistenten – NoSleep startet nach Abschluss automatisch."
+    ],
+    "usingTitle": "So verwenden Sie es",
+    "usingSteps": [
+      "Drücken Sie ⌃⌘S oder klicken Sie auf das Menüleistensymbol, um die Schlafsperre umzuschalten.",
+      "Wählen Sie Smart NoSleep (Standard), Absolute NoSleep oder einen Timer.",
+      "Schließen Sie den Deckel. Ihre Agenten laufen weiter. Öffnen Sie ihn später, um zu sehen, wann sie fertig waren."
+    ],
+    "faqTitle": "Häufig gestellte Fragen",
+    "faq": [
+      {
+        "q": "Funktioniert es mit geschlossenem Deckel und ohne externen Monitor?",
+        "a": "Ja. Genau dafür wurde es entwickelt. Normale Schlafverhinderungs-Tools unterbinden nur den Inaktivitätsschlaf; NoSleep verhindert zusätzlich den Klappschlaf, der unmittelbar beim Schließen des Deckels ausgelöst wird – auch ohne angeschlossenes Zubehör."
+      },
+      {
+        "q": "Entlädt es meinen Akku?",
+        "a": "Nicht bis zum Nullpunkt. NoSleep löst die Schlafsperre in jedem Modus bei 5 % Akkustand und aktiviert sie erneut, sobald der Akku über 25 % geladen ist oder der Mac am Netz hängt. Im Smart-Modus lässt der Mac zudem sofort schlafen, sobald Ihre Agenten inaktiv werden."
+      },
+      {
+        "q": "Ist es sicher? Warum erscheint die macOS-Warnung?",
+        "a": "Die App ist unter der MIT-Lizenz quelloffen – Sie können jeden einzelnen Codezeilen einsehen. Die Warnung erscheint, weil die App nicht mit einem bezahlten Apple Developer-Zertifikat signiert ist. Ein einzelner xattr-Befehl entfernt sie."
+      },
+      {
+        "q": "Benötigt es Administratorrechte?",
+        "a": "Einmalig. Um einen Mac mit geschlossenem Deckel wachzuhalten, ist pmset erforderlich – dafür benötigt macOS beim ersten Mal Ihr Passwort. Danach erfolgt alles stumm."
+      }
+    ]
+  },
+  "pages": {
+    "keep-macbook-awake-lid-closed": {
+      "title": "So verhindern Sie den Schlafmodus eines MacBook mit geschlossenem Deckel (ohne externen Monitor)",
+      "description": "Alle Methoden, um zu verhindern, dass ein MacBook in den Schlafmodus wechselt, sobald der Deckel geschlossen wird – von Apple’s eingebautem Clamshell-Modus über „caffeinate“ und „pmset disablesleep“ bis hin zur einzigen kostenlosen App, die dies sicher auch im Akkubetrieb ermöglicht.",
+      "h1": "So halten Sie ein MacBook mit geschlossenem Deckel wach – ohne externen Monitor",
+      "intro": "Schließen Sie den Deckel eines MacBook, und es wechselt innerhalb weniger Sekunden in den Schlafmodus. Downloads werden unterbrochen, SSH-Sitzungen fallen weg, und jeder laufende KI-Agent bricht mitten in der Aufgabe ab. Hier erfahren Sie, warum das passiert – und wie Sie es umgehen können: von Apples eingebautem Clamshell-Modus bis hin zu einer kostenlosen App, die alles mit einem Klick sicher erledigt.",
+      "sections": [
+        {
+          "h2": "Warum ein MacBook beim Schließen des Deckels in den Schlafmodus wechselt",
+          "html": "<p>macOS interpretiert einen geschlossenen Deckel als direkte Aufforderung zum Einschlafen. Es handelt sich nicht um ein Leerlauf-Timeout, das Sie verlängern könnten – sondern um einen separaten Mechanismus namens <strong>Clamshell-Schlaf</strong>, der sofort ausgelöst wird, unabhängig davon, was gerade läuft. Deshalb wirken Tools, die lediglich den Leerlauf-Schlaf verhindern, sobald der Deckel geschlossen ist, nicht.</p>"
+        },
+        {
+          "h2": "Option 1: Apples Clamshell-Modus (benötigt Stromversorgung + externes Display)",
+          "html": "<p>Apple unterstützt zwar das Betreiben mit geschlossenem Deckel – allerdings nur, wenn <em>beides</em> zutrifft: Der Mac ist an eine Stromquelle angeschlossen, und ein externes Display, eine externe Tastatur oder Maus ist angeschlossen. Trennen Sie eines davon ab, wechselt der Mac trotzdem in den Schlafmodus. Für ein Laptop in der Tasche, auf einem Schreibtisch ohne Monitor oder im Akkubetrieb hilft diese Option also nicht.</p>"
+        },
+        {
+          "h2": "Option 2: caffeinate (überlebt den geschlossenen Deckel nicht)",
+          "html": "<p>Der integrierte Befehl <code>caffeinate</code> sowie die meisten Menüleisten-Apps (Amphetamine, KeepingYouAwake, Caffeine) setzen eine sogenannte <em>Power Assertion</em>. Damit wird der Leerlauf-Schlaf verhindert – etwa damit der Bildschirm eingeschaltet bleibt, während Sie kurz weg sind. Eine Power Assertion kann jedoch den Clamshell-Schlaf nicht außer Kraft setzen. Sobald Sie den Deckel schließen, schläft der Mac trotzdem ein.</p>"
+        },
+        {
+          "h2": "Option 3: pmset disablesleep (funktioniert – aber gefährlich)",
+          "html": "<p>Das Einzige, das den geschlossenen Deckel tatsächlich überlebt, ist ein systemweiter Flag:</p><pre><code>sudo pmset -a disablesleep 1</code></pre><p>Dieser Befehl hält den Mac wirklich wach – selbst mit geschlossenem Deckel und keinerlei angeschlossenen Geräten. Zwei Probleme: Erstens müssen Sie daran denken, danach <code>sudo pmset -a disablesleep 0</code> auszuführen – andernfalls schläft Ihr Mac niemals wieder ein. Zweitens – und das ist besonders heikel – <strong>deaktiviert dieser Befehl auch Apples Notfall-Schlaf bei niedrigem Akkuladestand</strong>. Im Akkubetrieb läuft der Mac einfach weiter, bis der Akku komplett leer ist – und schaltet dann abrupt ab. Wir haben das auf die harte Tour gelernt: Ein Übernacht-Lauf, ein toter Akku – und der Akkustatus sank von „Gut“ auf „Schlecht“.</p>"
+        },
+        {
+          "h2": "Option 4: NoSleep (führt den pmset-Trick für Sie – sicher)",
+          "html": "<p><a href=\"/\">NoSleep</a> ist eine kostenlose, quelloffene Menüleisten-App, die <code>pmset disablesleep</code> in die Sicherheitsvorkehrungen einbettet, die ihm sonst fehlen:</p><ul><li><strong>Eine einzige Umschalttaste</strong> (⌃⌘S) aktiviert oder deaktiviert das „Wachbleiben mit geschlossenem Deckel“ – und stellt stets den normalen Schlafmodus wieder her, sobald die Funktion ausgeschaltet oder die App beendet wird.</li><li><strong>Akkuschutz</strong>: Die Blockade wird automatisch bei 5 % Akkustand aufgehoben, sodass der Mac normal in den Schlafmodus wechseln kann – statt bis zum Totalausfall durchzulaufen.</li><li><strong>Intelligenter Modus</strong>: Überwacht laufende KI-Agenten (Claude Code, Codex, Ollama, Cursor …) und lässt den Mac sofort schlafen, sobald sie in den Leerlauf wechseln – so müssen Sie sich nicht daran erinnern, NoSleep manuell auszuschalten.</li><li><strong>Timer</strong>: Für Fälle, in denen Sie nur kurz wach bleiben müssen – z. B. für einen Download: 15 Minuten / 1 Stunde / 2 Stunden.</li></ul><p>Die App ist nativ in Swift geschrieben, universell einsetzbar (für Apple Silicon und Intel) und fordert Ihr Passwort genau einmal an.</p>"
+        },
+        {
+          "h2": "Welche Methode sollten Sie nutzen?",
+          "html": "<ul><li>Sind Sie am Schreibtisch mit Monitor und Stromversorgung docked? Dann reicht Apples Clamshell-Modus völlig aus.</li><li>Möchten Sie nur verhindern, dass der Bildschirm ausschaltet, während Sie etwas anschauen? Nutzen Sie <code>caffeinate</code> oder eine beliebige Keep-Awake-App.</li><li>Müssen Sie wirklich sicherstellen, dass der Mac weiterarbeitet – mit geschlossenem Deckel, im Akkubetrieb, ohne externen Monitor? Dann brauchen Sie <code>pmset disablesleep</code> – und etwas, das es für Sie sicher ein- und wieder ausschaltet und den Akku schützt. Genau dafür wurde NoSleep entwickelt.</li></ul>"
+        }
+      ]
+    },
+    "amphetamine-alternative": {
+      "title": "Amphetamine-Alternativen für Mac (2026): NoSleep vs. Amphetamine vs. Caffeine vs. KeepingYouAwake",
+      "description": "Vergleich der besten Apps, um den Mac wachzuhalten – Amphetamine, Caffeine, KeepingYouAwake und NoSleep – hinsichtlich geschlossener-Deckel-Unterstützung, Akkusicherheit, Awareness gegenüber KI-Agenten und Preis.",
+      "h1": "Amphetamine-Alternativen für Mac: Welche App hält den Mac wirklich im Deckel-geschlossen-Modus wach?",
+      "intro": "Amphetamine ist die Standardantwort auf die Frage „Wie verhindere ich das Einschlafen meines Mac?“ – und es ist eine solide App. Doch sie wurde primär dafür konzipiert, den Bildschirm eingeschaltet zu halten, nicht einen geschlossenen Laptop am Laufen zu halten. Wenn genau das Ihr Problem ist – etwa bei Übernacht-Builds, langen Downloads oder laufenden KI-Agenten – hier ist ein Vergleich der Optionen.",
+      "sections": [
+        {
+          "h2": "Der Vergleich",
+          "html": "<table><thead><tr><th>App</th><th>Preis</th><th>Geschlossener Deckel, kein Monitor</th><th>Akku-Schutz</th><th>Erkennt, wenn Agenten fertig sind</th><th>Open Source</th></tr></thead><tbody><tr><td><strong>NoSleep</strong></td><td>Kostenlos</td><td>Ja</td><td>Ja – gibt nach Erreichen von 5 % frei</td><td>Ja (Smart-Modus)</td><td>Ja, MIT-Lizenz</td></tr><tr><td>Amphetamine</td><td>Kostenlos</td><td>Nur mit Stromversorgung + externem Display (Closed-Display-Modus)</td><td>Optional als Auslöser</td><td>Nein</td><td>Nein</td></tr><tr><td>KeepingYouAwake</td><td>Kostenlos</td><td>Nein</td><td>Nein</td><td>Nein</td><td>Ja</td></tr><tr><td>Caffeine</td><td>Kostenlos</td><td>Nein</td><td>Nein</td><td>Nein</td><td>Ja</td></tr><tr><td>caffeinate (CLI)</td><td>Integriert</td><td>Nein</td><td>Nein</td><td>Nein</td><td>—</td></tr></tbody></table>"
+        },
+        {
+          "h2": "Amphetamine",
+          "html": "<p>Die funktionsreichste Option weit und breit: Trigger, Zeitpläne, appbasierte Sitzungen, ein Dock-Symbol, das Sie ausblenden können. Der <em>Closed-Display-Modus</em> hält ein MacBook im geschlossenen Zustand am Laufen – allerdings setzt er Apples Clamshell-Modus voraus und benötigt daher externe Stromversorgung sowie ein angeschlossenes Display oder Eingabegerät. Ohne Strom und ohne angeschlossene Geräte schläft das MacBook wie jedes andere auch. Auf Reddit finden sich zahlreiche Beiträge von Nutzern, die davon überrascht wurden.</p>"
+        },
+        {
+          "h2": "KeepingYouAwake und Caffeine",
+          "html": "<p>Beide sind kleine, Open-Source-Apps, die genau eine Sache tun: eine Power-Assertion halten, damit der Mac nicht in den Ruhemodus wechselt. Ideal für Präsentationen oder um den Bildschirm eingeschaltet zu halten. Keine der beiden unterstützt den geschlossenen Deckel – und das war auch nie ihre Absicht.</p>"
+        },
+        {
+          "h2": "NoSleep",
+          "html": "<p><a href=\"/\">NoSleep</a> entstand aus dem gegenteiligen Problem: Ein Laptop musste im geschlossenen Zustand – allein mit Akku – weiterlaufen, während ein KI-Coding-Agent gerade eine Aufgabe bearbeitete. Dazu nutzt es das Systemflag, das tatsächlich auch bei geschlossenem Deckel wirkt (<code>pmset disablesleep</code>), und ergänzt es um die beiden Dinge, die dieses Flag standardmäßig nicht bietet – einen Akku-Schutz, damit das MacBook niemals bis zum kompletten Entladen durchläuft, und einen Smart-Modus, der das Gerät sofort in den Schlafmodus versetzt, sobald Ihre Agenten inaktiv werden. Es bietet bewusst weniger Einstellungsmöglichkeiten als Amphetamine: Eine Tastenkombination, drei Modi – fertig.</p>"
+        },
+        {
+          "h2": "Fazit",
+          "html": "<p>Wenn Sie Zeitpläne und Trigger für einen ständig docked betriebenen Mac brauchen, ist Amphetamine nach wie vor ausgezeichnet. Wenn Sie jedoch möchten, dass ein MacBook mit geschlossenem Deckel – auch ohne Strom – weiterarbeitet und sich automatisch wieder schlafen legt, sobald die Arbeit erledigt ist, dann ist NoSleep die einzige App, die genau dafür gebaut wurde.</p>"
+        }
+      ]
+    },
+    "claude-code-mac-sleep": {
+      "title": "Verhindern, dass Claude Code (oder ein beliebiger KI-Agent) beim Einschlafen Ihres Mac abstürzt",
+      "description": "Claude Code, Codex, Cursor und Ollama werden alle beendet, sobald ein MacBook in den Ruhezustand wechselt oder der Deckel geschlossen wird. Hier erfahren Sie, warum das passiert, welche Lösungsversuche scheitern – und welche kostenlose App Agenten über Nacht am Laufen hält, während der Mac danach wieder schlafen darf.",
+      "h1": "Verhindern, dass Claude Code beim Einschlafen Ihres Mac abstürzt",
+      "intro": "Sie starten einen 20-minütigen Agenten-Lauf, schließen das Laptop, um Kaffee zu kochen – und kehren zu einer abgebrochenen Sitzung zurück. Dieses Problem betrifft jedes KI-Programmier-Tool: Claude Code, die Codex-CLI, Cursor-Agents, Ollama, Aider – doch die Schuld liegt nicht beim Tool. Sie liegt bei macOS.",
+      "sections": [
+        {
+          "h2": "Warum der Agent stoppt",
+          "html": "<p>Wenn ein Mac in den Ruhezustand wechselt, werden alle Prozesse eingefroren. Netzwerkverbindungen laufen ab, der API-Stream des Agents bricht ab – und beim Aufwecken kann das Tool meist nicht an der Stelle fortsetzen, an der es unterbrochen wurde. Das Schließen des Deckels löst den Ruhezustand sofort aus; bleibt der Mac geöffnet, wechselt er nach dem festgelegten Inaktivitätszeitraum automatisch in den Ruhezustand. In beiden Fällen ist der Lauf verloren.</p>"
+        },
+        {
+          "h2": "Lösungsversuche, die nicht funktionieren",
+          "html": "<ul><li><strong>„Ruhezustand verhindern, wenn Display aus ist“</strong> in den Systemeinstellungen gilt nur beim Anschluss an eine Stromquelle und verhindert den Ruhezustand im Klappmodus („clamshell sleep“) nicht.</li><li><strong>caffeinate</strong> oder Amphetamine halten zwar den Bildschirm aktiv, überleben aber das Schließen des Deckels bei Batteriebetrieb nicht.</li><li><strong>Das halbgeöffnete Laptop mit sich herumtragen.</strong> Funktioniert. Sieht lächerlich aus. Genau so entstand NoSleep tatsächlich.</li><li><strong>tmux / nohup</strong> halten den Prozess bei SSH-Verbindungsabbrüchen am Leben – aber nicht beim Einschlafen des gesamten Geräts.</li></ul>"
+        },
+        {
+          "h2": "Was wirklich funktioniert",
+          "html": "<p>Der Mac muss auf Systemebene angewiesen werden, nicht einzuschlafen (<code>pmset disablesleep</code>) – und anschließend wieder zum Einschlafen aufgefordert werden, sobald die Arbeit erledigt ist; andernfalls läuft er die ganze Nacht und entlädt den Akku vollständig. <a href=\"/\">NoSleep</a> macht beides:</p><ol><li>Drücken Sie ⌃⌘S. Der intelligente Modus (Smart NoSleep) ist aktiv.</li><li>Schließen Sie den Deckel. Claude Code läuft weiter.</li><li>NoSleep überwacht laufende Agenten-Prozesse. Sobald diese 15 Minuten lang (konfigurierbar) inaktiv waren, lässt es den Mac schlafen und zeigt eine Benachrichtigung mit Zeitpunkt und Name des beendeten Prozesses an.</li><li>Falls der Akkustand jemals auf 5 % fällt, gibt NoSleep unverzüglich frei – unabhängig vom gewählten Modus.</li></ol>"
+        },
+        {
+          "h2": "Welche Agenten erkennt der intelligente Modus?",
+          "html": "<p>Jeder Prozess, der im Aktivitätsmonitor erscheint: <code>claude</code>, <code>codex</code>, <code>cursor</code>, <code>ollama</code>, <code>aider</code>, <code>gemini</code> und ähnliche CLI-Agenten. Die Erkennung erfolgt anhand des Prozessnamens – sie funktioniert also auch mit eigenen Skripten, solange Sie NoSleep den Namen mitteilen. Wenn Sie lieber keine automatische Erkennung nutzen möchten, wählen Sie Absolute NoSleep oder einen festen Timer.</p>"
+        },
+        {
+          "h2": "Kostenlos, Open Source, kein Account nötig",
+          "html": "<p>NoSleep ist unter der MIT-Lizenz veröffentlicht, nativ in Swift geschrieben, etwa 1 MB groß und enthält keinerlei Telemetrie. Die App ist nicht signiert – beim ersten Start ist lediglich ein einfacher <code>xattr</code>-Befehl erforderlich, der auf der <a href=\"/\">Download-Seite</a> erklärt wird.</p>"
+        }
+      ]
+    },
+    "pmset-disablesleep": {
+      "title": "pmset disablesleep erklärt: Die einzige Methode, einen Mac mit geschlossenem Deckel wachzuhalten – und die versteckte Batteriefalle",
+      "description": "Was »sudo pmset -a disablesleep 1« unter macOS wirklich tut, warum es die einzige Einstellung ist, die bei geschlossenem Deckel wirkt – und der wenig bekannte Nebeneffekt, der einen MacBook-Akku bis zum harten Herunterfahren entlädt.",
+      "h1": "pmset disablesleep: Was es bewirkt – und die Batteriefalle, von der niemand spricht",
+      "intro": "Wenn Sie nach einer Möglichkeit gesucht haben, einen MacBook mit geschlossenem Deckel wachzuhalten, sind Sie wahrscheinlich schon auf diesen Befehl gestoßen. Er funktioniert – und zwar als einziger. Doch er hat einen unerwähnten Nebeneffekt, der nirgends offensichtlich dokumentiert ist – und uns den Akku gekostet hat.",
+      "sections": [
+        {
+          "h2": "Was die Option bewirkt",
+          "html": "<pre><code>sudo pmset -a disablesleep 1   # niemals schlafen, auch bei geschlossenem Deckel\nsudo pmset -a disablesleep 0   # zurück zur Normalfunktion</code></pre><p><code>pmset</code> ist Apples Tool zur Stromverwaltung. <code>disablesleep</code> ist ein versteckter Schlüssel, der dem Kernel-Strommanager sagt, <em>alle</em> Schlafanfragen abzulehnen – sei es durch Inaktivität, über den Menübefehl »Schlafen« oder beim Schließen des Deckels (Clamshell-Modus). Mit <code>-a</code> wird die Einstellung sowohl im Akku- als auch im Netzmodus aktiviert. Sie bleibt auch nach einem Neustart erhalten – genau deshalb wird sie so oft vergessen, wieder zu deaktivieren.</p>"
+        },
+        {
+          "h2": "Warum nichts anderes bei geschlossenem Deckel wirkt",
+          "html": "<p>Apps wie Amphetamine oder der Befehl <code>caffeinate</code> arbeiten über sogenannte <em>Power Assertions</em> (<code>IOPMAssertionCreateWithName</code>). Eine solche Assertion signalisiert: »Es läuft gerade etwas – schlaf nicht wegen Inaktivität.« Der Clamshell-Pfad prüft jedoch keine Assertions: Der Deckelschalter gilt als direkte Benutzeraktion – ähnlich wie das manuelle Auswählen von »Schlafen« im Apple-Menü. Deshalb werden Assertions ignoriert und der Mac schläft trotzdem ein. <code>disablesleep</code> greift dagegen tiefer ein – direkt in die Policy des Strommanagers – und ist daher die einzige Einstellung, die auch beim geschlossenen Deckel durchhält.</p>"
+        },
+        {
+          "h2": "Die Falle: Es deaktiviert auch den Notfallschlaf bei schwachem Akku",
+          "html": "<p>macOS zwingt den Mac normalerweise in den Schlafmodus, sobald der Akku kritisch leer ist – damit er sauber in den Ruhezustand wechseln kann, statt mitten beim Schreiben den Strom zu verlieren. Dieser Notfallschlaf wird vom Strommanager genauso behandelt wie jede andere Schlafanfrage – und <code>disablesleep 1</code> lehnt ihn ebenfalls ab.</p><p>Wir haben das am Log vom 2026-08-17 bestätigt: Die Warnung bei 10 % Akku erschien um 01:32 Uhr, danach folgte kein Eintrag »Entering Sleep« – der nächste Eintrag war ein kalter Neustart um 06:39 Uhr. Der Mac war bis zum völligen Akku-Leerlauf durchgelaufen. Der Akkustatus, der zuvor noch »Gut« angezeigt hatte, zeigte am nächsten Morgen plötzlich »Schlecht« an.</p><p>Falls Sie diese Option also auf einem Laptop nutzen, <strong>müssen Sie selbst auf den Akkustand achten</strong> – macOS tut es nicht mehr.</p>"
+        },
+        {
+          "h2": "Sicherer Einsatz",
+          "html": "<p>Drei Regeln, falls Sie diesen Befehl selbst in Skripten verwenden:</p><ol><li>Koppeln Sie <code>disablesleep 1</code> immer mit einer zuverlässigen Rücksetzung auf <code>disablesleep 0</code> – beim Beenden, bei einem Fehler oder per Timer.</li><li>Prüfen Sie regelmäßig den Akkustand (<code>pmset -g batt</code> oder <code>IOPSCopyPowerSourcesInfo</code>) und setzen Sie die Option automatisch zurück, sobald der Akku unter eine für Sie sichere Schwelle fällt.</li><li>Verlassen Sie sich nicht darauf, dass »der Bildschirm eingeschaltet ist«, um Anwesenheit zu erkennen. Eine hängende Power Assertion etwa von einer Aufnahme- oder Transkriptions-App kann den Bildschirm stundenlang aktiv halten.</li></ol><p>Oder überlassen Sie es <a href=\"/\">NoSleep</a>: Es setzt die Option beim Aktivieren von »Wachhalten«, entfernt sie beim Deaktivieren oder Beenden – und löst sie bereits bei 5 % Akku in jedem Modus wieder auf. Im Smart-Modus deaktiviert es sie zudem, sobald Ihre KI-Agenten inaktiv werden. Der Quellcode ist offen, falls Sie genau nachvollziehen möchten, wie es funktioniert.</p>"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>如何在合上 MacBook 盖子（无外接显示器）时保持其唤醒</title>
+<meta name="description" content="所有让 MacBook 在合盖后不休眠的方法：Clamshell 模式、caffeinate、pmset disablesleep，以及唯一一款能在电池供电下安全实现此功能的免费应用。">
+<link rel="canonical" href="https://site-ten-blond-47.vercel.app/zh/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="en" href="https://site-ten-blond-47.vercel.app/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="de" href="https://site-ten-blond-47.vercel.app/de/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="es" href="https://site-ten-blond-47.vercel.app/es/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="fr" href="https://site-ten-blond-47.vercel.app/fr/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="ja" href="https://site-ten-blond-47.vercel.app/ja/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="ko" href="https://site-ten-blond-47.vercel.app/ko/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="pt-BR" href="https://site-ten-blond-47.vercel.app/pt/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="zh-Hans" href="https://site-ten-blond-47.vercel.app/zh/keep-macbook-awake-lid-closed">
+<link rel="alternate" hreflang="x-default" href="https://site-ten-blond-47.vercel.app/keep-macbook-awake-lid-closed">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="NoSleep">
+<meta property="og:title" content="如何在合上 MacBook 盖子（无外接显示器）时保持其唤醒">
+<meta property="og:description" content="所有让 MacBook 在合盖后不休眠的方法：Clamshell 模式、caffeinate、pmset disablesleep，以及唯一一款能在电池供电下安全实现此功能的免费应用。">
+<meta property="og:url" content="https://site-ten-blond-47.vercel.app/zh/keep-macbook-awake-lid-closed">
+<meta property="og:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="如何在合上 MacBook 盖子（无外接显示器）时保持其唤醒">
+<meta name="twitter:description" content="所有让 MacBook 在合盖后不休眠的方法：Clamshell 模式、caffeinate、pmset disablesleep，以及唯一一款能在电池供电下安全实现此功能的免费应用。">
+<meta name="twitter:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"TechArticle","headline":"如何在合上 MacBook 盖子时保持其唤醒 —— 无需外接显示器","description":"所有让 MacBook 在合盖后不休眠的方法：Clamshell 模式、caffeinate、pmset disablesleep，以及唯一一款能在电池供电下安全实现此功能的免费应用。","inLanguage":"zh-Hans","datePublished":"2026-08-23","dateModified":"2026-08-23","author":{"@type":"Person","name":"Darius Cheung","url":"https://github.com/99Darius"},"publisher":{"@type":"Organization","name":"NoSleep","url":"https://site-ten-blond-47.vercel.app"},"mainEntityOfPage":"https://site-ten-blond-47.vercel.app/zh/keep-macbook-awake-lid-closed","image":"https://site-ten-blond-47.vercel.app/og.jpg","about":{"@type":"SoftwareApplication","name":"NoSleep","operatingSystem":"macOS"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"NoSleep","item":"https://site-ten-blond-47.vercel.app/zh/"},{"@type":"ListItem","position":2,"name":"如何在合上 MacBook 盖子时保持其唤醒 —— 无需外接显示器","item":"https://site-ten-blond-47.vercel.app/zh/keep-macbook-awake-lid-closed"}]}]}</script>
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --card: #ffffff;
+    --text: #1d1d1f;
+    --muted: #6b6b70;
+    --accent: #5566ff;
+    --accent-deep: #2c3bb0;
+    --accent-soft: #eef1ff;
+    --accent-border: #d4d9ff;
+    --shadow: 0 10px 40px rgba(40, 50, 120, 0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e0f17;
+      --card: #181a26;
+      --text: #f5f5f7;
+      --muted: #a0a0aa;
+      --accent: #8190ff;
+      --accent-deep: #cdd5ff;
+      --accent-soft: #20243f;
+      --accent-border: #353a66;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 22px; }
+
+  /* Hero */
+  header { text-align: center; padding: 72px 0 48px; }
+  .logo {
+    width: 92px; height: 92px; margin: 0 auto 26px;
+    border-radius: 22px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .logo span {
+    font-size: 52px; font-weight: 800; color: #fff; line-height: 1;
+  }
+  .logo .strike {
+    position: absolute; width: 70%; height: 4px; background: rgba(255,255,255,0.92);
+    border-radius: 3px; transform: rotate(-45deg);
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.5px; }
+  .tagline { font-size: 19px; color: var(--muted); margin: 0 auto 34px; max-width: 520px; }
+
+  .cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent); color: #fff; text-decoration: none;
+    font-size: 17px; font-weight: 600;
+    padding: 15px 30px; border-radius: 13px;
+    box-shadow: var(--shadow); transition: transform .12s ease, background .12s ease;
+  }
+  .cta:hover { transform: translateY(-1px); background: var(--accent-deep); }
+  .cta-sub { display: block; font-size: 13px; color: var(--muted); margin-top: 14px; }
+
+  /* Email-gate download form */
+  .dl-form {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    max-width: 480px; margin: 0 auto;
+  }
+  .dl-form input[type="email"] {
+    flex: 1 1 200px; min-width: 0;
+    font: inherit; font-size: 16px; color: var(--text);
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 13px; padding: 14px 16px; outline: none;
+  }
+  .dl-form input[type="email"]:focus { border-color: var(--accent); }
+  .dl-form .cta { border: 0; cursor: pointer; font-family: inherit; }
+  .gh-link {
+    display: inline-block; margin-top: 12px; font-size: 14px; font-weight: 600;
+    color: var(--accent); text-decoration: none;
+  }
+  .gh-link:hover { text-decoration: underline; }
+  kbd {
+    font-family: inherit; font-weight: 700;
+    background: var(--accent-soft); color: var(--accent-deep);
+    border: 1px solid var(--accent-border); border-radius: 7px;
+    padding: 2px 8px; font-size: 0.92em; white-space: nowrap;
+  }
+
+  /* Cards */
+  section { padding: 14px 0; }
+  .card {
+    background: var(--card); border-radius: 18px; padding: 28px 30px;
+    box-shadow: var(--shadow); margin: 18px 0;
+  }
+  .card h2 { font-size: 21px; margin: 0 0 16px; }
+  .feature { display: flex; gap: 14px; margin: 14px 0; align-items: flex-start; }
+  .feature .ico {
+    flex: 0 0 38px; width: 38px; height: 38px; border-radius: 11px;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    display: flex; align-items: center; justify-content: center; font-size: 19px;
+  }
+  .feature b { display: block; font-size: 15px; }
+  .feature p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+
+  ol { padding-left: 22px; margin: 0; }
+  ol li { margin: 10px 0; font-size: 15px; }
+  .note {
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 12px; padding: 16px 18px; font-size: 14px; margin-top: 8px;
+  }
+  code {
+    font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.88em;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 6px; padding: 2px 7px;
+  }
+
+  /* Smart NoSleep showcase (faithful macOS mockups) */
+  .shots { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  .shot { flex: 1 1 260px; max-width: 330px; }
+  .shot .cap { font-size: 13px; color: var(--muted); text-align: center; margin-top: 12px; }
+  .macmenu {
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 10px; box-shadow: var(--shadow);
+    padding: 5px; font-size: 13.5px; line-height: 1.25;
+  }
+  .macmenu .mi { padding: 5px 12px 5px 26px; border-radius: 6px; position: relative; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .macmenu .mi.dim { color: var(--muted); font-size: 12.5px; }
+  .macmenu .mi.checked::before { content: "✓"; position: absolute; left: 9px; font-weight: 700; }
+  .macmenu .mi.sel { background: var(--accent); color: #fff; }
+  .macmenu .mi .sub { float: right; color: var(--muted); margin-left: 14px; }
+  .macmenu .mi.sel .sub { color: rgba(255,255,255,0.8); }
+  .macmenu hr { border: 0; border-top: 1px solid var(--accent-border); margin: 5px 10px; }
+  .macnotif {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 16px; box-shadow: var(--shadow); padding: 14px 16px;
+  }
+  .macnotif .nicon {
+    flex: 0 0 40px; width: 40px; height: 40px; border-radius: 9px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 22px; position: relative;
+  }
+  .macnotif .nicon i {
+    position: absolute; width: 66%; height: 2.5px; background: rgba(255,255,255,0.92);
+    border-radius: 2px; transform: rotate(-45deg); display: block;
+  }
+  .macnotif b { display: block; font-size: 13.5px; }
+  .macnotif p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0 56px; }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 560px) {
+    h1 { font-size: 31px; }
+    header { padding: 52px 0 36px; }
+    .card { padding: 22px 20px; }
+  }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="top"><a href="/zh/">NoSleep</a><a href="https://github.com/99Darius/NoSleep">GitHub</a></nav>
+
+<article>
+  <h1>如何在合上 MacBook 盖子时保持其唤醒 —— 无需外接显示器</h1>
+  <p class="intro">合上 MacBook 盖子，它几秒内就会进入休眠。下载中断、SSH 连接断开，甚至正在运行的 AI 代理也会在任务中途戛然而止。本文解释这一行为背后的原因，并为你梳理全部绕过方案：从苹果原生的 Clamshell 模式，到只需一键操作的免费应用。</p>
+  <h2>为什么 MacBook 合盖就会休眠</h2><p>macOS 将合盖视为明确的休眠指令。这并非可通过设置延长的空闲超时，而是一条独立触发路径，称为 <strong>Clamshell 休眠</strong>——无论当前运行什么任务，它都会立即生效。正因如此，那些仅能「防止空闲休眠」的工具，在盖子合上后完全失效。</p>
+<h2>方案一：苹果原生 Clamshell 模式（需电源 + 显示器）</h2><p>苹果确实支持合盖运行，但前提是 <em>同时满足以下两个条件</em>：Mac 已连接电源，且已接入外接显示器、键盘或鼠标。任一条件断开，Mac 即刻休眠。对于装在包里的笔记本、桌面无显示器场景，或仅靠电池供电的情况，此方案毫无帮助。</p>
+<h2>方案二：caffeinate（无法抵御合盖休眠）</h2><p>系统内置的 <code>caffeinate</code> 命令，以及大多数菜单栏应用（如 Amphetamine、KeepingYouAwake、Caffeine）会创建一种 <em>电源断言（power assertion）</em>。这类断言可阻止空闲休眠——例如你暂时离开时屏幕仍保持亮起；但它**无法覆盖 Clamshell 休眠**。一旦合盖，Mac 依然会休眠。</p>
+<h2>方案三：pmset disablesleep（有效但危险）</h2><p>唯一能真正扛住合盖休眠的，是系统级标志位：</p><pre><code>sudo pmset -a disablesleep 1</code></pre><p>该命令确实能让 Mac 在合盖且无任何外设连接时持续保持唤醒。但存在两大问题：第一，你必须手动执行 <code>sudo pmset -a disablesleep 0</code> 来恢复休眠功能，否则 Mac 将永远无法休眠；第二——更严重的是——<strong>它同时禁用了 macOS 自带的低电量紧急休眠机制</strong>。在电池供电下，Mac 会持续运行直至电量耗尽并强制关机。我们曾亲身踩坑：一次通宵运行后，电池彻底没电，健康度直接从「良好」跌至「较差」。</p>
+<h2>方案四：NoSleep（自动安全执行 pmset 操作）</h2><p><a href="/">NoSleep</a> 是一款免费开源的菜单栏应用，它为 <code>pmset disablesleep</code> 补齐了缺失的安全防护机制：</p><ul><li><strong>一键开关</strong>（快捷键 ⌃⌘S）即可启用/禁用合盖唤醒，且在关闭或退出应用时自动恢复系统正常休眠行为。</li><li><strong>电池保护</strong>：电量降至 5% 时自动解除锁定，确保 Mac 能按常规休眠，而非硬关机。</li><li><strong>智能模式</strong>：实时监测 AI 代理进程（如 Claude Code、Codex、Ollama、Cursor…），一旦它们进入空闲状态，即刻允许 Mac 正常休眠，无需你手动干预。</li><li><strong>倒计时定时器</strong>：支持 15 分钟 / 1 小时 / 2 小时，专为完成下载等短期任务设计。</li></ul><p>它采用原生 Swift 编写，兼容 Apple Silicon 与 Intel 芯片，且仅需在首次使用时输入一次密码。</p>
+<h2>该选哪个？</h2><ul><li>在桌面固定使用，配有显示器和电源？苹果原生 Clamshell 模式完全够用。</li><li>需要屏幕常亮（比如观看视频）？用 <code>caffeinate</code> 或任意防休眠应用即可。</li><li>需要 Mac 在<strong>真正合盖状态下持续工作</strong>——比如放在包里、仅靠电池、没有外接显示器？那你必须用 <code>pmset disablesleep</code>，而 NoSleep 正是为此而生：它帮你自动开关、守护电池，安全可靠。</li></ul>
+  <div class="cta-box">
+    <p style="color:var(--muted);font-size:14px;margin:0 0 12px">立即体验 NoSleep — 免费、开源、无需注册</p>
+    <form id="dl-form" class="dl-form" novalidate>
+  <input type="email" id="dl-email" placeholder="you@example.com" autocomplete="email" aria-label="Email" required>
+  <button class="cta" type="submit">⬇&nbsp; 下载 macOS 版本</button>
+</form>
+<span class="cta-sub">留下邮箱，即可获取安装程序及偶尔的更新资讯 — 绝不发送垃圾邮件。<br>免费且开源 · 支持 Apple Silicon 与 Intel 芯片 · <kbd>⌃⌘S</kbd></span>
+<a class="gh-link" href="https://github.com/99Darius/NoSleep">GitHub 开源项目 →</a>
+  </div>
+</article>
+<section><div class="card"><h2>使用指南</h2><ul class="guides"><li><a href="/zh/keep-macbook-awake-lid-closed">如何在合上 MacBook 盖子时保持其唤醒 —— 无需外接显示器</a></li><li><a href="/zh/amphetamine-alternative">Mac 上的 Amphetamine 替代方案：哪款防休眠应用真正在合盖状态下有效？</a></li><li><a href="/zh/claude-code-mac-sleep">防止 Claude Code 在 Mac 睡眠时中断</a></li><li><a href="/zh/pmset-disablesleep">pmset disablesleep：它究竟做了什么，还有那个无人提及的电池陷阱</a></li></ul></div></section>
+<footer>
+  专为 macOS 打造 · <a href="https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg">下载 macOS 版本</a> · <a href="https://github.com/99Darius/NoSleep">GitHub 源码</a>
+  <div class="langs"><a href="/keep-macbook-awake-lid-closed" hreflang="en" class="">English</a><a href="/de/keep-macbook-awake-lid-closed" hreflang="de" class="">Deutsch</a><a href="/es/keep-macbook-awake-lid-closed" hreflang="es" class="">Español</a><a href="/fr/keep-macbook-awake-lid-closed" hreflang="fr" class="">Français</a><a href="/ja/keep-macbook-awake-lid-closed" hreflang="ja" class="">日本語</a><a href="/ko/keep-macbook-awake-lid-closed" hreflang="ko" class="">한국어</a><a href="/pt/keep-macbook-awake-lid-closed" hreflang="pt-BR" class="">Português</a><a href="/zh/keep-macbook-awake-lid-closed" hreflang="zh-Hans" class="cur">简体中文</a></div>
+</footer>
+</div>
+<script>
+(function () {
+  var PKG = "https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg";
+  var form = document.getElementById('dl-form'); if (!form) return;
+  var input = document.getElementById('dl-email');
+  var saved = null; try { saved = localStorage.getItem('nosleepEmail'); } catch (e) {}
+  if (saved) { var a = document.createElement('a'); a.className = 'cta'; a.href = PKG; a.textContent = form.querySelector('button').textContent; form.replaceWith(a); return; }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault(); var email = input.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { input.reportValidity(); return; }
+    try { localStorage.setItem('nosleepEmail', email); } catch (err) {}
+    try { fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }), keepalive: true }).catch(function(){}); } catch (err) {}
+    window.location.href = PKG;
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evita que Claude Code (o cualquier agente de IA) se detenga cuando tu Mac entre en modo de reposo</title>
+<meta name="description" content="Claude Code, Codex, Cursor y Ollama se detienen al entrar en modo de reposo o al cerrar la tapa de un MacBook. Aquí te explicamos por qué ocurre, qué soluciones no funcionan y la aplicación gratuita que mantiene tus agentes activos toda la noche y permite que el Mac entre en modo de reposo una vez finalicen.">
+<link rel="canonical" href="https://site-ten-blond-47.vercel.app/es/claude-code-mac-sleep">
+<link rel="alternate" hreflang="en" href="https://site-ten-blond-47.vercel.app/claude-code-mac-sleep">
+<link rel="alternate" hreflang="de" href="https://site-ten-blond-47.vercel.app/de/claude-code-mac-sleep">
+<link rel="alternate" hreflang="es" href="https://site-ten-blond-47.vercel.app/es/claude-code-mac-sleep">
+<link rel="alternate" hreflang="fr" href="https://site-ten-blond-47.vercel.app/fr/claude-code-mac-sleep">
+<link rel="alternate" hreflang="ja" href="https://site-ten-blond-47.vercel.app/ja/claude-code-mac-sleep">
+<link rel="alternate" hreflang="ko" href="https://site-ten-blond-47.vercel.app/ko/claude-code-mac-sleep">
+<link rel="alternate" hreflang="pt-BR" href="https://site-ten-blond-47.vercel.app/pt/claude-code-mac-sleep">
+<link rel="alternate" hreflang="zh-Hans" href="https://site-ten-blond-47.vercel.app/zh/claude-code-mac-sleep">
+<link rel="alternate" hreflang="x-default" href="https://site-ten-blond-47.vercel.app/claude-code-mac-sleep">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="NoSleep">
+<meta property="og:title" content="Evita que Claude Code (o cualquier agente de IA) se detenga cuando tu Mac entre en modo de reposo">
+<meta property="og:description" content="Claude Code, Codex, Cursor y Ollama se detienen al entrar en modo de reposo o al cerrar la tapa de un MacBook. Aquí te explicamos por qué ocurre, qué soluciones no funcionan y la aplicación gratuita que mantiene tus agentes activos toda la noche y permite que el Mac entre en modo de reposo una vez finalicen.">
+<meta property="og:url" content="https://site-ten-blond-47.vercel.app/es/claude-code-mac-sleep">
+<meta property="og:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_ES">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Evita que Claude Code (o cualquier agente de IA) se detenga cuando tu Mac entre en modo de reposo">
+<meta name="twitter:description" content="Claude Code, Codex, Cursor y Ollama se detienen al entrar en modo de reposo o al cerrar la tapa de un MacBook. Aquí te explicamos por qué ocurre, qué soluciones no funcionan y la aplicación gratuita que mantiene tus agentes activos toda la noche y permite que el Mac entre en modo de reposo una vez finalicen.">
+<meta name="twitter:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"TechArticle","headline":"Evita que Claude Code se detenga cuando tu Mac entre en modo de reposo","description":"Claude Code, Codex, Cursor y Ollama se detienen al entrar en modo de reposo o al cerrar la tapa de un MacBook. Aquí te explicamos por qué ocurre, qué soluciones no funcionan y la aplicación gratuita que mantiene tus agentes activos toda la noche y permite que el Mac entre en modo de reposo una vez finalicen.","inLanguage":"es","datePublished":"2026-08-23","dateModified":"2026-08-23","author":{"@type":"Person","name":"Darius Cheung","url":"https://github.com/99Darius"},"publisher":{"@type":"Organization","name":"NoSleep","url":"https://site-ten-blond-47.vercel.app"},"mainEntityOfPage":"https://site-ten-blond-47.vercel.app/es/claude-code-mac-sleep","image":"https://site-ten-blond-47.vercel.app/og.jpg","about":{"@type":"SoftwareApplication","name":"NoSleep","operatingSystem":"macOS"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"NoSleep","item":"https://site-ten-blond-47.vercel.app/es/"},{"@type":"ListItem","position":2,"name":"Evita que Claude Code se detenga cuando tu Mac entre en modo de reposo","item":"https://site-ten-blond-47.vercel.app/es/claude-code-mac-sleep"}]}]}</script>
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --card: #ffffff;
+    --text: #1d1d1f;
+    --muted: #6b6b70;
+    --accent: #5566ff;
+    --accent-deep: #2c3bb0;
+    --accent-soft: #eef1ff;
+    --accent-border: #d4d9ff;
+    --shadow: 0 10px 40px rgba(40, 50, 120, 0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e0f17;
+      --card: #181a26;
+      --text: #f5f5f7;
+      --muted: #a0a0aa;
+      --accent: #8190ff;
+      --accent-deep: #cdd5ff;
+      --accent-soft: #20243f;
+      --accent-border: #353a66;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 22px; }
+
+  /* Hero */
+  header { text-align: center; padding: 72px 0 48px; }
+  .logo {
+    width: 92px; height: 92px; margin: 0 auto 26px;
+    border-radius: 22px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .logo span {
+    font-size: 52px; font-weight: 800; color: #fff; line-height: 1;
+  }
+  .logo .strike {
+    position: absolute; width: 70%; height: 4px; background: rgba(255,255,255,0.92);
+    border-radius: 3px; transform: rotate(-45deg);
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.5px; }
+  .tagline { font-size: 19px; color: var(--muted); margin: 0 auto 34px; max-width: 520px; }
+
+  .cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent); color: #fff; text-decoration: none;
+    font-size: 17px; font-weight: 600;
+    padding: 15px 30px; border-radius: 13px;
+    box-shadow: var(--shadow); transition: transform .12s ease, background .12s ease;
+  }
+  .cta:hover { transform: translateY(-1px); background: var(--accent-deep); }
+  .cta-sub { display: block; font-size: 13px; color: var(--muted); margin-top: 14px; }
+
+  /* Email-gate download form */
+  .dl-form {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    max-width: 480px; margin: 0 auto;
+  }
+  .dl-form input[type="email"] {
+    flex: 1 1 200px; min-width: 0;
+    font: inherit; font-size: 16px; color: var(--text);
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 13px; padding: 14px 16px; outline: none;
+  }
+  .dl-form input[type="email"]:focus { border-color: var(--accent); }
+  .dl-form .cta { border: 0; cursor: pointer; font-family: inherit; }
+  .gh-link {
+    display: inline-block; margin-top: 12px; font-size: 14px; font-weight: 600;
+    color: var(--accent); text-decoration: none;
+  }
+  .gh-link:hover { text-decoration: underline; }
+  kbd {
+    font-family: inherit; font-weight: 700;
+    background: var(--accent-soft); color: var(--accent-deep);
+    border: 1px solid var(--accent-border); border-radius: 7px;
+    padding: 2px 8px; font-size: 0.92em; white-space: nowrap;
+  }
+
+  /* Cards */
+  section { padding: 14px 0; }
+  .card {
+    background: var(--card); border-radius: 18px; padding: 28px 30px;
+    box-shadow: var(--shadow); margin: 18px 0;
+  }
+  .card h2 { font-size: 21px; margin: 0 0 16px; }
+  .feature { display: flex; gap: 14px; margin: 14px 0; align-items: flex-start; }
+  .feature .ico {
+    flex: 0 0 38px; width: 38px; height: 38px; border-radius: 11px;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    display: flex; align-items: center; justify-content: center; font-size: 19px;
+  }
+  .feature b { display: block; font-size: 15px; }
+  .feature p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+
+  ol { padding-left: 22px; margin: 0; }
+  ol li { margin: 10px 0; font-size: 15px; }
+  .note {
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 12px; padding: 16px 18px; font-size: 14px; margin-top: 8px;
+  }
+  code {
+    font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.88em;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 6px; padding: 2px 7px;
+  }
+
+  /* Smart NoSleep showcase (faithful macOS mockups) */
+  .shots { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  .shot { flex: 1 1 260px; max-width: 330px; }
+  .shot .cap { font-size: 13px; color: var(--muted); text-align: center; margin-top: 12px; }
+  .macmenu {
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 10px; box-shadow: var(--shadow);
+    padding: 5px; font-size: 13.5px; line-height: 1.25;
+  }
+  .macmenu .mi { padding: 5px 12px 5px 26px; border-radius: 6px; position: relative; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .macmenu .mi.dim { color: var(--muted); font-size: 12.5px; }
+  .macmenu .mi.checked::before { content: "✓"; position: absolute; left: 9px; font-weight: 700; }
+  .macmenu .mi.sel { background: var(--accent); color: #fff; }
+  .macmenu .mi .sub { float: right; color: var(--muted); margin-left: 14px; }
+  .macmenu .mi.sel .sub { color: rgba(255,255,255,0.8); }
+  .macmenu hr { border: 0; border-top: 1px solid var(--accent-border); margin: 5px 10px; }
+  .macnotif {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 16px; box-shadow: var(--shadow); padding: 14px 16px;
+  }
+  .macnotif .nicon {
+    flex: 0 0 40px; width: 40px; height: 40px; border-radius: 9px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 22px; position: relative;
+  }
+  .macnotif .nicon i {
+    position: absolute; width: 66%; height: 2.5px; background: rgba(255,255,255,0.92);
+    border-radius: 2px; transform: rotate(-45deg); display: block;
+  }
+  .macnotif b { display: block; font-size: 13.5px; }
+  .macnotif p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0 56px; }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 560px) {
+    h1 { font-size: 31px; }
+    header { padding: 52px 0 36px; }
+    .card { padding: 22px 20px; }
+  }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="top"><a href="/es/">NoSleep</a><a href="https://github.com/99Darius/NoSleep">GitHub</a></nav>
+
+<article>
+  <h1>Evita que Claude Code se detenga cuando tu Mac entre en modo de reposo</h1>
+  <p class="intro">Inicias una tarea de agente que dura 20 minutos, cierras la laptop para ir a prepararte un café y, al regresar, encuentras la sesión muerta. Todos los entornos de programación con IA tienen este problema: Claude Code, la CLI de Codex, los agentes de Cursor, Ollama, Aider… y no es culpa de la herramienta. Es macOS.</p>
+  <h2>¿Por qué se detiene el agente?</h2><p>Cuando un Mac entra en modo de reposo, todos los procesos se congelan. Las conexiones de red expiran, la transmisión de la API del agente se interrumpe y, al reactivar el Mac, la herramienta normalmente no puede reanudar el paso en el que estaba. Cerrar la tapa activa el modo de reposo de inmediato; dejar el Mac abierto lo activa tras el tiempo de inactividad configurado. En ambos casos, la ejecución se pierde.</p>
+<h2>Soluciones que la gente prueba y que no funcionan</h2><ul><li><strong>«Evitar el reposo cuando la pantalla está apagada»</strong> en Ajustes del sistema solo funciona cuando el Mac está conectado a la corriente y no evita el modo de reposo en posición de concha (clamshell).</li><li><strong>caffeinate</strong> o Amphetamine mantienen la pantalla encendida, pero no sobreviven al cierre de la tapa si el Mac funciona con batería.</li><li><strong>Llevar la laptop a medio abrir</strong>. Funciona. Pero parece ridículo. De hecho, así nació NoSleep.</li><li><strong>tmux / nohup</strong> mantienen el proceso vivo tras una desconexión SSH, pero no tras el modo de reposo del equipo.</li></ul>
+<h2>Qué sí funciona</h2><p>El Mac debe recibir instrucciones a nivel del sistema para no entrar en modo de reposo (<code>pmset disablesleep</code>) — y luego debe recibir la orden de volver a entrar en modo de reposo una vez finalizada la tarea, o de lo contrario seguirá funcionando toda la noche y agotará la batería. <a href="/">NoSleep</a> hace ambas cosas:</p><ol><li>Pulsa ⌃⌘S. Smart NoSleep está activado.</li><li>Cierra la tapa. Claude Code sigue ejecutándose.</li><li>NoSleep supervisa los procesos del agente. Cuando han estado inactivos durante 15 minutos (configurable), permite que el Mac entre en modo de reposo y muestra una notificación indicando cuándo ocurrió y qué estaba ejecutándose.</li><li>Si la batería cae al 5 %, libera el bloqueo inmediatamente, sin importar el modo activo.</li></ol>
+<h2>¿Qué agentes detecta el modo inteligente?</h2><p>Cualquier proceso que aparezca como tal en el sistema: <code>claude</code>, <code>codex</code>, <code>cursor</code>, <code>ollama</code>, <code>aider</code>, <code>gemini</code> y agentes CLI similares. La detección se basa en el nombre del proceso, por lo que también funciona con tus propios scripts si les asignas un nombre reconocible. Si prefieres no depender de la detección automática, usa Absolute NoSleep o un temporizador fijo.</p>
+<h2>Gratis, de código abierto y sin cuenta</h2><p>NoSleep tiene licencia MIT, está escrito en Swift nativo, pesa unos 1 MB y no incluye telemetría. No está firmado — en la primera instalación hay un paso sencillo de una línea con <code>xattr</code>, explicado en la <a href="/">página de descarga</a>.</p>
+  <div class="cta-box">
+    <p style="color:var(--muted);font-size:14px;margin:0 0 12px">Prueba NoSleep — gratis, de código abierto, sin necesidad de cuenta</p>
+    <form id="dl-form" class="dl-form" novalidate>
+  <input type="email" id="dl-email" placeholder="tú@ejemplo.com" autocomplete="email" aria-label="Email" required>
+  <button class="cta" type="submit">⬇&nbsp; Descargar para macOS</button>
+</form>
+<span class="cta-sub">Indica tu correo electrónico para recibir el instalador y actualizaciones ocasionales — sin spam.<br>Gratis y de código abierto · Compatible con Apple Silicon e Intel · <kbd>⌃⌘S</kbd></span>
+<a class="gh-link" href="https://github.com/99Darius/NoSleep">Código abierto en GitHub →</a>
+  </div>
+</article>
+<section><div class="card"><h2>Guías</h2><ul class="guides"><li><a href="/es/keep-macbook-awake-lid-closed">Cómo mantener un MacBook despierto con la tapa cerrada — sin monitor externo</a></li><li><a href="/es/amphetamine-alternative">Alternativas a Amphetamine para Mac: ¿qué aplicación keep-awake funciona realmente con la tapa cerrada?</a></li><li><a href="/es/claude-code-mac-sleep">Evita que Claude Code se detenga cuando tu Mac entre en modo de reposo</a></li><li><a href="/es/pmset-disablesleep">pmset disablesleep: qué hace y la trampa para la batería que nadie menciona</a></li></ul></div></section>
+<footer>
+  Hecho para macOS · <a href="https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg">Descargar para macOS</a> · <a href="https://github.com/99Darius/NoSleep">Código fuente en GitHub</a>
+  <div class="langs"><a href="/claude-code-mac-sleep" hreflang="en" class="">English</a><a href="/de/claude-code-mac-sleep" hreflang="de" class="">Deutsch</a><a href="/es/claude-code-mac-sleep" hreflang="es" class="cur">Español</a><a href="/fr/claude-code-mac-sleep" hreflang="fr" class="">Français</a><a href="/ja/claude-code-mac-sleep" hreflang="ja" class="">日本語</a><a href="/ko/claude-code-mac-sleep" hreflang="ko" class="">한국어</a><a href="/pt/claude-code-mac-sleep" hreflang="pt-BR" class="">Português</a><a href="/zh/claude-code-mac-sleep" hreflang="zh-Hans" class="">简体中文</a></div>
+</footer>
+</div>
+<script>
+(function () {
+  var PKG = "https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg";
+  var form = document.getElementById('dl-form'); if (!form) return;
+  var input = document.getElementById('dl-email');
+  var saved = null; try { saved = localStorage.getItem('nosleepEmail'); } catch (e) {}
+  if (saved) { var a = document.createElement('a'); a.className = 'cta'; a.href = PKG; a.textContent = form.querySelector('button').textContent; form.replaceWith(a); return; }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault(); var email = input.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { input.reportValidity(); return; }
+    try { localStorage.setItem('nosleepEmail', email); } catch (err) {}
+    try { fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }), keepalive: true }).catch(function(){}); } catch (err) {}
+    window.location.href = PKG;
+  });
+})();
+</script>
+</body>
+</html>

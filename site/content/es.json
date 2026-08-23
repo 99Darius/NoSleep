@@ -1,0 +1,205 @@
+{
+  "lang": "es",
+  "hreflang": "es",
+  "native": "Español",
+  "ui": {
+    "download": "Descargar para macOS",
+    "emailPlaceholder": "tú@ejemplo.com",
+    "emailNote": "Indica tu correo electrónico para recibir el instalador y actualizaciones ocasionales — sin spam.",
+    "free": "Gratis y de código abierto · Compatible con Apple Silicon e Intel",
+    "github": "Código abierto en GitHub →",
+    "guides": "Guías",
+    "home": "Inicio",
+    "madeFor": "Hecho para macOS",
+    "source": "Código fuente en GitHub",
+    "languages": "Idiomas",
+    "backHome": "← Inicio de NoSleep",
+    "tryIt": "Prueba NoSleep — gratis, de código abierto, sin necesidad de cuenta"
+  },
+  "home": {
+    "title": "NoSleep — mantén tu Mac despierto con la tapa cerrada mientras trabajan los agentes de IA",
+    "description": "Aplicación gratuita y de código abierto para Mac que mantiene tu MacBook despierto con la tapa cerrada —sin monitor externo— mientras se ejecutan Claude Code, Codex o cualquier otro agente de IA, y lo deja dormir cuando terminan. Nunca descarga la batería por completo.",
+    "h1": "Despierto mientras tus agentes trabajan. Dormido cuando terminan.",
+    "tagline": "Una pequeña aplicación en la barra de menú que mantiene tu Mac despierto —incluso con la tapa cerrada— mientras se ejecutan Claude Code, Codex, Ollama o cualquier agente de IA. Smart NoSleep detecta cuándo finalizan y permite que tu Mac vuelva a dormir, ahorrando batería y calor.",
+    "featuresTitle": "Qué hace",
+    "features": [
+      {
+        "icon": "🤖",
+        "title": "Smart NoSleep",
+        "body": "Diseñado para sesiones nocturnas de programación con IA: permanece despierto mientras tus agentes están activos, permite que el Mac duerma una vez que entran en estado inactivo y te notifica cuándo ocurre."
+      },
+      {
+        "icon": "💤",
+        "title": "Mantener despierto con tapa cerrada",
+        "body": "Sigue despierto incluso con la tapa cerrada —no se necesita ninguna pantalla externa."
+      },
+      {
+        "icon": "🔋",
+        "title": "Seguro para la batería",
+        "body": "Libera el bloqueo del sueño al llegar al 5 % de batería, para que el Mac nunca se apague por descarga total."
+      },
+      {
+        "icon": "⌨️",
+        "title": "Un solo atajo",
+        "body": "Pulsa ⌃⌘S desde cualquier lugar para activar o desactivar el modo de mantenimiento despierto, o haz clic en el ícono de la barra de menú."
+      },
+      {
+        "icon": "⏱️",
+        "title": "Temporizadores",
+        "body": "Mantén el sistema despierto durante 15 minutos, 1 hora o 2 horas, y luego se desactiva automáticamente."
+      },
+      {
+        "icon": "🪶",
+        "title": "Ligero",
+        "body": "Desarrollado nativamente en Swift, sin Electron. Consume una cantidad insignificante de CPU y memoria."
+      }
+    ],
+    "installTitle": "Instalación",
+    "installIntro": "NoSleep es de código abierto y no está firmado con un certificado de desarrollador de Apple de pago, por lo que macOS muestra una advertencia de «no se puede verificar» la primera vez. Es normal. Solo necesitas usar Terminal una vez:",
+    "installSteps": [
+      "Descarga el instalador —se guardará en tu carpeta Descargas.",
+      "Abre Terminal (Aplicaciones → Utilidades), pega y ejecuta el comando que aparece abajo.",
+      "Haz doble clic en el archivo .pkg —ahora se abrirá normalmente.",
+      "Sigue las instrucciones del instalador —NoSleep se iniciará automáticamente al finalizar."
+    ],
+    "usingTitle": "Cómo usarlo",
+    "usingSteps": [
+      "Pulsa ⌃⌘S o haz clic en el ícono de la barra de menú para alternar el modo de mantenimiento despierto.",
+      "Elige Smart NoSleep (predeterminado), Absolute NoSleep o un temporizador.",
+      "Cierra la tapa. Tus agentes siguen ejecutándose. Ábrela después para ver cuándo terminaron."
+    ],
+    "faqTitle": "Preguntas frecuentes",
+    "faq": [
+      {
+        "q": "¿Funciona con la tapa cerrada y sin monitor externo?",
+        "a": "Sí. Ese es precisamente su propósito. Las herramientas habituales para mantener despierto solo evitan el sueño por inactividad; NoSleep también evita el sueño en modo concha (clamshell), que se activa en cuanto cierras la tapa, incluso sin nada conectado."
+      },
+      {
+        "q": "¿Descargará mi batería?",
+        "a": "No hasta cero. NoSleep libera el bloqueo del sueño al alcanzar el 5 % de batería en todos los modos, y lo reactiva automáticamente al superar el 25 % o al conectarla a la corriente. En modo Smart, además, permite que el Mac duerma tan pronto como tus agentes entran en estado inactivo."
+      },
+      {
+        "q": "¿Es seguro? ¿Por qué aparece la advertencia de macOS?",
+        "a": "Es de código abierto bajo licencia MIT —puedes leer cada línea. La advertencia aparece porque la app no está firmada con un certificado de desarrollador de Apple de pago. Un único comando xattr la elimina."
+      },
+      {
+        "q": "¿Requiere permisos de administrador?",
+        "a": "Solo una vez. Mantener un Mac despierto con la tapa cerrada requiere pmset, que necesita tu contraseña la primera vez. Después, funciona en silencio."
+      }
+    ]
+  },
+  "pages": {
+    "keep-macbook-awake-lid-closed": {
+      "title": "Cómo mantener un MacBook despierto con la tapa cerrada (sin monitor externo)",
+      "description": "Todas las formas de evitar que un MacBook entre en reposo al cerrar la tapa: modo conchilla, caffeinate, pmset disablesleep… y la única app gratuita que lo hace de forma segura incluso con batería.",
+      "h1": "Cómo mantener un MacBook despierto con la tapa cerrada — sin monitor externo",
+      "intro": "Al cerrar la tapa de un MacBook, este entra en reposo en cuestión de segundos. Las descargas se detienen, las sesiones SSH se interrumpen y cualquier agente de IA que esté ejecutándose muere a mitad de una tarea. Aquí te explicamos por qué ocurre esto y todas las soluciones posibles, desde el modo conchilla integrado de Apple hasta una app gratuita que lo resuelve con un solo clic.",
+      "sections": [
+        {
+          "h2": "Por qué un MacBook entra en reposo al cerrar la tapa",
+          "html": "<p>macOS interpreta la tapa cerrada como una solicitud directa de entrar en reposo. No es un tiempo de inactividad que puedas extender: es una ruta independiente llamada <strong>reposo en modo conchilla</strong>, que se activa de inmediato, sin importar qué procesos estén en ejecución. Por eso, herramientas que simplemente «evitan el reposo por inactividad» no funcionan una vez que la tapa está cerrada.</p>"
+        },
+        {
+          "h2": "Opción 1: El modo conchilla de Apple (requiere alimentación + pantalla)",
+          "html": "<p>Apple sí permite ejecutar el Mac con la tapa cerrada, pero únicamente cuando <em>ambas</em> condiciones se cumplen: el Mac está conectado a la corriente y tiene un monitor, teclado o ratón externo conectado. Desconecta cualquiera de los dos y el equipo entrará en reposo. Por tanto, no sirve si usas el portátil en una mochila, sobre un escritorio sin monitor o con batería.</p>"
+        },
+        {
+          "h2": "Opción 2: caffeinate (no sobrevive al cierre de la tapa)",
+          "html": "<p>El comando integrado <code>caffeinate</code> y la mayoría de apps de la barra de menú (Amphetamine, KeepingYouAwake, Caffeine) crean una <em>afirmación de energía</em>. Esto evita el reposo por inactividad —la pantalla permanece encendida mientras te ausentes—, pero una afirmación de energía no puede anular el reposo en modo conchilla. Cierra la tapa y el Mac entrará en reposo igualmente.</p>"
+        },
+        {
+          "h2": "Opción 3: pmset disablesleep (funciona, pero es peligroso)",
+          "html": "<p>Lo único que sobrevive al cierre de la tapa es una bandera a nivel del sistema:</p><pre><code>sudo pmset -a disablesleep 1</code></pre><p>Esto mantiene efectivamente al Mac despierto con la tapa cerrada y sin ningún periférico conectado. Pero hay dos problemas. Primero, debes recordar ejecutar <code>sudo pmset -a disablesleep 0</code> después, o tu Mac nunca volverá a entrar en reposo. Segundo —y esto es grave—: <strong>también desactiva el reposo de emergencia por baja batería de macOS</strong>. Con batería, el Mac seguirá funcionando hasta llegar al 0 % y apagarse bruscamente. Lo descubrimos por las malas: una ejecución nocturna, una batería completamente descargada y su estado de salud pasó de «Bueno» a «Deficiente».</p>"
+        },
+        {
+          "h2": "Opción 4: NoSleep (ejecuta el truco de pmset de forma segura)",
+          "html": "<p><a href=\"/\">NoSleep</a> es una app gratuita y de código abierto para la barra de menú que envuelve <code>pmset disablesleep</code> con las protecciones que le faltan:</p><ul><li><strong>Un solo interruptor</strong> (⌃⌘S) activa y desactiva el mantenimiento del estado despierto con la tapa cerrada, y siempre restaura el reposo normal al desactivarlo o al cerrar la app.</li><li><strong>Protección de batería</strong>: libera el bloqueo al alcanzar el 5 %, para que el Mac pueda entrar en reposo de forma natural en lugar de apagarse por completo.</li><li><strong>Modo inteligente</strong>: supervisa agentes de IA en ejecución (Claude Code, Codex, Ollama, Cursor…) y permite que el Mac entre en reposo tan pronto como queden inactivos, así no tienes que acordarte de desactivarlo.</li><li><strong>Temporizadores</strong>: 15 min / 1 h / 2 h, si solo necesitas terminar una descarga.</li></ul><p>Está escrita en Swift nativo, es universal (compatible con Apple Silicon e Intel), y solo te pide tu contraseña una vez.</p>"
+        },
+        {
+          "h2": "¿Cuál deberías usar?",
+          "html": "<ul><li>¿Conectado a un escritorio con monitor y alimentación? El modo conchilla de Apple es suficiente.</li><li>¿Necesitas que la pantalla permanezca encendida mientras ves algo? Usa <code>caffeinate</code> o cualquier app que evite el reposo.</li><li>¿Necesitas que el Mac siga trabajando con la tapa <em>realmente cerrada</em> —en una mochila, con batería o sin monitor? Entonces necesitas <code>pmset disablesleep</code>, y algo que lo desactive automáticamente y proteja tu batería. Para eso existe NoSleep.</li></ul>"
+        }
+      ]
+    },
+    "amphetamine-alternative": {
+      "title": "Alternativas a Amphetamine para Mac (2026): NoSleep frente a Amphetamine frente a Caffeine frente a KeepingYouAwake",
+      "description": "Comparamos las mejores aplicaciones keep-awake para macOS: Amphetamine, Caffeine, KeepingYouAwake y NoSleep, evaluando soporte con tapa cerrada, protección de la batería, conciencia de agentes de IA y precio.",
+      "h1": "Alternativas a Amphetamine para Mac: ¿qué aplicación keep-awake funciona realmente con la tapa cerrada?",
+      "intro": "Amphetamine es la respuesta predeterminada a «¿cómo evito que mi Mac entre en modo de suspensión?», y es una excelente aplicación. Pero fue diseñada para mantener la pantalla encendida, no para hacer funcionar un portátil con la tapa cerrada. Si ese es tu caso —compilaciones nocturnas, descargas largas, agentes de IA— aquí tienes cómo se comparan las opciones.",
+      "sections": [
+        {
+          "h2": "La comparación",
+          "html": "<table><thead><tr><th>Aplicación</th><th>Precio</th><th>Tapa cerrada, sin monitor</th><th>Protección de batería</th><th>Sabe cuándo finalizan los agentes</th><th>Código abierto</th></tr></thead><tbody><tr><td><strong>NoSleep</strong></td><td>Gratis</td><td>Sí</td><td>Sí — se desactiva al 5 %</td><td>Sí (modo Inteligente)</td><td>Sí, licencia MIT</td></tr><tr><td>Amphetamine</td><td>Gratis</td><td>Solo con alimentación externa y monitor conectado (modo Closed-Display)</td><td>Activación opcional</td><td>No</td><td>No</td></tr><tr><td>KeepingYouAwake</td><td>Gratis</td><td>No</td><td>No</td><td>No</td><td>Sí</td></tr><tr><td>Caffeine</td><td>Gratis</td><td>No</td><td>No</td><td>No</td><td>Sí</td></tr><tr><td>caffeinate (CLI)</td><td>Incluido en el sistema</td><td>No</td><td>No</td><td>No</td><td>—</td></tr></tbody></table>"
+        },
+        {
+          "h2": "Amphetamine",
+          "html": "<p>La opción más completa en cuanto a funciones: disparadores, programación, sesiones basadas en aplicaciones y un ícono en la barra Dock que puedes ocultar. Su <em>modo Closed-Display</em> mantiene funcionando un MacBook con la tapa cerrada, pero depende del modo «concha» de Apple, por lo que requiere alimentación externa y un monitor o dispositivo de entrada conectado. En batería y sin nada conectado, entra en suspensión como cualquier otro Mac. En Reddit hay muchos usuarios sorprendidos al descubrirlo.</p>"
+        },
+        {
+          "h2": "KeepingYouAwake y Caffeine",
+          "html": "<p>Ambas son pequeñas, de código abierto y hacen exactamente una cosa: mantener una solicitud de energía para evitar que el Mac entre en suspensión por inactividad. Ideales para presentaciones o para mantener la pantalla encendida. Ninguna de las dos maneja la tapa cerrada, ni fueron diseñadas para eso.</p>"
+        },
+        {
+          "h2": "NoSleep",
+          "html": "<p><a href=\"/\">NoSleep</a> nació del problema opuesto: un portátil que debía seguir funcionando <em>con la tapa cerrada</em>, usando solo la batería, mientras un agente de IA realizaba una tarea. Usa la bandera del sistema que sí sobrevive a la tapa cerrada (<code>pmset disablesleep</code>) y añade las dos cosas que esa bandera carece: una protección de batería para evitar apagados forzados por descarga total, y un modo Inteligente que permite que el Mac vuelva a dormir en cuanto tus agentes quedan inactivos. Tiene menos controles que Amphetamine por diseño: un atajo, tres modos, listo.</p>"
+        },
+        {
+          "h2": "Conclusión",
+          "html": "<p>Si necesitas programación y disparadores para un Mac siempre conectado a un monitor, Amphetamine sigue siendo excelente. Si quieres que un MacBook siga trabajando con la tapa cerrada, usando solo la batería, y vuelva a dormir automáticamente cuando termine la tarea, NoSleep es la única aplicación creada específicamente para eso.</p>"
+        }
+      ]
+    },
+    "claude-code-mac-sleep": {
+      "title": "Evita que Claude Code (o cualquier agente de IA) se detenga cuando tu Mac entre en modo de reposo",
+      "description": "Claude Code, Codex, Cursor y Ollama se detienen al entrar en modo de reposo o al cerrar la tapa de un MacBook. Aquí te explicamos por qué ocurre, qué soluciones no funcionan y la aplicación gratuita que mantiene tus agentes activos toda la noche y permite que el Mac entre en modo de reposo una vez finalicen.",
+      "h1": "Evita que Claude Code se detenga cuando tu Mac entre en modo de reposo",
+      "intro": "Inicias una tarea de agente que dura 20 minutos, cierras la laptop para ir a prepararte un café y, al regresar, encuentras la sesión muerta. Todos los entornos de programación con IA tienen este problema: Claude Code, la CLI de Codex, los agentes de Cursor, Ollama, Aider… y no es culpa de la herramienta. Es macOS.",
+      "sections": [
+        {
+          "h2": "¿Por qué se detiene el agente?",
+          "html": "<p>Cuando un Mac entra en modo de reposo, todos los procesos se congelan. Las conexiones de red expiran, la transmisión de la API del agente se interrumpe y, al reactivar el Mac, la herramienta normalmente no puede reanudar el paso en el que estaba. Cerrar la tapa activa el modo de reposo de inmediato; dejar el Mac abierto lo activa tras el tiempo de inactividad configurado. En ambos casos, la ejecución se pierde.</p>"
+        },
+        {
+          "h2": "Soluciones que la gente prueba y que no funcionan",
+          "html": "<ul><li><strong>«Evitar el reposo cuando la pantalla está apagada»</strong> en Ajustes del sistema solo funciona cuando el Mac está conectado a la corriente y no evita el modo de reposo en posición de concha (clamshell).</li><li><strong>caffeinate</strong> o Amphetamine mantienen la pantalla encendida, pero no sobreviven al cierre de la tapa si el Mac funciona con batería.</li><li><strong>Llevar la laptop a medio abrir</strong>. Funciona. Pero parece ridículo. De hecho, así nació NoSleep.</li><li><strong>tmux / nohup</strong> mantienen el proceso vivo tras una desconexión SSH, pero no tras el modo de reposo del equipo.</li></ul>"
+        },
+        {
+          "h2": "Qué sí funciona",
+          "html": "<p>El Mac debe recibir instrucciones a nivel del sistema para no entrar en modo de reposo (<code>pmset disablesleep</code>) — y luego debe recibir la orden de volver a entrar en modo de reposo una vez finalizada la tarea, o de lo contrario seguirá funcionando toda la noche y agotará la batería. <a href=\"/\">NoSleep</a> hace ambas cosas:</p><ol><li>Pulsa ⌃⌘S. Smart NoSleep está activado.</li><li>Cierra la tapa. Claude Code sigue ejecutándose.</li><li>NoSleep supervisa los procesos del agente. Cuando han estado inactivos durante 15 minutos (configurable), permite que el Mac entre en modo de reposo y muestra una notificación indicando cuándo ocurrió y qué estaba ejecutándose.</li><li>Si la batería cae al 5 %, libera el bloqueo inmediatamente, sin importar el modo activo.</li></ol>"
+        },
+        {
+          "h2": "¿Qué agentes detecta el modo inteligente?",
+          "html": "<p>Cualquier proceso que aparezca como tal en el sistema: <code>claude</code>, <code>codex</code>, <code>cursor</code>, <code>ollama</code>, <code>aider</code>, <code>gemini</code> y agentes CLI similares. La detección se basa en el nombre del proceso, por lo que también funciona con tus propios scripts si les asignas un nombre reconocible. Si prefieres no depender de la detección automática, usa Absolute NoSleep o un temporizador fijo.</p>"
+        },
+        {
+          "h2": "Gratis, de código abierto y sin cuenta",
+          "html": "<p>NoSleep tiene licencia MIT, está escrito en Swift nativo, pesa unos 1 MB y no incluye telemetría. No está firmado — en la primera instalación hay un paso sencillo de una línea con <code>xattr</code>, explicado en la <a href=\"/\">página de descarga</a>.</p>"
+        }
+      ]
+    },
+    "pmset-disablesleep": {
+      "title": "pmset disablesleep explicado: la única forma de mantener un Mac despierto con la tapa cerrada — y su trampa para la batería",
+      "description": "Qué hace realmente «sudo pmset -a disablesleep 1» en macOS, por qué es la única configuración que resiste una tapa cerrada y el efecto secundario poco conocido que puede descargar por completo la batería de un MacBook hasta un apagado forzado.",
+      "h1": "pmset disablesleep: qué hace y la trampa para la batería que nadie menciona",
+      "intro": "Si has buscado cómo mantener un MacBook despierto con la tapa cerrada, ya habrás visto este comando. Funciona. Y es, de hecho, lo único que funciona. Pero tiene un efecto secundario no documentado explícitamente en ninguna parte, y nos costó una batería.",
+      "sections": [
+        {
+          "h2": "Qué hace esta opción",
+          "html": "<pre><code>sudo pmset -a disablesleep 1   # nunca dormir, ni siquiera con la tapa cerrada\nsudo pmset -a disablesleep 0   # volver al comportamiento normal</code></pre><p><code>pmset</code> es la herramienta de gestión de energía de Apple. <code>disablesleep</code> es una clave oculta que le indica al gestor de energía del kernel que rechace <em>todas</em> las solicitudes de sueño: tiempos de inactividad, el comando Dormir del menú Apple y también el sueño en modo «clamshell». La opción <code>-a</code> lo aplica tanto con batería como conectado a la corriente. Sobrevive a los reinicios, y eso es precisamente por lo que olvidar restablecerla es tan común.</p>"
+        },
+        {
+          "h2": "Por qué nada más resiste una tapa cerrada",
+          "html": "<p>Aplicaciones como Amphetamine y el comando <code>caffeinate</code> funcionan mediante <em>afirmaciones de energía</em> (<code>IOPMAssertionCreateWithName</code>). Una afirmación dice: «está ocurriendo algo, no entres en sueño por inactividad». Sin embargo, el flujo de sueño en modo «clamshell» no consulta esas afirmaciones: el interruptor de la tapa se trata como una acción del usuario, como seleccionar Dormir desde el menú. Por eso las afirmaciones se ignoran y el Mac entra en sueño. <code>disablesleep</code>, en cambio, opera a un nivel inferior, dentro de la política del gestor de energía, y por eso es la única configuración que se mantiene activa.</p>"
+        },
+        {
+          "h2": "La trampa: también desactiva el sueño por baja batería",
+          "html": "<p>Normalmente, macOS fuerza al Mac a entrar en sueño cuando la batería alcanza un nivel crítico, para poder hibernar de forma limpia y evitar perder energía en mitad de una escritura. Ese sueño de emergencia es, desde el punto de vista del gestor de energía, simplemente otra solicitud de sueño —y <code>disablesleep 1</code> la rechaza también.</p><p>Lo confirmamos en un registro del 2026-08-17: la advertencia del 10 % apareció a las 01:32, no hubo ningún evento «Entrando en sueño» después, y la siguiente entrada fue un arranque en frío a las 06:39. El Mac había seguido funcionando hasta que la batería se agotó por completo. La salud de la batería, que antes decía «Buena», pasó a «Pobre» a la mañana siguiente.</p><p>Así que si usas esta opción en un portátil, <strong>tú</strong> debes vigilar la batería, porque macOS ya no lo hará por ti.</p>"
+        },
+        {
+          "h2": "Cómo usarla con seguridad",
+          "html": "<p>Tres reglas si la usas en tus propios scripts:</p><ol><li>Siempre combina <code>disablesleep 1</code> con un <code>disablesleep 0</code> garantizado: al salir, ante un error o tras un temporizador.</li><li>Consulta periódicamente el estado de la batería (<code>pmset -g batt</code> o <code>IOPSCopyPowerSourcesInfo</code>) y restablece la opción cuando caiga por debajo del umbral que consideres seguro.</li><li>No confíes en que «la pantalla esté encendida» como prueba de que hay alguien presente. Una afirmación atascada de una app de grabación o transcripción puede mantener la pantalla encendida toda la noche.</li></ol><p>O déjalo en manos de <a href=\"/\">NoSleep</a>: activa la opción al activar «mantener despierto», la desactiva al desactivarla o al salir, la libera automáticamente al llegar al 5 % de batería en todos los modos y, en modo Inteligente, también la desactiva cuando tus agentes de IA entran en inactividad. Es de código abierto, así que puedes ver exactamente cómo lo hace.</p>"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NoSleep — mantenha seu Mac acordado com a tampa fechada enquanto agentes de IA trabalham</title>
+<meta name="description" content="Aplicativo gratuito e de código aberto para Mac que mantém seu MacBook acordado com a tampa fechada — sem monitor externo — enquanto Claude Code, Codex ou qualquer agente de IA está em execução, e permite que ele durma novamente ao finalizar. Nunca descarrega a bateria até zero.">
+<link rel="canonical" href="https://site-ten-blond-47.vercel.app/pt/">
+<link rel="alternate" hreflang="en" href="https://site-ten-blond-47.vercel.app/">
+<link rel="alternate" hreflang="de" href="https://site-ten-blond-47.vercel.app/de/">
+<link rel="alternate" hreflang="es" href="https://site-ten-blond-47.vercel.app/es/">
+<link rel="alternate" hreflang="fr" href="https://site-ten-blond-47.vercel.app/fr/">
+<link rel="alternate" hreflang="ja" href="https://site-ten-blond-47.vercel.app/ja/">
+<link rel="alternate" hreflang="ko" href="https://site-ten-blond-47.vercel.app/ko/">
+<link rel="alternate" hreflang="pt-BR" href="https://site-ten-blond-47.vercel.app/pt/">
+<link rel="alternate" hreflang="zh-Hans" href="https://site-ten-blond-47.vercel.app/zh/">
+<link rel="alternate" hreflang="x-default" href="https://site-ten-blond-47.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NoSleep">
+<meta property="og:title" content="NoSleep — mantenha seu Mac acordado com a tampa fechada enquanto agentes de IA trabalham">
+<meta property="og:description" content="Aplicativo gratuito e de código aberto para Mac que mantém seu MacBook acordado com a tampa fechada — sem monitor externo — enquanto Claude Code, Codex ou qualquer agente de IA está em execução, e permite que ele durma novamente ao finalizar. Nunca descarrega a bateria até zero.">
+<meta property="og:url" content="https://site-ten-blond-47.vercel.app/pt/">
+<meta property="og:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NoSleep — mantenha seu Mac acordado com a tampa fechada enquanto agentes de IA trabalham">
+<meta name="twitter:description" content="Aplicativo gratuito e de código aberto para Mac que mantém seu MacBook acordado com a tampa fechada — sem monitor externo — enquanto Claude Code, Codex ou qualquer agente de IA está em execução, e permite que ele durma novamente ao finalizar. Nunca descarrega a bateria até zero.">
+<meta name="twitter:image" content="https://site-ten-blond-47.vercel.app/og.jpg">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"NoSleep","operatingSystem":"macOS 13+","applicationCategory":"UtilitiesApplication","description":"Aplicativo gratuito e de código aberto para Mac que mantém seu MacBook acordado com a tampa fechada — sem monitor externo — enquanto Claude Code, Codex ou qualquer agente de IA está em execução, e permite que ele durma novamente ao finalizar. Nunca descarrega a bateria até zero.","softwareVersion":"1.1.11","downloadUrl":"https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg","url":"https://site-ten-blond-47.vercel.app/pt/","image":"https://site-ten-blond-47.vercel.app/og.jpg","license":"https://opensource.org/licenses/MIT","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Darius Cheung","url":"https://github.com/99Darius"},"codeRepository":"https://github.com/99Darius/NoSleep","inLanguage":"pt-BR"}</script>
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --card: #ffffff;
+    --text: #1d1d1f;
+    --muted: #6b6b70;
+    --accent: #5566ff;
+    --accent-deep: #2c3bb0;
+    --accent-soft: #eef1ff;
+    --accent-border: #d4d9ff;
+    --shadow: 0 10px 40px rgba(40, 50, 120, 0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e0f17;
+      --card: #181a26;
+      --text: #f5f5f7;
+      --muted: #a0a0aa;
+      --accent: #8190ff;
+      --accent-deep: #cdd5ff;
+      --accent-soft: #20243f;
+      --accent-border: #353a66;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 22px; }
+
+  /* Hero */
+  header { text-align: center; padding: 72px 0 48px; }
+  .logo {
+    width: 92px; height: 92px; margin: 0 auto 26px;
+    border-radius: 22px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .logo span {
+    font-size: 52px; font-weight: 800; color: #fff; line-height: 1;
+  }
+  .logo .strike {
+    position: absolute; width: 70%; height: 4px; background: rgba(255,255,255,0.92);
+    border-radius: 3px; transform: rotate(-45deg);
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.5px; }
+  .tagline { font-size: 19px; color: var(--muted); margin: 0 auto 34px; max-width: 520px; }
+
+  .cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent); color: #fff; text-decoration: none;
+    font-size: 17px; font-weight: 600;
+    padding: 15px 30px; border-radius: 13px;
+    box-shadow: var(--shadow); transition: transform .12s ease, background .12s ease;
+  }
+  .cta:hover { transform: translateY(-1px); background: var(--accent-deep); }
+  .cta-sub { display: block; font-size: 13px; color: var(--muted); margin-top: 14px; }
+
+  /* Email-gate download form */
+  .dl-form {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    max-width: 480px; margin: 0 auto;
+  }
+  .dl-form input[type="email"] {
+    flex: 1 1 200px; min-width: 0;
+    font: inherit; font-size: 16px; color: var(--text);
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 13px; padding: 14px 16px; outline: none;
+  }
+  .dl-form input[type="email"]:focus { border-color: var(--accent); }
+  .dl-form .cta { border: 0; cursor: pointer; font-family: inherit; }
+  .gh-link {
+    display: inline-block; margin-top: 12px; font-size: 14px; font-weight: 600;
+    color: var(--accent); text-decoration: none;
+  }
+  .gh-link:hover { text-decoration: underline; }
+  kbd {
+    font-family: inherit; font-weight: 700;
+    background: var(--accent-soft); color: var(--accent-deep);
+    border: 1px solid var(--accent-border); border-radius: 7px;
+    padding: 2px 8px; font-size: 0.92em; white-space: nowrap;
+  }
+
+  /* Cards */
+  section { padding: 14px 0; }
+  .card {
+    background: var(--card); border-radius: 18px; padding: 28px 30px;
+    box-shadow: var(--shadow); margin: 18px 0;
+  }
+  .card h2 { font-size: 21px; margin: 0 0 16px; }
+  .feature { display: flex; gap: 14px; margin: 14px 0; align-items: flex-start; }
+  .feature .ico {
+    flex: 0 0 38px; width: 38px; height: 38px; border-radius: 11px;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    display: flex; align-items: center; justify-content: center; font-size: 19px;
+  }
+  .feature b { display: block; font-size: 15px; }
+  .feature p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+
+  ol { padding-left: 22px; margin: 0; }
+  ol li { margin: 10px 0; font-size: 15px; }
+  .note {
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 12px; padding: 16px 18px; font-size: 14px; margin-top: 8px;
+  }
+  code {
+    font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.88em;
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-radius: 6px; padding: 2px 7px;
+  }
+
+  /* Smart NoSleep showcase (faithful macOS mockups) */
+  .shots { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  .shot { flex: 1 1 260px; max-width: 330px; }
+  .shot .cap { font-size: 13px; color: var(--muted); text-align: center; margin-top: 12px; }
+  .macmenu {
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 10px; box-shadow: var(--shadow);
+    padding: 5px; font-size: 13.5px; line-height: 1.25;
+  }
+  .macmenu .mi { padding: 5px 12px 5px 26px; border-radius: 6px; position: relative; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .macmenu .mi.dim { color: var(--muted); font-size: 12.5px; }
+  .macmenu .mi.checked::before { content: "✓"; position: absolute; left: 9px; font-weight: 700; }
+  .macmenu .mi.sel { background: var(--accent); color: #fff; }
+  .macmenu .mi .sub { float: right; color: var(--muted); margin-left: 14px; }
+  .macmenu .mi.sel .sub { color: rgba(255,255,255,0.8); }
+  .macmenu hr { border: 0; border-top: 1px solid var(--accent-border); margin: 5px 10px; }
+  .macnotif {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--accent-border);
+    border-radius: 16px; box-shadow: var(--shadow); padding: 14px 16px;
+  }
+  .macnotif .nicon {
+    flex: 0 0 40px; width: 40px; height: 40px; border-radius: 9px;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 22px; position: relative;
+  }
+  .macnotif .nicon i {
+    position: absolute; width: 66%; height: 2.5px; background: rgba(255,255,255,0.92);
+    border-radius: 2px; transform: rotate(-45deg); display: block;
+  }
+  .macnotif b { display: block; font-size: 13.5px; }
+  .macnotif p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0 56px; }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 560px) {
+    h1 { font-size: 31px; }
+    header { padding: 52px 0 36px; }
+    .card { padding: 22px 20px; }
+  }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+
+  nav.top { display:flex; justify-content:space-between; align-items:center; padding:18px 0 0; font-size:14px; }
+  nav.top a { color: var(--accent); text-decoration:none; font-weight:600; }
+  article { background: var(--card); border-radius:18px; padding: 34px 34px; box-shadow: var(--shadow); margin: 26px 0; }
+  article h1 { font-size: 32px; margin: 0 0 14px; }
+  article .intro { font-size: 17px; color: var(--muted); margin: 0 0 26px; }
+  article h2 { font-size: 21px; margin: 30px 0 10px; }
+  article p, article li { font-size: 15.5px; }
+  article pre { background: var(--accent-soft); border:1px solid var(--accent-border); border-radius: 10px; padding: 12px 14px; overflow-x:auto; font-size: 13.5px; }
+  article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.93em; }
+  article p code, article li code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
+  article table { width:100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; display:block; overflow-x:auto; }
+  article th, article td { text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--accent-border); vertical-align: top; }
+  article th { color: var(--muted); font-weight:600; }
+  .cta-box { text-align:center; margin: 30px 0 6px; }
+  .guides { list-style:none; padding:0; margin:0; }
+  .guides li { margin: 10px 0; }
+  .guides a { color: var(--accent); text-decoration:none; font-weight:600; }
+  .langs { display:flex; flex-wrap:wrap; gap: 6px 14px; justify-content:center; margin-top: 14px; }
+  .langs a { color: var(--muted); }
+  .langs a.cur { color: var(--text); font-weight:600; }
+  .faq details { margin: 10px 0; } .faq summary { font-weight:600; cursor:pointer; font-size:15px; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: 14.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="top"><a href="/pt/">NoSleep</a><a href="https://github.com/99Darius/NoSleep">GitHub</a></nav>
+
+<header>
+  <div class="logo"><span>S</span><div class="strike"></div></div>
+  <h1>Acordado enquanto seus agentes trabalham. Dormindo quando terminam.</h1>
+  <p class="tagline">Um pequeno aplicativo na barra de menus que mantém seu Mac acordado — mesmo com a tampa fechada — enquanto Claude Code, Codex, Ollama ou qualquer agente de IA está em execução. O Smart NoSleep detecta quando eles finalizam e permite que seu Mac durma novamente, economizando bateria e reduzindo o aquecimento.</p>
+  <form id="dl-form" class="dl-form" novalidate>
+  <input type="email" id="dl-email" placeholder="vocé@exemplo.com" autocomplete="email" aria-label="Email" required>
+  <button class="cta" type="submit">⬇&nbsp; Baixar para macOS</button>
+</form>
+<span class="cta-sub">Informe seu e-mail para receber o instalador e atualizações ocasionais — sem spam.<br>Gratuito e de código aberto · Apple Silicon e Intel · <kbd>⌃⌘S</kbd></span>
+<a class="gh-link" href="https://github.com/99Darius/NoSleep">Código aberto no GitHub →</a>
+</header>
+<section><div class="card">
+  <h2>O que ele faz</h2>
+  <div class="feature"><div class="ico">🤖</div><div><b>Smart NoSleep</b><p>Projetado para execuções noturnas de IA: permanece acordado enquanto seus agentes estão ativos, permite que o Mac durma assim que ficarem ociosos e avisa você quando isso acontece.</p></div></div><div class="feature"><div class="ico">💤</div><div><b>Manter acordado com tampa fechada</b><p>Permanece acordado mesmo com a tampa fechada — nenhum monitor externo necessário.</p></div></div><div class="feature"><div class="ico">🔋</div><div><b>Seguro para a bateria</b><p>Libera o bloqueio de sono ao atingir 5% de bateria, impedindo que o Mac descarregue até uma desligamento forçado.</p></div></div><div class="feature"><div class="ico">⌨️</div><div><b>Um único atalho</b><p>Pressione ⌃⌘S em qualquer lugar para alternar entre manter acordado ou não, ou clique no ícone da barra de menus.</p></div></div><div class="feature"><div class="ico">⏱️</div><div><b>Temporizadores</b><p>Mantenha acordado por 15 minutos, 1 hora ou 2 horas — depois desliga automaticamente.</p></div></div><div class="feature"><div class="ico">🪶</div><div><b>Leve como uma pena</b><p>Desenvolvido nativamente em Swift, sem Electron. Consumo quase nulo de CPU e memória.</p></div></div>
+</div></section>
+<section><div class="card">
+  <h2>Instalação</h2>
+  <p style="margin-top:0;color:var(--muted);font-size:14px;">O NoSleep é de código aberto e não está assinado com um certificado Apple pago, então o macOS exibe um aviso de 'não é possível verificar' na primeira execução. Isso é normal. Basta usar o Terminal uma única vez:</p>
+  <ol><li>Baixe o instalador — ele será salvo na pasta Downloads.</li><li>Abra o Terminal (Aplicativos → Utilitários), cole e execute o comando mostrado abaixo.</li><li>Dê um duplo-clique no arquivo .pkg — agora ele abrirá normalmente.</li><li>Siga as etapas do instalador — o NoSleep será iniciado automaticamente ao finalizar.</li></ol>
+  <pre><code>xattr -d com.apple.quarantine ~/Downloads/NoSleep-Installer-1.1.11.pkg</code></pre>
+</div></section>
+<section><div class="card">
+  <h2>Como usar</h2>
+  <ol><li>Pressione ⌃⌘S ou clique no ícone da barra de menus para alternar entre manter acordado ou não.</li><li>Escolha Smart NoSleep (padrão), Absolute NoSleep ou um temporizador.</li><li>Feche a tampa. Seus agentes continuam rodando. Abra-a mais tarde para ver quando terminaram.</li></ol>
+</div></section>
+<section><div class="card faq">
+  <h2>Perguntas frequentes</h2>
+  <details><summary>Funciona com a tampa fechada e sem monitor externo?</summary><p>Sim. Esse é exatamente o propósito. Ferramentas normais de 'manter acordado' só evitam o sono por inatividade; o NoSleep também impede o sono em concha ('clamshell sleep'), que é ativado imediatamente ao fechar a tampa — mesmo sem nada conectado.</p></details><details><summary>Ele vai descarregar minha bateria?</summary><p>Não até zero. O NoSleep libera o bloqueio de sono ao atingir 5% de bateria em todos os modos e o reativa assim que a carga ultrapassar 25% ou o Mac estiver conectado à energia. No modo Smart, ele também permite que o Mac durma assim que seus agentes entrarem em estado ocioso.</p></details><details><summary>É seguro? Por que o aviso do macOS?</summary><p>É de código aberto sob licença MIT — você pode ler cada linha. O aviso aparece porque o aplicativo não está assinado com um certificado pago da Apple Developer. Um único comando xattr resolve isso.</p></details><details><summary>Precisa de privilégios de administrador?</summary><p>Apenas uma vez. Manter um Mac acordado com a tampa fechada exige o uso de pmset, que solicita sua senha na primeira execução. Depois disso, funciona silenciosamente.</p></details>
+</div></section>
+<section><div class="card">
+  <h2>Guias</h2>
+  <ul class="guides"><li><a href="/pt/keep-macbook-awake-lid-closed">Como manter um MacBook acordado com a tampa fechada — sem monitor externo</a></li><li><a href="/pt/amphetamine-alternative">Alternativas ao Amphetamine para Mac: qual aplicativo keep-awake realmente funciona com a tampa fechada?</a></li><li><a href="/pt/claude-code-mac-sleep">Evite que o Claude Code pare ao colocar seu Mac em modo de espera</a></li><li><a href="/pt/pmset-disablesleep">pmset disablesleep: o que faz — e a armadilha da bateria que ninguém menciona</a></li></ul>
+</div></section>
+<footer>
+  Feito para macOS · <a href="https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg">Baixar para macOS</a> · <a href="https://github.com/99Darius/NoSleep">Código-fonte no GitHub</a>
+  <div class="langs"><a href="/" hreflang="en" class="">English</a><a href="/de/" hreflang="de" class="">Deutsch</a><a href="/es/" hreflang="es" class="">Español</a><a href="/fr/" hreflang="fr" class="">Français</a><a href="/ja/" hreflang="ja" class="">日本語</a><a href="/ko/" hreflang="ko" class="">한국어</a><a href="/pt/" hreflang="pt-BR" class="cur">Português</a><a href="/zh/" hreflang="zh-Hans" class="">简体中文</a></div>
+</footer>
+</div>
+<script>
+(function () {
+  var PKG = "https://github.com/99Darius/NoSleep/releases/download/v1.1.11/NoSleep-Installer-1.1.11.pkg";
+  var form = document.getElementById('dl-form'); if (!form) return;
+  var input = document.getElementById('dl-email');
+  var saved = null; try { saved = localStorage.getItem('nosleepEmail'); } catch (e) {}
+  if (saved) { var a = document.createElement('a'); a.className = 'cta'; a.href = PKG; a.textContent = form.querySelector('button').textContent; form.replaceWith(a); return; }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault(); var email = input.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { input.reportValidity(); return; }
+    try { localStorage.setItem('nosleepEmail', email); } catch (err) {}
+    try { fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }), keepalive: true }).catch(function(){}); } catch (err) {}
+    window.location.href = PKG;
+  });
+})();
+</script>
+</body>
+</html>
