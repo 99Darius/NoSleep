@@ -10,3 +10,5 @@ installer/resources/background-dark.png
 installer/resources/LICENSE.txt
 .vercel/
 .NoSleep.app.root-leftover/
+.env*.local
+node_modules/

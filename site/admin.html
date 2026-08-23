@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>NoSleep — Admin</title>
+<style>
+  :root {
+    --bg: #0d1117; --panel: #161b22; --panel2: #1c2230; --line: #2a3140;
+    --text: #e6edf3; --dim: #8b949e; --accent: #4c8dff; --good: #2ea043; --warn: #d29922;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 24px 20px 80px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+  h1 { font-size: 20px; margin: 0; }
+  h2 { font-size: 16px; margin: 28px 0 12px; color: var(--dim); text-transform: uppercase; letter-spacing: .04em; }
+  .btn {
+    background: var(--panel2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 14px; font-size: 14px; cursor: pointer;
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.small { padding: 5px 10px; font-size: 13px; }
+  .btn.on { background: var(--good); border-color: var(--good); color: #fff; }
+
+  /* login */
+  #login { max-width: 340px; margin: 12vh auto 0; text-align: center; }
+  #login input {
+    width: 100%; padding: 11px 12px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--panel); color: var(--text); font-size: 15px; margin: 14px 0;
+  }
+  #login .btn { width: 100%; }
+  .err { color: #f85149; min-height: 20px; font-size: 14px; }
+
+  /* stat */
+  .stats { display: flex; gap: 12px; flex-wrap: wrap; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; }
+  .stat .n { font-size: 26px; font-weight: 700; }
+  .stat .l { color: var(--dim); font-size: 13px; }
+
+  table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  th { color: var(--dim); font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  .muted { color: var(--dim); }
+
+  .thread { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .thread.done { opacity: .55; }
+  .thread .top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+  .thread .title { font-weight: 600; }
+  .thread .meta { color: var(--dim); font-size: 13px; margin: 2px 0 8px; }
+  .badge { font-size: 11px; padding: 2px 7px; border-radius: 20px; border: 1px solid var(--line); color: var(--dim); }
+  .badge.high { color: var(--good); border-color: var(--good); }
+  .badge.medium { color: var(--warn); border-color: var(--warn); }
+  .fit { color: var(--dim); font-size: 13px; margin-bottom: 8px; }
+  .reply { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 14px; white-space: pre-wrap; }
+  .actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- LOGIN -->
+  <div id="login">
+    <h1>NoSleep Admin</h1>
+    <form id="login-form">
+      <input id="pw" type="password" placeholder="Password" autocomplete="current-password" autofocus>
+      <div class="err" id="login-err"></div>
+      <button class="btn primary" type="submit">Sign in</button>
+    </form>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dash" class="hidden">
+    <header>
+      <h1>NoSleep Admin</h1>
+      <button class="btn small" id="logout">Log out</button>
+    </header>
+
+    <h2>Email leads</h2>
+    <div class="stats" style="margin-bottom:14px;">
+      <div class="stat"><div class="n" id="lead-count">0</div><div class="l">total leads</div></div>
+      <div class="stat"><div class="n" id="lead-week">0</div><div class="l">last 7 days</div></div>
+      <button class="btn small" id="export" style="align-self:center;">Export CSV</button>
+    </div>
+    <table id="leads-table">
+      <thead><tr><th>Email</th><th>Date</th><th>Source</th></tr></thead>
+      <tbody id="leads-body"></tbody>
+    </table>
+    <p class="muted" id="leads-empty" style="display:none;">No leads captured yet.</p>
+
+    <h2>Reddit outreach</h2>
+    <p class="muted" id="reddit-progress"></p>
+    <div id="threads"></div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var loginEl = document.getElementById("login");
+  var dashEl = document.getElementById("dash");
+  var state = { leads: [], threads: [], repliedThreads: {} };
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+
+  function show(view) {
+    loginEl.classList.toggle("hidden", view !== "login");
+    dashEl.classList.toggle("hidden", view !== "dash");
+  }
+
+  function fmtDate(iso) {
+    try { return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }); }
+    catch (e) { return iso; }
+  }
+
+  async function loadData() {
+    var r = await fetch("/api/admin/data", { credentials: "same-origin" });
+    if (r.status === 401) { show("login"); return false; }
+    state = await r.json();
+    render();
+    show("dash");
+    return true;
+  }
+
+  function render() {
+    // leads
+    var body = document.getElementById("leads-body");
+    var week = Date.now() - 7 * 864e5;
+    var wc = 0;
+    body.innerHTML = state.leads.map(function (l) {
+      if (new Date(l.ts).getTime() >= week) wc++;
+      return "<tr><td>" + esc(l.email) + "</td><td>" + esc(fmtDate(l.ts)) +
+             "</td><td class='muted'>" + esc(l.source || "") + "</td></tr>";
+    }).join("");
+    document.getElementById("lead-count").textContent = state.leads.length;
+    document.getElementById("lead-week").textContent = wc;
+    document.getElementById("leads-empty").style.display = state.leads.length ? "none" : "block";
+    document.getElementById("leads-table").style.display = state.leads.length ? "" : "none";
+
+    // threads
+    var done = 0;
+    var html = state.threads.map(function (t) {
+      var replied = !!state.repliedThreads[t.id];
+      if (replied) done++;
+      var pr = (t.priority || "").toLowerCase();
+      return "<div class='thread " + (replied ? "done" : "") + "' data-id='" + esc(t.id) + "'>" +
+        "<div class='top'><div><div class='title'>" + esc(t.title) + "</div>" +
+        "<div class='meta'>" + esc(t.subreddit) + " · " + esc(t.recency || "") + "</div></div>" +
+        "<span class='badge " + pr + "'>" + esc(t.priority || "") + "</span></div>" +
+        "<div class='fit'>" + esc(t.fit || "") + "</div>" +
+        "<div class='reply' id='reply-" + esc(t.id) + "'>" + esc(t.reply) + "</div>" +
+        "<div class='actions'>" +
+          "<button class='btn small copy' data-id='" + esc(t.id) + "'>Copy reply</button>" +
+          "<a class='btn small' href='" + esc(t.url) + "' target='_blank' rel='noopener'>Open thread</a>" +
+          "<button class='btn small toggle " + (replied ? "on" : "") + "' data-id='" + esc(t.id) + "'>" +
+            (replied ? "✓ Posted" : "Mark posted") + "</button>" +
+        "</div></div>";
+    }).join("");
+    document.getElementById("threads").innerHTML = html;
+    document.getElementById("reddit-progress").textContent =
+      done + " of " + state.threads.length + " threads replied to.";
+  }
+
+  // login
+  document.getElementById("login-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var errEl = document.getElementById("login-err");
+    errEl.textContent = "";
+    var r = await fetch("/api/admin/login", {
+      method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: document.getElementById("pw").value })
+    });
+    if (r.ok) { document.getElementById("pw").value = ""; loadData(); }
+    else { errEl.textContent = "Incorrect password."; }
+  });
+
+  document.getElementById("logout").addEventListener("click", async function () {
+    await fetch("/api/admin/logout", { method: "POST", credentials: "same-origin" });
+    show("login");
+  });
+
+  document.getElementById("export").addEventListener("click", function () {
+    var rows = [["email", "date", "source"]].concat(
+      state.leads.map(function (l) { return [l.email, l.ts, l.source || ""]; })
+    );
+    var csv = rows.map(function (r) {
+      return r.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(",");
+    }).join("\n");
+    var a = document.createElement("a");
+    a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+    a.download = "nosleep-leads.csv";
+    a.click();
+  });
+
+  // thread actions (delegated)
+  document.getElementById("threads").addEventListener("click", async function (e) {
+    var copyBtn = e.target.closest(".copy");
+    if (copyBtn) {
+      var id = copyBtn.getAttribute("data-id");
+      var t = state.threads.find(function (x) { return x.id === id; });
+      try { await navigator.clipboard.writeText(t.reply); copyBtn.textContent = "Copied!"; }
+      catch (err) { copyBtn.textContent = "Copy failed"; }
+      setTimeout(function () { copyBtn.textContent = "Copy reply"; }, 1500);
+      return;
+    }
+    var tog = e.target.closest(".toggle");
+    if (tog) {
+      var id2 = tog.getAttribute("data-id");
+      var now = !state.repliedThreads[id2];
+      tog.disabled = true;
+      var r = await fetch("/api/admin/data", {
+        method: "POST", credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: id2, replied: now })
+      });
+      tog.disabled = false;
+      if (r.ok) { state.repliedThreads = (await r.json()).repliedThreads; render(); }
+    }
+  });
+
+  // boot
+  loadData();
+})();
+</script>
+</body>
+</html>

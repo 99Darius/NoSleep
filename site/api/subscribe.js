@@ -1,38 +1,27 @@
-// Vercel serverless function: best-effort email capture before download.
-// Adds the address as a Resend contact (https://resend.com/docs/api-reference).
-// Requires the RESEND_API_KEY env var; without it (or on any upstream error)
-// we still return success — the download must never be blocked by this.
+// Best-effort email capture before download. Appends the address to the
+// encrypted leads blob (see ../lib/store.js). The download must never be blocked
+// by this, so any storage error still returns success and is only logged.
+import { addLead } from "../lib/store.js";
+
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).json({ error: 'method not allowed' });
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+    return res.status(405).json({ error: "method not allowed" });
   }
 
-  const email = (req.body && req.body.email ? String(req.body.email) : '').trim();
+  const email = (req.body && req.body.email ? String(req.body.email) : "").trim();
   const valid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) && email.length <= 254;
   if (!valid) {
-    return res.status(400).json({ error: 'invalid email' });
+    return res.status(400).json({ error: "invalid email" });
   }
 
-  const key = process.env.RESEND_API_KEY;
-  if (key) {
-    try {
-      const r = await fetch('https://api.resend.com/contacts', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${key}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, unsubscribed: false }),
-      });
-      if (!r.ok) {
-        console.error('resend contacts.create failed', r.status, await r.text());
-      }
-    } catch (err) {
-      console.error('resend contacts.create error', err);
-    }
-  } else {
-    console.error('RESEND_API_KEY not set; email not stored:', email);
+  try {
+    await addLead(email, {
+      source: "site",
+      ua: String(req.headers["user-agent"] || "").slice(0, 300),
+    });
+  } catch (err) {
+    console.error("lead capture failed:", err);
   }
 
   return res.status(204).end();
